@@ -1,1 +1,3 @@
-this is a fance readme file for the initial commit.
+# Hurace
+
+this is a fancy readme file for the initial commit.
