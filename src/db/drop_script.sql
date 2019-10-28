@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS [dbo].[TimeMeasurement];
+DROP TABLE IF EXISTS [dbo].[RaceData];
+DROP TABLE IF EXISTS [dbo].[RaceState];
+DROP TABLE IF EXISTS [dbo].[Race];
+DROP TABLE IF EXISTS [dbo].[SeasonPlan];
+DROP TABLE IF EXISTS [dbo].[Venue];
+DROP TABLE IF EXISTS [dbo].[Season];
+DROP TABLE IF EXISTS [dbo].[StartPosition];
+DROP TABLE IF EXISTS [dbo].[Skier];
+DROP TABLE IF EXISTS [dbo].[Country];
+DROP TABLE IF EXISTS [dbo].[Image];
+DROP TABLE IF EXISTS [dbo].[Sex];
+DROP TABLE IF EXISTS [dbo].[RaceType];
+DROP TABLE IF EXISTS [dbo].[StartList];
