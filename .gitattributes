@@ -1,0 +1,2 @@
+doc/DataModel.svg filter=lfs diff=lfs merge=lfs -text
+src/db/insert_script.sql filter=lfs diff=lfs merge=lfs -text
