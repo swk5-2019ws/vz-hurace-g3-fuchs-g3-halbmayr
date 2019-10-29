@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Season]
 (
-	[SeasonId] INT NOT NULL,
+	[SeasonId] INT NOT NULL IDENTITY,
 	[Name] VARCHAR(30) NOT NULL,
 	[StartDate] DATE NOT NULL,
 	[EndDate] DATE NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE [dbo].[Country]
 
 CREATE TABLE [dbo].[Image]
 (
-    [ImageId] INT NOT NULL,
+    [ImageId] INT NOT NULL IDENTITY,
     [Content] VARBINARY(MAX) NOT NULL,
     CONSTRAINT Image_pk PRIMARY KEY ([ImageId])
 );
@@ -45,13 +45,13 @@ CREATE TABLE [dbo].[Sex]
 
 CREATE TABLE [dbo].[StartList]
 (
-    [StartListId] INT NOT NULL,
+    [StartListId] INT NOT NULL IDENTITY,
     CONSTRAINT StartList_pk PRIMARY KEY ([StartListId])
 );
 
 CREATE TABLE [dbo].[Skier]
 (
-    [SkierId] INT NOT NULL,
+    [SkierId] INT NOT NULL IDENTITY,
     [FirstName] VARCHAR(50) NOT NULL,
     [LastName] VARCHAR(50) NOT NULL,
     [DateOfBirth] DATE NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE [dbo].[RaceType]
 
 CREATE TABLE [dbo].[Race]
 (
-    [RaceId] INT NOT NULL,
+    [RaceId] INT NOT NULL IDENTITY,
     [RaceType] VARCHAR(20) NOT NULL,
     [Venue] VARCHAR(30) NOT NULL,
     [FirstStartListId] INT NULL,
@@ -132,7 +132,7 @@ CREATE TABLE [dbo].[RaceData]
 );
 
 CREATE TABLE [dbo].[TimeMeasurement] (
-	[TimeMeasurementId] INT NOT NULL,
+	[TimeMeasurementId] INT NOT NULL IDENTITY,
     [RaceId] INT NOT NULL,
     [StartListId] INT NOT NULL,
     [SkierId] INT NOT NULL,
