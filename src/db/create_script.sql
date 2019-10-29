@@ -144,6 +144,6 @@ CREATE TABLE [Hurace].[TimeMeasurement] (
 	CONSTRAINT TimeMeasurement_pk PRIMARY KEY ([TimeMeasurementId]),
     CONSTRAINT TimeMeasurement_unique UNIQUE ([RaceId], [StartListId], [SkierId], [SensorId]),
 	CONSTRAINT TimeMeasurement_RaceData_fk FOREIGN KEY ([RaceId], [StartListId], [SkierId])
-		REFERENCES RaceData ([RaceId], [StartListId], [SkierId]),
+		REFERENCES [Hurace].[RaceData] ([RaceId], [StartListId], [SkierId]),
 	CONSTRAINT TimeMeasurement_sensorid_gt_or_eq_zero CHECK ([SensorId] >= 0)
 );
