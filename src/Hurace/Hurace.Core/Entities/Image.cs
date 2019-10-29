@@ -2,5 +2,8 @@
 {
     public class Image
     {
+        internal Image()
+        {
+        }
     }
 }

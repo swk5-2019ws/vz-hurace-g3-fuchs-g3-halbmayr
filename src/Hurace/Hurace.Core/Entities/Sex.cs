@@ -2,5 +2,8 @@
 {
     public class Sex
     {
+        internal Sex()
+        {
+        }
     }
 }

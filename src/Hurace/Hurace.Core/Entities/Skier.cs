@@ -2,5 +2,8 @@
 {
     public class Skier
     {
+        internal Skier()
+        {
+        }
     }
 }

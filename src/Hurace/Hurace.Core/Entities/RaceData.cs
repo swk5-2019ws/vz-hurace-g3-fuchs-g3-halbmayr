@@ -2,5 +2,8 @@
 {
     public class RaceData
     {
+        internal RaceData()
+        {
+        }
     }
 }

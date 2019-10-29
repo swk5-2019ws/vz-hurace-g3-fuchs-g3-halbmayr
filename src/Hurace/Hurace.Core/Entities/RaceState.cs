@@ -2,5 +2,8 @@
 {
     public class RaceState
     {
+        internal RaceState()
+        {
+        }
     }
 }
