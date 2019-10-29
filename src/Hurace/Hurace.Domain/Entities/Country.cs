@@ -1,4 +1,4 @@
-﻿namespace Hurace.Core.Entities
+﻿namespace Hurace.Domain.Entities
 {
     public class Country
     {
