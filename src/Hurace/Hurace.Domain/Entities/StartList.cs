@@ -1,9 +1,12 @@
-﻿namespace Hurace.Domain.Entities
+﻿using System.Collections.Generic;
+
+namespace Hurace.Domain.Entities
 {
     public class StartList
     {
-        internal StartList()
-        {
-        }
+        public int StartListId { get; set; }
+        public Race Race { get; set; }
+        public List<StartPosition> StartPositions { get; set; }
+        public List<RaceData> RaceData { get; set; }
     }
 }

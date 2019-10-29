@@ -2,8 +2,8 @@
 {
     public class StartPosition
     {
-        internal StartPosition()
-        {
-        }
+        public StartList StartList { get; set; }
+        public Skier Skier { get; set; }
+        public int Position { get; set; }
     }
 }

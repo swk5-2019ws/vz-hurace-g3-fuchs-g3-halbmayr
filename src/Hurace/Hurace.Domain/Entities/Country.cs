@@ -2,8 +2,6 @@
 {
     public class Country
     {
-        internal Country()
-        {
-        }
+        public string Name { get; set; }
     }
 }

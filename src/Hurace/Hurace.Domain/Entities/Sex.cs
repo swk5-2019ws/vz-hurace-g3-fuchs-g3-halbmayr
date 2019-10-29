@@ -1,9 +1,10 @@
-﻿namespace Hurace.Domain.Entities
+﻿using System.Collections.Generic;
+
+namespace Hurace.Domain.Entities
 {
     public class Sex
     {
-        internal Sex()
-        {
-        }
+        public string Label { get; set; }
+        public List<Skier> Skiers { get; set; }
     }
 }

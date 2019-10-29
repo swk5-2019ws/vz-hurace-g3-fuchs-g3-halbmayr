@@ -1,9 +1,13 @@
-﻿namespace Hurace.Domain.Entities
+﻿using System.Collections.Generic;
+
+namespace Hurace.Domain.Entities
 {
     public class RaceData
     {
-        internal RaceData()
-        {
-        }
+        public Race Race { get; set; }
+        public StartList StartList { get; set; }
+        public Skier Skier { get; set; }
+        public RaceState RaceState { get; set; }
+        public List<TimeMeasurement> TimeMeasurements { get; set; }
     }
 }

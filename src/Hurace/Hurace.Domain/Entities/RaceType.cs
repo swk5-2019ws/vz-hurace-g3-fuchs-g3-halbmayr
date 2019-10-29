@@ -1,9 +1,10 @@
-﻿namespace Hurace.Domain.Entities
+﻿using System.Collections.Generic;
+
+namespace Hurace.Domain.Entities
 {
     public class RaceType
     {
-        internal RaceType()
-        {
-        }
+        public string Label { get; set; }
+        public List<Race> Races { get; set; }
     }
 }
