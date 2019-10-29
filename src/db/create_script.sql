@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Season]
 (
 	[SeasonId] INT NOT NULL,
-	[Name] VARCHAR(50) NOT NULL,
+	[Name] VARCHAR(30) NOT NULL,
 	[StartDate] DATE NOT NULL,
 	[EndDate] DATE NOT NULL,
 	CONSTRAINT Season_pk PRIMARY KEY ([SeasonId])
@@ -72,7 +72,7 @@ CREATE TABLE [dbo].[StartPosition]
     [SkierId] INT NOT NULL,
     [StartListId] INT NOT NULL,
     [Position] INT NOT NULL,
-    CONSTRAINT StartPosition_pk PRIMARY KEY ([SkierId], [StartListId], [Position]),
+    CONSTRAINT StartPosition_pk PRIMARY KEY ([SkierId], [StartListId]),
 	CONSTRAINT StartPosition_Skier_fk FOREIGN KEY ([SkierId])
 		REFERENCES [dbo].[Skier] ([SkierId]),
 	CONSTRAINT StartPosition_StartList_fk FOREIGN KEY ([StartListId])
@@ -101,8 +101,11 @@ CREATE TABLE [dbo].[Race]
 		REFERENCES [dbo].[Venue] ([Name]),
 	CONSTRAINT Race_StartList_1_fk FOREIGN KEY ([FirstStartListId])
 		REFERENCES [dbo].[StartList] ([StartListId]),
+	CONSTRAINT Race_FirstSL_uq UNIQUE ([FirstStartListId]),
+	CONSTRAINT Race_SecondSL_uq UNIQUE ([SecondStartListId]),
 	CONSTRAINT Race_StartList_2_fk FOREIGN KEY ([SecondStartListId])
-		REFERENCES [dbo].[StartList] ([StartListId])
+		REFERENCES [dbo].[StartList] ([StartListId]),
+	CONSTRAINT Race_NuOfSensors_gt_th_zero CHECK ([NumberOfSensors] > 0)
 );
 
 CREATE TABLE [dbo].[RaceState]
@@ -129,12 +132,15 @@ CREATE TABLE [dbo].[RaceData]
 );
 
 CREATE TABLE [dbo].[TimeMeasurement] (
+	[TimeMeasurementId] INT NOT NULL,
     [RaceId] INT NOT NULL,
     [StartListId] INT NOT NULL,
     [SkierId] INT NOT NULL,
     [SensorId] INT NOT NULL,
     [Measurement] DATETIME NOT NULL,
-    CONSTRAINT TimeMeasurement_pk PRIMARY KEY ([SensorId]),
+	CONSTRAINT TimeMeasurement_pk PRIMARY KEY ([TimeMeasurementId]),
+    CONSTRAINT TimeMeasurement_unique UNIQUE ([RaceId], [StartListId], [SkierId], [SensorId]),
 	CONSTRAINT TimeMeasurement_RaceData_fk FOREIGN KEY ([RaceId], [StartListId], [SkierId])
-		REFERENCES RaceData ([RaceId], [StartListId], [SkierId])
+		REFERENCES RaceData ([RaceId], [StartListId], [SkierId]),
+	CONSTRAINT TimeMeasurement_sensorid_gt_or_eq_zero CHECK ([SensorId] >= 0)
 );
