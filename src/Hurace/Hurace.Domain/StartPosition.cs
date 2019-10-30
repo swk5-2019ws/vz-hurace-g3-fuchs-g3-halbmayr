@@ -1,4 +1,4 @@
-﻿namespace Hurace.Domain.Entities
+﻿namespace Hurace.Domain
 {
     public class StartPosition
     {

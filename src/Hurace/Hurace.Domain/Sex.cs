@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hurace.Domain.Entities
+namespace Hurace.Domain
 {
     public class Sex
     {
