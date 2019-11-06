@@ -12,7 +12,7 @@ namespace Hurace.Domain
         public int CountryId { get; set; }
         public int ImageId { get; set; }
         public int SexId { get; set; }
-        public List<int> RaceDataIds { get; set; }
-        public List<int> StartPositionIds { get; set; }
+        public List<int> RaceDataIds { get; }
+        public List<int> StartPositionIds { get; }
     }
 }

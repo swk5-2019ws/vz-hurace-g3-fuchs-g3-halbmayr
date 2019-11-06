@@ -9,6 +9,6 @@ namespace Hurace.Domain
         public string Name { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public List<int> VenueIds { get; set; }
+        public List<int> VenueIds { get; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Hurace.Domain
 {
@@ -11,6 +12,7 @@ namespace Hurace.Domain
         public int SecondStartListId { get; set; }
         public int NumberOfSensors { get; set; }
         public string Description { get; set; }
-        public List<int> RaceDataIds { get; set; }
+        public DateTime Date { get; set; }
+        public List<int> RaceDataIds { get; }
     }
 }

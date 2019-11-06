@@ -6,6 +6,6 @@ namespace Hurace.Domain
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<int> VenueIds { get; set; }
+        public List<int> VenueIds { get; }
     }
 }

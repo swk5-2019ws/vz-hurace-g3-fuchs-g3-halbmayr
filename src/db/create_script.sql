@@ -180,6 +180,7 @@ CREATE TABLE [Hurace].[Skier]
 
 
  CONSTRAINT [Skier_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
+ CONSTRAINT [Skier_ImageId_uq] UNIQUE NONCLUSTERED ([ImageId] ASC),
  CONSTRAINT [Skier_Country_fk] FOREIGN KEY ([CountryId])  REFERENCES [Hurace].[Country]([Id]),
  CONSTRAINT [Skier_Image_fk] FOREIGN KEY ([ImageId])  REFERENCES [Hurace].[Image]([Id]),
  CONSTRAINT [Skier_Sex_fk] FOREIGN KEY ([SexId])  REFERENCES [Hurace].[Sex]([Id])
@@ -247,6 +248,7 @@ CREATE TABLE [Hurace].[Race]
  [NumberOfSensors]   int NOT NULL ,
  [Description]       varchar(280) NOT NULL ,
  [VenueId]           int NOT NULL ,
+ [Date]              date NOT NULL ,
 
 
  CONSTRAINT [Race_pk] PRIMARY KEY NONCLUSTERED ([RaceId] ASC),
@@ -309,6 +311,13 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
+
+
+
+
+
+
+
 
 
 

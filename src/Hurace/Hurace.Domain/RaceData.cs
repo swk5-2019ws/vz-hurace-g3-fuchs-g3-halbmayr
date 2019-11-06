@@ -9,6 +9,6 @@ namespace Hurace.Domain
         public int StartListId { get; set; }
         public int SkierId { get; set; }
         public int RaceStateId { get; set; }
-        public List<int> TimeMeasurementIds { get; set; }
+        public List<int> TimeMeasurementIds { get; }
     }
 }
