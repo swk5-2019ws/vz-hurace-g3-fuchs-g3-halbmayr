@@ -4,8 +4,8 @@ namespace Hurace.Domain
 {
     public class Image
     {
-        public int ImageId { get; set; }
+        public int Id { get; set; }
         public byte[] Content { get; set; }
-        public List<int> SkierIds { get; set; }
+        public int SkierIds { get; set; }
     }
 }
