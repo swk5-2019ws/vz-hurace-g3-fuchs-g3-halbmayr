@@ -5,8 +5,8 @@ namespace Hurace.Domain
     public class StartList
     {
         public int StartListId { get; set; }
-        public Race Race { get; set; }
-        public List<StartPosition> StartPositions { get; set; }
-        public List<RaceData> RaceData { get; set; }
+        public int RaceId { get; set; }
+        public List<int> StartPositionIds { get; set; }
+        public List<int> RaceDataId { get; set; }
     }
 }

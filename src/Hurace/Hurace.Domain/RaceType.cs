@@ -5,6 +5,6 @@ namespace Hurace.Domain
     public class RaceType
     {
         public string Label { get; set; }
-        public List<Race> Races { get; set; }
+        public List<int> RaceIds { get; set; }
     }
 }

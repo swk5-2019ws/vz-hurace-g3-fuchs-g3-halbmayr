@@ -2,8 +2,8 @@
 {
     public class StartPosition
     {
-        public StartList StartList { get; set; }
-        public Skier Skier { get; set; }
+        public int StartListId { get; set; }
+        public int SkierId { get; set; }
         public int Position { get; set; }
     }
 }

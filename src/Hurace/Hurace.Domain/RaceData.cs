@@ -4,10 +4,10 @@ namespace Hurace.Domain
 {
     public class RaceData
     {
-        public Race Race { get; set; }
-        public StartList StartList { get; set; }
-        public Skier Skier { get; set; }
-        public RaceState RaceState { get; set; }
-        public List<TimeMeasurement> TimeMeasurements { get; set; }
+        public int RaceId { get; set; }
+        public int StartListId { get; set; }
+        public int SkierId { get; set; }
+        public string RaceStateLabel { get; set; }
+        public List<int> TimeMeasurementIds { get; set; }
     }
 }

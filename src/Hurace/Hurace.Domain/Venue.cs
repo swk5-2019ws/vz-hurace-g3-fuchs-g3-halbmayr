@@ -5,7 +5,7 @@ namespace Hurace.Domain
     public class Venue
     {
         public string Name { get; set; }
-        public List<Season> Seasons { get; set; }
-        public List<Race> Race { get; set; }
+        public List<int> SeasonIds { get; set; }
+        public List<int> RaceIds { get; set; }
     }
 }

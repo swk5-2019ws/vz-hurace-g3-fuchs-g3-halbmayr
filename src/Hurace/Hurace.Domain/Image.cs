@@ -6,6 +6,6 @@ namespace Hurace.Domain
     {
         public int ImageId { get; set; }
         public byte[] Content { get; set; }
-        public List<Skier> Skiers { get; set; }
+        public List<int> SkierIds { get; set; }
     }
 }

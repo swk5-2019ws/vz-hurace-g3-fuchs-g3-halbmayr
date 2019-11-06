@@ -9,9 +9,9 @@ namespace Hurace.Domain
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public Country Country { get; set; }
-        public Image Image { get; set; }
-        public Sex Sex { get; set; }
-        public List<RaceData> RaceData { get; set; }
+        public string CountryName { get; set; }
+        public int ImageId { get; set; }
+        public string SexLabel { get; set; }
+        public List<int> RaceDataIds { get; set; }
     }
 }
