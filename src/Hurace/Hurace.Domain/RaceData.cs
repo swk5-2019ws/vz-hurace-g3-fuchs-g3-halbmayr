@@ -4,7 +4,7 @@ namespace Hurace.Domain
 {
     public class RaceData
     {
-        public int Îd { get; set; }
+        public int Id { get; set; }
         public int RaceId { get; set; }
         public int StartListId { get; set; }
         public int SkierId { get; set; }
