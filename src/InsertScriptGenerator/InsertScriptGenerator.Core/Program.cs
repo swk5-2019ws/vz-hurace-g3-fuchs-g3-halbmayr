@@ -1,0 +1,315 @@
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace InsertScriptGenerator.Core
+{
+    class Program
+    {
+        private static List<string> insertScript = new List<string>();
+
+        static void Main()
+        {
+            var random = new Random();
+
+            var skiers = new List<Skier>();
+            var sexes = new List<Sex>();
+            var countries = new List<Country>();
+            var races = new List<Race>();
+            var venues = new List<Venue>();
+            var raceTypes = new List<RaceType>();
+            var startLists = new List<StartList>();
+            var startPositions = new List<StartPosition>();
+            var raceStates = new List<RaceState>();
+            var seasons = new List<Season>();
+            var seasonPlans = new List<SeasonPlan>();
+            var images = new List<Image>();
+            var raceDataList = new List<RaceData>();
+            var timeMeasurements = new List<TimeMeasurement>();
+
+            var skiersJson = JObject.Parse(File.ReadAllText("Resources/data.json")).Children().Children().Children();
+            var racesJson = JObject.Parse(File.ReadAllText("Resources/races.json")).Children().Children().Children();
+
+            raceStates.Add(new RaceState()
+            {
+                Id = raceStates.Count,
+                Label = "Finished"
+            });
+            raceStates.Add(new RaceState()
+            {
+                Id = raceStates.Count,
+                Label = "Disqualified"
+            });
+            raceStates.Add(new RaceState()
+            {
+                Id = raceStates.Count,
+                Label = "DidNotFinish"
+            });
+            raceStates.Add(new RaceState()
+            {
+                Id = raceStates.Count,
+                Label = "Running"
+            });
+
+            foreach (var currentSkier in skiersJson)
+            {
+                var currentCountryLabel = currentSkier.Value<string>("country");
+                if (countries.FirstOrDefault(c => c.Name == currentCountryLabel) == null)
+                {
+                    countries.Add(new Country()
+                    {
+                        Id = countries.Count,
+                        Name = currentCountryLabel
+                    });
+                }
+            }
+
+            foreach (var currentRace in racesJson)
+            {
+                var currentPlace = currentRace.Value<JObject>("place");
+                var currentCountryLabel = currentPlace.Value<string>("country");
+
+                var currentVenueLabel = currentPlace.Value<string>("place");
+                if (venues.FirstOrDefault(v => v.Name == currentVenueLabel) == null)
+                {
+                    venues.Add(new Venue()
+                    {
+                        Id = venues.Count,
+                        CountryId = countries.FirstOrDefault(c => c.Name == currentCountryLabel).Id,
+                        Name = currentVenueLabel
+                    });
+                }
+
+                var currentRaceType = currentRace.Value<string>("discipline");
+
+                bool raceTypeIsNeeded = currentRaceType == "Slalom" || currentRaceType == "Giant Slalom";
+
+                if (currentRaceType != null && raceTypeIsNeeded)
+                {
+                    int nextRaceId = races.Count;
+
+                    if (raceTypes.FirstOrDefault(rt => rt.Label == currentRaceType) == null)
+                    {
+                        raceTypes.Add(new RaceType()
+                        {
+                            Id = raceTypes.Count,
+                            Label = currentRaceType
+                        });
+                    }
+
+                    int firstStartListId = startLists.Count;
+                    startLists.Add(new StartList()
+                    {
+                        Id = firstStartListId
+                    });
+
+                    int secondStartListId = startLists.Count;
+                    startLists.Add(new StartList()
+                    {
+                        Id = secondStartListId
+                    });
+
+                    races.Add(new Race()
+                    {
+                        Id = nextRaceId,
+                        Date = DateTime.Parse(currentRace.Value<string>("date")),
+                        Description = "",
+                        NumberOfSensors = random.Next(3, 6),
+                        FirstStartListId = firstStartListId,
+                        SecondStartListId = secondStartListId,
+                        RaceTypeId = raceTypes.FirstOrDefault(rt => rt.Label == currentRaceType).Id,
+                        VenueId = venues.FirstOrDefault(v => v.Name == currentVenueLabel).Id
+                    });
+                }
+            }
+
+            foreach (var currentSkier in skiersJson)
+            {
+                var currentSexLabel = currentSkier.Value<string>("gender");
+                if (sexes.FirstOrDefault(s => s.Label == currentSexLabel) == null)
+                {
+                    sexes.Add(new Sex()
+                    {
+                        Id = sexes.Count,
+                        Label = currentSexLabel
+                    });
+                }
+
+                var currentCountryLabel = currentSkier.Value<string>("country");
+
+                var dobString = currentSkier.Value<string>("birthDate");
+                if (!dobString.Contains('-'))
+                {
+                    dobString = "01-01-" + dobString;
+                }
+
+                string avatarId = currentSkier.Value<string>("avatarUrl").Split('/').Last().Split('.').First();
+                string imageFileName = $"{avatarId}.jpg";
+                string imagePath = "..\\..\\..\\Resources\\images";
+                string filePath = $"{imagePath}\\{imageFileName}";
+
+                if (!File.Exists(filePath))
+                {
+                    filePath = $"{imagePath}\\default_image.jpg";
+                }
+
+                byte[] imageBytes = File.ReadAllBytes(filePath);
+                int nextImageId = images.Count;
+                images.Add(new Image()
+                {
+                    Id = nextImageId,
+                    Content = imageBytes
+                });
+
+                skiers.Add(new Skier()
+                {
+                    Id = skiers.Count,
+                    FirstName = currentSkier.Value<string>("firstName"),
+                    LastName = currentSkier.Value<string>("lastName"),
+                    DateOfBirth = DateTime.Parse(dobString),
+                    SexId = sexes.FirstOrDefault(sex => sex.Label == currentSexLabel).Id,
+                    CountryId = countries.FirstOrDefault(c => c.Name == currentCountryLabel).Id,
+                    ImageId = nextImageId
+                });
+            }
+
+            foreach (var currentStartList in startLists)
+            {
+                int positionCounter = 1;
+                int participatingSkierCount = random.Next(21) + 30;
+                foreach (var participatingSkier in skiers.OrderBy(s => random.Next()).Take(participatingSkierCount))
+                {
+                    startPositions.Add(new StartPosition()
+                    {
+                        StartListId = currentStartList.Id,
+                        SkierId = participatingSkier.Id,
+                        Position = positionCounter++
+                    });
+                }
+            }
+
+            races.Select(r => r.Date.Year)
+                .Distinct()
+                .ToList()
+                .ForEach(y => seasons.Add(new Season()
+                {
+                    Id = seasons.Count,
+                    Name = $"Yearly season {y}",
+                    StartDate = new DateTime(y, 1, 1),
+                    EndDate = new DateTime(y, 12, 31)
+                }));
+
+            foreach (var currentSeason in seasons)
+            {
+                foreach (var currentVenue in venues)
+                {
+                    seasonPlans.Add(new SeasonPlan()
+                    {
+                        SeasonId = currentSeason.Id,
+                        VenueId = currentVenue.Id
+                    });
+                }
+            }
+
+            foreach (var currentStartPosition in startPositions)
+            {
+                int currentRaceId = races
+                    .FirstOrDefault(r => r.FirstStartListId == currentStartPosition.StartListId
+                                      || r.SecondStartListId == currentStartPosition.StartListId)
+                    .Id;
+
+                int raceStateId;
+                double raceStateIdentifier = random.NextDouble();
+                if (0 <= raceStateIdentifier && raceStateIdentifier < 0.9)
+                {
+                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Finished").Id;
+                }
+                else if (0.9 <= raceStateIdentifier && raceStateIdentifier < 0.95)
+                {
+                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Disqualified").Id;
+                }
+                else if (0.95 <= raceStateIdentifier && raceStateIdentifier < 1.0)
+                {
+                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "DidNotFinish").Id;
+                }
+                else
+                {
+                    throw new Exception($"{nameof(raceStateIdentifier)} out of bounds!");
+                }
+
+                int nextRaceDataId = raceDataList.Count;
+                raceDataList.Add(new RaceData()
+                {
+                    Id = nextRaceDataId,
+                    RaceId = currentRaceId,
+                    StartListId = currentStartPosition.StartListId,
+                    SkierId = currentStartPosition.SkierId,
+                    RaceStateId = raceStateId
+                });
+
+                for (int sensorId = 0; sensorId < races.FirstOrDefault(r => r.Id == currentRaceId).NumberOfSensors; sensorId++)
+                {
+                    timeMeasurements.Add(new TimeMeasurement()
+                    {
+                        Id = timeMeasurements.Count,
+                        RaceDataId = nextRaceDataId,
+                        SensorId = sensorId,
+                        Measurement = Enumerable.Range(0, sensorId + 1).ToList().Select(i => random.Next(25,36)).Sum() * 1000
+                    });
+                }
+            }
+
+            AddToInsertScript(startLists);
+            AddToInsertScript(raceTypes);
+            AddToInsertScript(sexes);
+            AddToInsertScript(images);
+            AddToInsertScript(countries);
+            AddToInsertScript(skiers);
+            AddToInsertScript(startPositions);
+            AddToInsertScript(seasons);
+            AddToInsertScript(venues);
+            AddToInsertScript(seasonPlans);
+            AddToInsertScript(races);
+            AddToInsertScript(raceStates);
+            AddToInsertScript(raceDataList);
+            AddToInsertScript(timeMeasurements);
+
+            using (var streamWriter = new StreamWriter("..\\..\\..\\..\\..\\db\\insert_script.sql"))
+            {
+                foreach (var line in insertScript)
+                {
+                    streamWriter.WriteLine(line);
+                }
+            }
+        }
+
+        static void AddToInsertScript<T>(List<T> collection, bool enableIdentityInsert = true)
+        {
+            bool idPropExisting = typeof(T).GetProperties().FirstOrDefault(p => p.Name == "Id") != null;
+
+            insertScript.Add("------------------------------------------------------------------------");
+            insertScript.Add($"-- {typeof(T).Name.ToUpper()} DATA");
+            insertScript.Add("------------------------------------------------------------------------");
+            if (idPropExisting)
+            {
+                insertScript.Add("-- activate identity insert");
+                insertScript.Add($"SET IDENTITY_INSERT [Hurace].[{typeof(T).Name}] ON;");
+            }
+            insertScript.Add("-- insert data");
+            collection.ForEach(item => insertScript.Add(item.ToString()));
+            if (idPropExisting)
+            {
+                insertScript.Add("-- deactivate identity insert");
+                insertScript.Add($"SET IDENTITY_INSERT [Hurace].[{typeof(T).Name}] OFF;");
+            }
+            insertScript.Add("-- commit changes");
+            insertScript.Add("GO");
+            insertScript.Add("------------------------------------------------------------------------");
+            insertScript.Add("");
+            insertScript.Add("");
+        }
+    }
+}
