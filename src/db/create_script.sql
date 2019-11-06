@@ -149,7 +149,7 @@ CREATE TABLE [Hurace].[Venue]
 
 
  CONSTRAINT [Venue_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [FK_132] FOREIGN KEY ([CountryId])  REFERENCES [Hurace].[Country]([Id])
+ CONSTRAINT [Venue_Country_fk] FOREIGN KEY ([CountryId])  REFERENCES [Hurace].[Country]([Id])
 );
 GO
 
