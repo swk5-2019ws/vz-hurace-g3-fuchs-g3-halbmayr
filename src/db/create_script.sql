@@ -4,6 +4,7 @@
 CREATE SCHEMA [Hurace];
 GO
 
+
 -- ************************************** [Hurace].[StartList]
 
 CREATE TABLE [Hurace].[StartList]
@@ -301,16 +302,21 @@ CREATE TABLE [Hurace].[TimeMeasurement]
 (
  [Id]          int IDENTITY (1, 1) NOT NULL ,
  [SensorId]    int NOT NULL ,
- [Measurement] datetime NOT NULL ,
+ [Measurement] int NOT NULL ,
  [RaceDataId]  int NOT NULL ,
 
 
  CONSTRAINT [TimeMeasurement_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [TimeMeasurement_unique] UNIQUE NONCLUSTERED ([SensorId] ASC),
+ CONSTRAINT [TimeMeasurement_unique] UNIQUE NONCLUSTERED),
  CONSTRAINT [TimeMeasurement_RaceData_fk] FOREIGN KEY ([RaceDataId])  REFERENCES [Hurace].[RaceData]([Id]),
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
+
+
+
+
+
 
 
 
