@@ -87,7 +87,7 @@ GO
 CREATE TABLE [Hurace].[RaceState]
 (
  [Id]    int IDENTITY (1, 1) NOT NULL ,
- [Label] varchar(15) NOT NULL ,
+ [Label] varchar(20) NOT NULL ,
 
 
  CONSTRAINT [RaceState_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC)
