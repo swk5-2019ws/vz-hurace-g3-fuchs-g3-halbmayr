@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace Hurace.Domain
 {
-    public class Season
+    public class Season : DomainObjectBase
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }

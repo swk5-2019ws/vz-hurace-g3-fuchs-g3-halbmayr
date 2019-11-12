@@ -2,9 +2,8 @@
 
 namespace Hurace.Domain
 {
-    public class Venue
+    public class Venue : DomainObjectBase
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public int CountryId { get; set; }
         public List<int> SeasonIds { get; }

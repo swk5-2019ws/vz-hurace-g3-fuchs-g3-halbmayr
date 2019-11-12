@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace Hurace.Domain
 {
-    public class Race
+    public class Race : DomainObjectBase
     {
-        public int Id { get; set; }
         public int RaceTypeId { get; set; }
         public int VenueId { get; set; }
         public int FirstStartListId { get; set; }
