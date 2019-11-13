@@ -13,7 +13,7 @@ namespace Hurace.Core.Dal.AdoPersistence
     {
         private readonly AdoTemplate template;
 
-        private SimpleSqlQueryGenerator SqlQueryGenerator { get; }
+        private SimpleSqlQueryGenerator<Skier> SqlQueryGenerator { get; }
         private RowMapper<Skier> RowMapper { get; }
 
         public SkierDao(IConnectionFactory connectionFactory)
@@ -27,7 +27,7 @@ namespace Hurace.Core.Dal.AdoPersistence
             };
 
             RowMapper = new RowMapper<Skier>(notQueryAbleProperties);
-            SqlQueryGenerator = new SimpleSqlQueryGenerator(notQueryAbleProperties);
+            SqlQueryGenerator = new SimpleSqlQueryGenerator<Skier>(notQueryAbleProperties);
         }
 
         public Task<Skier> CreateAsync(Skier newInstance)
@@ -43,7 +43,7 @@ namespace Hurace.Core.Dal.AdoPersistence
         public async Task<IEnumerable<Skier>> GetAllAsync()
         {
             return await template.QueryAsync(
-                SqlQueryGenerator.GenerateGetAllQuery<Skier>(),
+                SqlQueryGenerator.GenerateGetAllQuery(),
                 RowMapper);
         }
 
