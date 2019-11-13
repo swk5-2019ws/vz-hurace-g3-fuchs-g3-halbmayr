@@ -1,15 +1,23 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Data.Common;
 using System.Threading.Tasks;
 
-namespace Hurace.Core.Db
+namespace Hurace.Core.Db.Connection
 {
-    public class ConnectionFactory
+    public class DefaultConnectionFactory : IConnectionFactory
     {
-        public ConnectionFactory(string connectionString, string providerName)
+        public DefaultConnectionFactory()
         {
-            ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-            ProviderName = providerName ?? throw new ArgumentNullException(nameof(providerName));
+            var appSettingConfig = new ConfigurationBuilder()
+                           .AddJsonFile("AppSettings.json", optional: false)
+                           .Build();
+
+            var connectionStringConfigSection = appSettingConfig
+                .GetSection("HuraceDbConnectionString");
+
+            ConnectionString = connectionStringConfigSection["ConnectionString"];
+            ProviderName = connectionStringConfigSection["ProviderName"];
         }
 
         private string ConnectionString { get; }

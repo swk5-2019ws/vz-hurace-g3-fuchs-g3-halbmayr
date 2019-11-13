@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace Hurace.Core.Db
+namespace Hurace.Core.Db.Utilities
 {
     public class RowToEntityMapper<T> where T : new()
     {

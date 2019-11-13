@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Xunit;
 
-namespace Hurace.Test.UnitTests.CoreTests.DaoTests
+namespace Hurace.Core.Test.DaoTests
 {
     public class SkierDaoTests : IDisposable
     {
@@ -46,7 +46,8 @@ namespace Hurace.Test.UnitTests.CoreTests.DaoTests
         [Fact]
         public async Task TestGetAll()
         {
-            var skierDao = DaoFactory.CreateSkierDao();
+            var connectionFactory = new Db.Connection.DefaultConnectionFactory();
+            var skierDao = new Dal.AdoPersistence.SkierDao(connectionFactory);
 
             var skiers = await skierDao.GetAllAsync();
 

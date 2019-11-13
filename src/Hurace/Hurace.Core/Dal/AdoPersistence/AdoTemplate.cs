@@ -1,4 +1,7 @@
 ﻿using Hurace.Core.Db;
+using Hurace.Core.Db.Connection;
+using Hurace.Core.Db.Extensions;
+using Hurace.Core.Db.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +11,9 @@ namespace Hurace.Core.Dal.AdoPersistence
 {
     internal class AdoTemplate
     {
-        private readonly ConnectionFactory connectionFactory;
+        private readonly IConnectionFactory connectionFactory;
 
-        public AdoTemplate(ConnectionFactory connectionFactory)
+        public AdoTemplate(IConnectionFactory connectionFactory)
         {
             this.connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }

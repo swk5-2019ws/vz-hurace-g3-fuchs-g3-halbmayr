@@ -3,33 +3,26 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Hurace.Test.UnitTests.CoreTests.Db
+namespace Hurace.Core.Tests.DbTests
 {
-    public class SimpleSqlQueryGeneratorTests
+    public class RowToEntityMapperTests
     {
         [Fact]
-        public void GenerateSimpleSelectQuery()
+        public void MapWithNullSkipableElements()
         {
             //todo write test
             Assert.False(true);
         }
 
         [Fact]
-        public void GenerateSimpleInsertQuery()
+        public void MapWithNullRow()
         {
             //todo write test
             Assert.False(true);
         }
 
         [Fact]
-        public void GenerateSimpleUpdateQuery()
-        {
-            //todo write test
-            Assert.False(true);
-        }
-
-        [Fact]
-        public void GenerateSimpleDeleteQuery()
+        public void MapWithSkipableElements()
         {
             //todo write test
             Assert.False(true);

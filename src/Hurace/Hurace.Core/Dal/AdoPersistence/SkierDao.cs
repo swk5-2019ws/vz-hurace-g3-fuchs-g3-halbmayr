@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Hurace.Core.Db;
+using Hurace.Core.Db.Connection;
+using Hurace.Core.Db.Utilities;
 using Hurace.Domain;
 
-namespace Hurace.Core.Dal.AdoPersistence.Dao
+namespace Hurace.Core.Dal.AdoPersistence
 {
-    internal class AdoSkierDao : IDataAccessObject<Skier>
+    public class SkierDao : IDataAccessObject<Skier>
     {
         private readonly AdoTemplate template;
 
         private SimpleSqlQueryGenerator SqlQueryGenerator { get; }
         private RowToEntityMapper<Skier> RowMapper { get; }
 
-        internal AdoSkierDao(ConnectionFactory connectionFactory)
+        public SkierDao(IConnectionFactory connectionFactory)
         {
             template = new AdoTemplate(connectionFactory);
 

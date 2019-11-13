@@ -1,4 +1,4 @@
-﻿namespace Hurace.Core.Db
+﻿namespace Hurace.Core.Db.Utilities
 {
     public class QueryParameter
     {

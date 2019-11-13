@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Hurace.Core.Db
+namespace Hurace.Core.Db.Utilities
 {
     public class SimpleSqlQueryGenerator
     {
