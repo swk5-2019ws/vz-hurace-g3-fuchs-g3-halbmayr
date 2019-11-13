@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Hurace.Core.Db.Utilities
 {
-    public class SimpleSqlQueryGenerator
+    public class SimpleSqlQueryGenerator<T>
     {
         private IEnumerable<string> SkipableProperties { get; }
 
@@ -14,12 +14,12 @@ namespace Hurace.Core.Db.Utilities
             SkipableProperties = skipableProperties;
         }
 
-        private void AppendDbColumns<T>(StringBuilder sb)
+        private void AppendDbColumns(StringBuilder sb)
         {
             bool firstProperty = true;
             foreach (var currentProperty in typeof(T).GetProperties())
             {
-                if (SkipableProperties != null && !SkipableProperties.Any(p => p == currentProperty.Name))
+                if (!SkipableProperties.Any(p => p == currentProperty.Name))
                 {
                     sb.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}]");
                     firstProperty = false;
@@ -27,24 +27,24 @@ namespace Hurace.Core.Db.Utilities
             }
         }
 
-        public string GenerateGetAllQuery<T>()
+        public string GenerateGetAllQuery()
         {
             var sb = new StringBuilder();
 
             sb.Append("SELECT");
-            AppendDbColumns<T>(sb);
+            AppendDbColumns(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
             return sb.ToString();
         }
 
-        public string GenerateGetByIdQuery<T>(int id)
+        public string GenerateGetByIdQuery(int id)
         {
             var sb = new StringBuilder();
 
             sb.Append("SELECT");
-            AppendDbColumns<T>(sb);
+            AppendDbColumns(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
             sb.Append($" WHERE Id = {id}");

@@ -8,11 +8,18 @@ namespace Hurace.Core.Tests.DbUtilityTests
     public class SimpleSqlQueryGeneratorTests
     {
         [Fact]
-        public void GenerateSimpleSelectQuery()
+        public void GenerateSimpleSelectQueryEmptyList()
         {
-            //todo write test
-            Assert.False(true);
+            string expectedQuery = "SELECT [Label], [SkierIds], [Id] FROM [Hurace].[Sex]";
+            
+
+            var ssqg= new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>(new List<string>());
+
+            string createdString = ssqg.GenerateGetAllQuery();
+
+            Assert.Equal(expectedQuery, createdString);
         }
+
 
         [Fact]
         public void GenerateSimpleInsertQuery()
