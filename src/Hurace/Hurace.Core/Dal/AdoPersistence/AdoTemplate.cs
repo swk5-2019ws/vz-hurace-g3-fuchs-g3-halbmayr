@@ -20,7 +20,7 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<IEnumerable<T>> QueryAsync<T>(
             string sqlQuery,
-            RowToEntityMapper<T> rowMapper,
+            RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
         {
             using var dbConnection = await connectionFactory.CreateConnectionAsync();
@@ -43,7 +43,7 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<T> QuerySingleAsync<T>(
             string sqlQuery,
-            RowToEntityMapper<T> rowMapper,
+            RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
         {
             return
