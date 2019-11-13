@@ -20,14 +20,8 @@ namespace Hurace.Core.Dal.AdoPersistence
         {
             template = new AdoTemplate(connectionFactory);
 
-            var notQueryAbleProperties = new List<string>()
-            {
-                nameof(Skier.RaceDataIds),
-                nameof(Skier.StartPositionIds)
-            };
-
-            RowMapper = new RowMapper<Skier>(notQueryAbleProperties);
-            SqlQueryGenerator = new SimpleSqlQueryGenerator<Skier>(notQueryAbleProperties);
+            RowMapper = new RowMapper<Skier>();
+            SqlQueryGenerator = new SimpleSqlQueryGenerator<Skier>(new List<string>());
         }
 
         public Task<Skier> CreateAsync(Skier newInstance)
