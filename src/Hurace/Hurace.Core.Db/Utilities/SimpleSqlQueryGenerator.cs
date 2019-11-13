@@ -7,23 +7,15 @@ namespace Hurace.Core.Db.Utilities
 {
     public class SimpleSqlQueryGenerator<T>
     {
-        private IEnumerable<string> SkipableProperties { get; }
-
-        public SimpleSqlQueryGenerator(IEnumerable<string> skipableProperties)
-        {
-            SkipableProperties = skipableProperties;
-        }
+        public SimpleSqlQueryGenerator() { }
 
         private void AppendDbColumns(StringBuilder sb)
         {
             bool firstProperty = true;
             foreach (var currentProperty in typeof(T).GetProperties())
             {
-                if (!SkipableProperties.Any(p => p == currentProperty.Name))
-                {
-                    sb.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}]");
-                    firstProperty = false;
-                }
+                sb.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}]");
+                firstProperty = false;
             }
         }
 
