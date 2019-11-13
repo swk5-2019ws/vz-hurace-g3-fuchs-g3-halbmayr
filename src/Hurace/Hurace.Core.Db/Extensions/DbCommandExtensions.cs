@@ -1,5 +1,4 @@
-﻿using Hurace.Core.Db.Utilities;
-using System;
+﻿using System;
 using System.Data.Common;
 
 namespace Hurace.Core.Db.Extensions
