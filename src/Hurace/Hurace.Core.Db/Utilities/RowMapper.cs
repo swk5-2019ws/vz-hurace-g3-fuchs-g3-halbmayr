@@ -8,13 +8,6 @@ namespace Hurace.Core.Db.Utilities
 {
     public class RowMapper<T> where T : new()
     {
-        private IEnumerable<string> SkipableProperties { get; }
-
-        public RowMapper(IEnumerable<string> skipableProperties)
-        {
-            SkipableProperties = skipableProperties;
-        }
-
         public T Map(IDataRecord row)
         {
             if (row is null)
@@ -26,8 +19,7 @@ namespace Hurace.Core.Db.Utilities
 
             foreach (var property in entity.GetType().GetProperties())
             {
-                if (SkipableProperties == null || !SkipableProperties.Any(p => p == property.Name))
-                    property.SetValue(entity, Convert.ChangeType(row[property.Name], property.PropertyType));
+                property.SetValue(entity, Convert.ChangeType(row[property.Name], property.PropertyType));
             }
 
             return entity;

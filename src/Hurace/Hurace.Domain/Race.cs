@@ -12,6 +12,5 @@ namespace Hurace.Domain
         public int NumberOfSensors { get; set; }
         public string Description { get; set; }
         public DateTime Date { get; set; }
-        public List<int> RaceDataIds { get; }
     }
 }
