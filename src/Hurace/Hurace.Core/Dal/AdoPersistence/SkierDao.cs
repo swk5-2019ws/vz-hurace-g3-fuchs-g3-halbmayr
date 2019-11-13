@@ -21,7 +21,7 @@ namespace Hurace.Core.Dal.AdoPersistence
             template = new AdoTemplate(connectionFactory);
 
             RowMapper = new RowMapper<Skier>();
-            SqlQueryGenerator = new SimpleSqlQueryGenerator<Skier>(new List<string>());
+            SqlQueryGenerator = new SimpleSqlQueryGenerator<Skier>();
         }
 
         public Task<Skier> CreateAsync(Skier newInstance)
