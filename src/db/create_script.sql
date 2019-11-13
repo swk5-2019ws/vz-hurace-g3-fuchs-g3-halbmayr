@@ -4,7 +4,6 @@
 CREATE SCHEMA [Hurace];
 GO
 
-
 -- ****************** SqlDBM: Microsoft SQL Server ******************
 -- ******************************************************************
 
@@ -202,15 +201,14 @@ GO
 
 CREATE TABLE [Hurace].[StartPosition]
 (
- [Id]          int NOT NULL ,
+ [Id]          int IDENTITY (1, 1) NOT NULL ,
  [SkierId]     int NOT NULL ,
  [StartListId] int NOT NULL ,
  [Position]    int NOT NULL ,
 
 
  CONSTRAINT [StartPosition_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [SkierId_uq] UNIQUE NONCLUSTERED ([SkierId] ASC),
- CONSTRAINT [StartListId_uq] UNIQUE NONCLUSTERED ([StartListId] ASC),
+ CONSTRAINT [SkierId_StartListId_uq] UNIQUE NONCLUSTERED ([SkierId] ASC, [StartListId] ASC),
  CONSTRAINT [StartPosition_Skier_fk] FOREIGN KEY ([SkierId])  REFERENCES [Hurace].[Skier]([Id]),
  CONSTRAINT [StartPosition_StartList_fk] FOREIGN KEY ([StartListId])  REFERENCES [Hurace].[StartList]([Id])
 );
@@ -228,16 +226,14 @@ GO
 CREATE TABLE [Hurace].[SeasonPlan]
 (
  [VenueId]  int NOT NULL ,
- [Id]       int NOT NULL ,
+ [Id]       int IDENTITY (1, 1) NOT NULL ,
  [SeasonId] int NOT NULL ,
 
 
  CONSTRAINT [SeasonPlan_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [SeasonId_uq] UNIQUE NONCLUSTERED ([SeasonId] ASC),
- CONSTRAINT [VenueId_uq] UNIQUE NONCLUSTERED ([VenueId] ASC),
+ CONSTRAINT [SeasonId_VenueId_uq] UNIQUE NONCLUSTERED ([SeasonId] ASC, [VenueId] ASC),
  CONSTRAINT [SeasonPlan_Season_fk] FOREIGN KEY ([SeasonId])  REFERENCES [Hurace].[Season]([Id]),
- CONSTRAINT [SeasonPlan_Venue_fk] FOREIGN KEY ([VenueId])  REFERENCES [Hurace].[Venue]([Id]),
- CHECK (  )
+ CONSTRAINT [SeasonPlan_Venue_fk] FOREIGN KEY ([VenueId])  REFERENCES [Hurace].[Venue]([Id])
 );
 GO
 
@@ -284,14 +280,15 @@ GO
 
 CREATE TABLE [Hurace].[RaceData]
 (
- [Id]          int NOT NULL ,
+ [RaceId]      int NOT NULL ,
+ [Id]          int IDENTITY (1, 1) NOT NULL ,
  [StartListId] int NOT NULL ,
  [SkierId]     int NOT NULL ,
  [RaceStateId] int NOT NULL ,
 
 
  CONSTRAINT [RaceData_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [RaceData_Race_fk] FOREIGN KEY ([Id])  REFERENCES [Hurace].[Race]([Id]),
+ CONSTRAINT [RaceData_Race_fk] FOREIGN KEY ([RaceId])  REFERENCES [Hurace].[Race]([Id]),
  CONSTRAINT [RaceData_RaceState_fk] FOREIGN KEY ([RaceStateId])  REFERENCES [Hurace].[RaceState]([Id]),
  CONSTRAINT [RaceData_Skier_fk] FOREIGN KEY ([SkierId])  REFERENCES [Hurace].[Skier]([Id]),
  CONSTRAINT [RaceData_StartList_fk] FOREIGN KEY ([StartListId])  REFERENCES [Hurace].[StartList]([Id])
@@ -312,15 +309,29 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  [Id]          int IDENTITY (1, 1) NOT NULL ,
  [SensorId]    int NOT NULL ,
  [Measurement] int NOT NULL ,
- [RaceDataId]  int NOT NULL ,
+ [Id_1]        int NOT NULL ,
 
 
  CONSTRAINT [TimeMeasurement_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [TimeMeasurement_unique] UNIQUE NONCLUSTERED),
- CONSTRAINT [TimeMeasurement_RaceData_fk] FOREIGN KEY ([RaceDataId])  REFERENCES [Hurace].[RaceData]([Id]),
+ CONSTRAINT [TimeMeasurement_RaceData_fk] FOREIGN KEY ([Id_1])  REFERENCES [Hurace].[RaceData]([Id]),
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
