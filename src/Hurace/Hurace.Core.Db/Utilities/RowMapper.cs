@@ -6,22 +6,27 @@ using System.Text;
 
 namespace Hurace.Core.Db.Utilities
 {
-    public class RowToEntityMapper<T> where T : new()
+    public class RowMapper<T> where T : new()
     {
         private IEnumerable<string> SkipableProperties { get; }
 
-        public RowToEntityMapper(IEnumerable<string> skipableProperties)
+        public RowMapper(IEnumerable<string> skipableProperties)
         {
             SkipableProperties = skipableProperties;
         }
 
         public T Map(IDataRecord row)
         {
+            if (row is null)
+            {
+                throw new ArgumentNullException(nameof(row));
+            }
+
             T entity = new T();
 
             foreach (var property in entity.GetType().GetProperties())
             {
-                if (!SkipableProperties.Any(p => p == property.Name))
+                if (SkipableProperties == null || !SkipableProperties.Any(p => p == property.Name))
                     property.SetValue(entity, Convert.ChangeType(row[property.Name], property.PropertyType));
             }
 

@@ -14,7 +14,7 @@ namespace Hurace.Core.Dal.AdoPersistence
         private readonly AdoTemplate template;
 
         private SimpleSqlQueryGenerator SqlQueryGenerator { get; }
-        private RowToEntityMapper<Skier> RowMapper { get; }
+        private RowMapper<Skier> RowMapper { get; }
 
         public SkierDao(IConnectionFactory connectionFactory)
         {
@@ -26,7 +26,7 @@ namespace Hurace.Core.Dal.AdoPersistence
                 nameof(Skier.StartPositionIds)
             };
 
-            RowMapper = new RowToEntityMapper<Skier>(notQueryAbleProperties);
+            RowMapper = new RowMapper<Skier>(notQueryAbleProperties);
             SqlQueryGenerator = new SimpleSqlQueryGenerator(notQueryAbleProperties);
         }
 
