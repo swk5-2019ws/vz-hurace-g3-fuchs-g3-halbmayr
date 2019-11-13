@@ -43,7 +43,7 @@ namespace Hurace.Core.Dal.AdoPersistence
         public async Task<IEnumerable<Skier>> GetAllAsync()
         {
             return await template.QueryAsync(
-                SqlQueryGenerator.GenerateGetAllSelectQuery<Skier>(),
+                SqlQueryGenerator.GenerateGetAllQuery<Skier>(),
                 RowMapper);
         }
 
