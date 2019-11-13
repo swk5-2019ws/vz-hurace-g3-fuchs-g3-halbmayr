@@ -249,7 +249,7 @@ GO
 CREATE TABLE [Hurace].[Race]
 (
  [Id]                int IDENTITY (1, 1) NOT NULL ,
- [RaceType]          int NOT NULL ,
+ [RaceTypeId]        int NOT NULL ,
  [FirstStartListId]  int NULL ,
  [SecondStartListId] int NULL ,
  [NumberOfSensors]   int NOT NULL ,
@@ -261,7 +261,7 @@ CREATE TABLE [Hurace].[Race]
  CONSTRAINT [Race_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
  CONSTRAINT [Race_FirstSL_uq] UNIQUE NONCLUSTERED ([FirstStartListId] ASC),
  CONSTRAINT [Race_SecondSL_uq] UNIQUE NONCLUSTERED ([SecondStartListId] ASC),
- CONSTRAINT [Race_RaceType_fk] FOREIGN KEY ([RaceType])  REFERENCES [Hurace].[RaceType]([Id]),
+ CONSTRAINT [Race_RaceType_fk] FOREIGN KEY ([RaceTypeId])  REFERENCES [Hurace].[RaceType]([Id]),
  CONSTRAINT [Race_StartList_1_fk] FOREIGN KEY ([FirstStartListId])  REFERENCES [Hurace].[StartList]([Id]),
  CONSTRAINT [Race_StartList_2_fk] FOREIGN KEY ([SecondStartListId])  REFERENCES [Hurace].[StartList]([Id]),
  CONSTRAINT [Race_Venue_fk] FOREIGN KEY ([VenueId])  REFERENCES [Hurace].[Venue]([Id]),
@@ -317,26 +317,4 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
