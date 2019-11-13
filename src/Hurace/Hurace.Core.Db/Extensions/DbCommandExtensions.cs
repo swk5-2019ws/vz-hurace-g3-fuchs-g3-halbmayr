@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Common;
 
-namespace Hurace.Core.Db
+namespace Hurace.Core.Db.Extensions
 {
     public static class DbCommandExtensions
     {

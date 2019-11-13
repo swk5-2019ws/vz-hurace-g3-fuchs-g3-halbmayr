@@ -1,1 +1,0 @@
-src/db/insert_script.sql filter=lfs diff=lfs merge=lfs -text

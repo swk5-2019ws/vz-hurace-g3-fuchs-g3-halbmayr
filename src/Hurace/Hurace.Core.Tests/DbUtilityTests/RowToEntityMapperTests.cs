@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Hurace.Test.UnitTests.CoreTests.Db
+namespace Hurace.Core.Tests.DbUtilityTests
 {
     public class RowToEntityMapperTests
     {

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Hurace.Core.Db\Hurace.Core.Db.csproj" />
     <ProjectReference Include="..\Hurace.Core\Hurace.Core.csproj" />
     <ProjectReference Include="..\Hurace.Domain\Hurace.Domain.csproj" />
   </ItemGroup>
