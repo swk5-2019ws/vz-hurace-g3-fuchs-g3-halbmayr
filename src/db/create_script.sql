@@ -309,12 +309,19 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  [Id]          int IDENTITY (1, 1) NOT NULL ,
  [SensorId]    int NOT NULL ,
  [Measurement] int NOT NULL ,
- [Id_1]        int NOT NULL ,
+ [RaceDataId]  int NOT NULL ,
 
 
  CONSTRAINT [TimeMeasurement_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [TimeMeasurement_RaceData_fk] FOREIGN KEY ([Id_1])  REFERENCES [Hurace].[RaceData]([Id]),
+ CONSTRAINT [TimeMeasurement_RaceData_fk] FOREIGN KEY ([RaceDataId])  REFERENCES [Hurace].[RaceData]([Id]),
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
+
+
+
+
+
+
+
 
