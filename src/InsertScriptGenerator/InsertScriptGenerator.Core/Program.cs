@@ -36,22 +36,22 @@ namespace InsertScriptGenerator.Core
             raceStates.Add(new RaceState()
             {
                 Id = raceStates.Count,
-                Label = "Finished"
+                Label = "Abgeschlossen"
             });
             raceStates.Add(new RaceState()
             {
                 Id = raceStates.Count,
-                Label = "Disqualified"
+                Label = "Disqualifiziert"
             });
             raceStates.Add(new RaceState()
             {
                 Id = raceStates.Count,
-                Label = "DidNotFinish"
+                Label = "NichtAbgeschlossen"
             });
             raceStates.Add(new RaceState()
             {
                 Id = raceStates.Count,
-                Label = "Running"
+                Label = "Laufend"
             });
 
             foreach (var currentSkier in skiersJson)
@@ -87,6 +87,7 @@ namespace InsertScriptGenerator.Core
 
                 bool raceTypeIsNeeded = currentRaceType == "Slalom" || currentRaceType == "Giant Slalom";
 
+                if (currentRaceType == "Giant Slalom") currentRaceType = "RiesenTorLauf";
                 if (currentRaceType != null && raceTypeIsNeeded)
                 {
                     int nextRaceId = races.Count;
@@ -129,6 +130,8 @@ namespace InsertScriptGenerator.Core
             foreach (var currentSkier in skiersJson)
             {
                 var currentSexLabel = currentSkier.Value<string>("gender");
+                if (currentSexLabel == "Female") currentSexLabel = "Weiblich";
+                else if (currentSexLabel == "Male") currentSexLabel = "Männlich";
                 if (sexes.FirstOrDefault(s => s.Label == currentSexLabel) == null)
                 {
                     sexes.Add(new Sex()
@@ -176,6 +179,7 @@ namespace InsertScriptGenerator.Core
                 });
             }
 
+            int startPositionId = 0;
             foreach (var currentStartList in startLists)
             {
                 int positionCounter = 1;
@@ -184,6 +188,7 @@ namespace InsertScriptGenerator.Core
                 {
                     startPositions.Add(new StartPosition()
                     {
+                        Id = startPositionId++,
                         StartListId = currentStartList.Id,
                         SkierId = participatingSkier.Id,
                         Position = positionCounter++
@@ -197,20 +202,22 @@ namespace InsertScriptGenerator.Core
                 .ForEach(y => seasons.Add(new Season()
                 {
                     Id = seasons.Count,
-                    Name = $"Yearly season {y}",
+                    Name = $"Jährliche Saison {y}",
                     StartDate = new DateTime(y, 1, 1),
                     EndDate = new DateTime(y, 12, 31)
                 }));
 
+            int seasonPlanIdCounter = 0;
             foreach (var currentSeason in seasons)
             {
                 foreach (var currentVenue in venues)
                 {
                     seasonPlans.Add(new SeasonPlan()
                     {
+                        Id = seasonPlanIdCounter++,
                         SeasonId = currentSeason.Id,
                         VenueId = currentVenue.Id
-                    });
+                    }) ;
                 }
             }
 
@@ -225,15 +232,15 @@ namespace InsertScriptGenerator.Core
                 double raceStateIdentifier = random.NextDouble();
                 if (0 <= raceStateIdentifier && raceStateIdentifier < 0.9)
                 {
-                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Finished").Id;
+                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Abgeschlossen").Id;
                 }
                 else if (0.9 <= raceStateIdentifier && raceStateIdentifier < 0.95)
                 {
-                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Disqualified").Id;
+                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Disqualifiziert").Id;
                 }
                 else if (0.95 <= raceStateIdentifier && raceStateIdentifier < 1.0)
                 {
-                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "DidNotFinish").Id;
+                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "NichtAbgeschlossen").Id;
                 }
                 else
                 {
