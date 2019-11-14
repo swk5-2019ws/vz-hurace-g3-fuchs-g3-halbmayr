@@ -23,7 +23,7 @@ namespace Hurace.Core.Dal.AdoPersistence
             SqlQueryGenerator = new SimpleSqlQueryGenerator<T>();
         }
 
-        public Task<T> CreateAsync(T newInstance)
+        public async Task<T> CreateAsync(T newInstance)
         {
             throw new NotImplementedException();
         }

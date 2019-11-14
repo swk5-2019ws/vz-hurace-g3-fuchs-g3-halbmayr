@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Hurace.Core.Db.Utilities
@@ -12,8 +13,9 @@ namespace Hurace.Core.Db.Utilities
         {
             var sb = new StringBuilder();
 
-            sb.Append("SELECT");
-            AppendDbColumns(sb);
+            sb.Append("SELECT ");
+
+            AppendDbColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
@@ -24,8 +26,9 @@ namespace Hurace.Core.Db.Utilities
         {
             var sb = new StringBuilder();
 
-            sb.Append("SELECT");
-            AppendDbColumns(sb);
+            sb.Append("SELECT ");
+
+            AppendDbColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
             sb.Append($" WHERE [Id] = {id}");
@@ -33,39 +36,33 @@ namespace Hurace.Core.Db.Utilities
             return sb.ToString();
         }
 
-        public string GenerateCreateQuery(T entity)
+        public Tuple<string, QueryParameter[]> GenerateCreateQuery(T entity)
         {
             var sb = new StringBuilder();
+            var queryParameters = new List<QueryParameter>();
 
-            sb.Append($"INSERT INTO [Hurace].[{typeof(T).Name}] (");
-            bool firstProperty = true;
-            foreach (var currentProperty in typeof(T).GetProperties())
+            sb.Append($"INSERT INTO [Hurace].[{entity.GetType().Name}] (");
+
+            AppendDbColumnNames(sb, (m) => m.Name == "Id");
+
+            sb.Append($") VALUES (");
+
+            bool firstValue = true;
+            foreach (var currentProperty in entity.GetType().GetProperties())
             {
                 if (currentProperty.Name != "Id")
                 {
-                    sb.Append($"{(firstProperty ? "" : ", ")}[{currentProperty.Name}]");
-                    firstProperty = false;
-                }
-            }
-            sb.Append($") VALUES (");
-            bool firstValue = true;
-            foreach (var property in entity.GetType().GetProperties())
-            {
-                if (property.Name != "Id")
-                {
-                    var val = entity.GetType().GetProperty(property.Name).GetValue(entity);
-                    sb.Append($"{(firstValue ? "" : ", ")}");
-                    if (property.PropertyType == typeof(string))
-                        sb.Append($"'{val}'");
-                    else if (property.PropertyType == typeof(DateTime))
-                        sb.Append("'" + ((DateTime)val).ToString("s", DateTimeFormatInfo.InvariantInfo) + "'");
-                    else
-                        sb.Append($"{val}");
+                    sb.Append($"{(firstValue ? "" : ", ")}@{currentProperty.Name}");
+
+                    queryParameters.Add(
+                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(entity)));
+
                     firstValue = false;
                 }
             }
             sb.Append(")");
-            return sb.ToString();
+
+            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
         public string GenerateUpdateQuery(int Id, T entity)
@@ -74,12 +71,12 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
             bool firstValue = true;
-            foreach (var property in entity.GetType().GetProperties())
+            foreach (var currentProperty in entity.GetType().GetProperties())
             {
-                if (property.Name != "Id")
+                if (currentProperty.Name != "Id")
                 {
-                    var val = entity.GetType().GetProperty(property.Name).GetValue(entity);
-                    sb.Append($"{(firstValue ? "" : ",")} [{property.Name}] = {val}");
+                    var val = entity.GetType().GetProperty(currentProperty.Name).GetValue(entity);
+                    sb.Append($"{(firstValue ? "" : ",")} [{currentProperty.Name}] = {val}");
                     firstValue = false;
                 }
             }
@@ -97,15 +94,17 @@ namespace Hurace.Core.Db.Utilities
             return sb.ToString();
         }
 
-        private void AppendDbColumns(StringBuilder sb)
+        private void AppendDbColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
         {
             bool firstProperty = true;
             foreach (var currentProperty in typeof(T).GetProperties())
             {
-                sb.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}]");
-                firstProperty = false;
+                if (propertyFilter == null || !propertyFilter(currentProperty))
+                {
+                    sb.Append($"{(firstProperty ? "" : ", ")}[{currentProperty.Name}]");
+                    firstProperty = false;
+                }
             }
         }
-
     }
 }
