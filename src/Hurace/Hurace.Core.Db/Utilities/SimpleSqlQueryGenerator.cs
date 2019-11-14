@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -42,7 +43,7 @@ namespace Hurace.Core.Db.Utilities
             {
                 if (currentProperty.Name != "Id")
                 {
-                    sb.Append($"{(firstProperty ? "" : ",")}[{currentProperty.Name}]");
+                    sb.Append($"{(firstProperty ? "" : ", ")}[{currentProperty.Name}]");
                     firstProperty = false;
                 }
             }
@@ -53,10 +54,12 @@ namespace Hurace.Core.Db.Utilities
                 if (property.Name != "Id")
                 {
                     var val = entity.GetType().GetProperty(property.Name).GetValue(entity);
-                    sb.Append($"{(firstValue ? "" : ",")}");
+                    sb.Append($"{(firstValue ? "" : ", ")}");
                     if (property.PropertyType == typeof(string))
                         sb.Append($"'{val}'");
-                    else 
+                    else if (property.PropertyType == typeof(DateTime))
+                        sb.Append("'" + ((DateTime)val).ToString("s", DateTimeFormatInfo.InvariantInfo) + "'");
+                    else
                         sb.Append($"{val}");
                     firstValue = false;
                 }
