@@ -85,13 +85,55 @@ namespace Hurace.Core.Tests
 
             var emptyParameterList = Array.Empty<object>();
 
-            var allDomainObjectsUnconverted = await (dynamic)getAllMethod.Invoke(adoDaoInstance, emptyParameterList);
-            var allDomainObjects = (IEnumerable<object>)allDomainObjectsUnconverted;
+            var allDomainObjectsDynamic = await (dynamic)getAllMethod.Invoke(adoDaoInstance, emptyParameterList);
+            var allDomainObjects = (IEnumerable<object>)allDomainObjectsDynamic;
 
             Assert.Equal(expectedResultCount, allDomainObjects.Count());
 
             var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
             var actualDomainObject = allDomainObjects.Skip(expectedDomainObject.Id).First();
+
+            foreach (var currentProperty in expectedDomainObject.GetType().GetProperties())
+            {
+                Assert.Equal(currentProperty.GetValue(expectedDomainObject), currentProperty.GetValue(actualDomainObject));
+            }
+        }
+
+        [Theory]
+        [InlineData(typeof(Domain.Country))]
+        [InlineData(typeof(Domain.Image))]
+        [InlineData(typeof(Domain.Race))]
+        [InlineData(typeof(Domain.RaceData))]
+        [InlineData(typeof(Domain.RaceState))]
+        [InlineData(typeof(Domain.RaceType))]
+        [InlineData(typeof(Domain.Season))]
+        [InlineData(typeof(Domain.SeasonPlan))]
+        [InlineData(typeof(Domain.Sex))]
+        [InlineData(typeof(Domain.Skier))]
+        [InlineData(typeof(Domain.StartList))]
+        [InlineData(typeof(Domain.StartPosition))]
+        [InlineData(typeof(Domain.TimeMeasurement))]
+        [InlineData(typeof(Domain.Venue))]
+        public async Task GetByIdTest(Type domainType)
+        {
+            var adoDao = typeof(GenericDao<>)
+                .MakeGenericType(domainType);
+
+            var constructorParameterTypeList = new Type[] { typeof(IConnectionFactory) };
+            var constructorParameterList = new object[] { new DefaultConnectionFactory() };
+
+            var adoDaoInstance = adoDao.GetConstructor(constructorParameterTypeList)
+                .Invoke(constructorParameterList);
+
+            var getByIdMethod = adoDao.GetMethods()
+                .FirstOrDefault(m => m.Name == "GetByIdAsync");
+
+            var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
+
+            var emptyParameterList = new object[] { expectedDomainObject.Id };
+
+            var actualDomainObjectDynamic = await (dynamic)getByIdMethod.Invoke(adoDaoInstance, emptyParameterList);
+            var actualDomainObject = (object)actualDomainObjectDynamic;
 
             foreach (var currentProperty in expectedDomainObject.GetType().GetProperties())
             {

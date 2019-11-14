@@ -35,9 +35,11 @@ namespace Hurace.Core.Dal.AdoPersistence
                 RowMapper);
         }
 
-        public Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await template.QuerySingleAsync(
+                SqlQueryGenerator.GenerateGetByIdQuery(id),
+                RowMapper);
         }
 
         public Task<bool> DeleteByIdAsync(int id)
