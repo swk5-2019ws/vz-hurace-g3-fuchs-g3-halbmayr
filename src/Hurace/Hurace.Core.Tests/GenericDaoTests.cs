@@ -118,7 +118,7 @@ namespace Hurace.Core.Tests
                     testObject = new Domain.Image()
                     {
                         Id = 2,
-                        Content = Array.Empty<byte>() 
+                        Content = Array.Empty<byte>()
                     };
                     return testObject;
                 case nameof(Domain.Race):
