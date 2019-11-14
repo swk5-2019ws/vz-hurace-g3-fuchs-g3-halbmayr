@@ -85,9 +85,12 @@ namespace InsertScriptGenerator.Core
 
                 var currentRaceType = currentRace.Value<string>("discipline");
 
-                bool raceTypeIsNeeded = currentRaceType == "Slalom" || currentRaceType == "Giant Slalom";
+                //localize english to german
+                if (currentRaceType == "Giant Slalom")
+                    currentRaceType = "Riesentorlauf";
 
-                if (currentRaceType == "Giant Slalom") currentRaceType = "RiesenTorLauf";
+                bool raceTypeIsNeeded = currentRaceType == "Slalom" || currentRaceType == "Riesentorlauf";
+
                 if (currentRaceType != null && raceTypeIsNeeded)
                 {
                     int nextRaceId = races.Count;
@@ -118,7 +121,7 @@ namespace InsertScriptGenerator.Core
                         Id = nextRaceId,
                         Date = DateTime.Parse(currentRace.Value<string>("date")),
                         Description = "",
-                        NumberOfSensors = random.Next(3, 6),
+                        NumberOfSensors = random.Next(4, 7),
                         FirstStartListId = firstStartListId,
                         SecondStartListId = secondStartListId,
                         RaceTypeId = raceTypes.FirstOrDefault(rt => rt.Label == currentRaceType).Id,
@@ -130,8 +133,13 @@ namespace InsertScriptGenerator.Core
             foreach (var currentSkier in skiersJson)
             {
                 var currentSexLabel = currentSkier.Value<string>("gender");
-                if (currentSexLabel == "Female") currentSexLabel = "Weiblich";
-                else if (currentSexLabel == "Male") currentSexLabel = "Männlich";
+                
+                //localize english to german
+                if (currentSexLabel == "Female")
+                    currentSexLabel = "Weiblich";
+                else if (currentSexLabel == "Male")
+                    currentSexLabel = "Männlich";
+                
                 if (sexes.FirstOrDefault(s => s.Label == currentSexLabel) == null)
                 {
                     sexes.Add(new Sex()
@@ -183,7 +191,7 @@ namespace InsertScriptGenerator.Core
             foreach (var currentStartList in startLists)
             {
                 int positionCounter = 1;
-                int participatingSkierCount = random.Next(21) + 30;
+                int participatingSkierCount = random.Next(11) + 45;
                 foreach (var participatingSkier in skiers.OrderBy(s => random.Next()).Take(participatingSkierCount))
                 {
                     startPositions.Add(new StartPosition()
@@ -217,7 +225,7 @@ namespace InsertScriptGenerator.Core
                         Id = seasonPlanIdCounter++,
                         SeasonId = currentSeason.Id,
                         VenueId = currentVenue.Id
-                    }) ;
+                    });
                 }
             }
 
