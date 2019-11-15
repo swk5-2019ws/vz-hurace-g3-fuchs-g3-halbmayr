@@ -54,9 +54,8 @@ namespace Hurace.Core.Tests
 
         [Theory]
         [InlineData(typeof(Domain.Country), 52)]
-        [InlineData(typeof(Domain.Image), 521)]
         [InlineData(typeof(Domain.Race), 37)]
-        [InlineData(typeof(Domain.RaceData), 3694)]
+        [InlineData(typeof(Domain.RaceData), 3700)]
         [InlineData(typeof(Domain.RaceState), 4)]
         [InlineData(typeof(Domain.RaceType), 2)]
         [InlineData(typeof(Domain.Season), 2)]
@@ -64,8 +63,8 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Sex), 2)]
         [InlineData(typeof(Domain.Skier), 521)]
         [InlineData(typeof(Domain.StartList), 74)]
-        [InlineData(typeof(Domain.StartPosition), 3694)]
-        [InlineData(typeof(Domain.TimeMeasurement), 19001)]
+        [InlineData(typeof(Domain.StartPosition), 3700)]
+        [InlineData(typeof(Domain.TimeMeasurement), 18416)]
         [InlineData(typeof(Domain.Venue), 31)]
         public async Task GetAllTest(Type domainType, int expectedResultCount)
         {
@@ -89,7 +88,6 @@ namespace Hurace.Core.Tests
 
         [Theory]
         [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Image))]
         [InlineData(typeof(Domain.Race))]
         [InlineData(typeof(Domain.RaceData))]
         [InlineData(typeof(Domain.RaceState))]
@@ -121,7 +119,6 @@ namespace Hurace.Core.Tests
 
         [Theory]
         [InlineData(typeof(Domain.Country), 50000)]
-        [InlineData(typeof(Domain.Image), 50000)]
         [InlineData(typeof(Domain.Race), 50000)]
         [InlineData(typeof(Domain.RaceData), 50000)]
         [InlineData(typeof(Domain.RaceState), 50000)]
@@ -179,13 +176,6 @@ namespace Hurace.Core.Tests
                         Name = "SUI"
                     };
                     return testObject;
-                case nameof(Domain.Image):
-                    testObject = new Domain.Image()
-                    {
-                        Id = 2,
-                        Content = Array.Empty<byte>()
-                    };
-                    return testObject;
                 case nameof(Domain.Race):
                     testObject = new Domain.Race()
                     {
@@ -193,10 +183,11 @@ namespace Hurace.Core.Tests
                         RaceTypeId = 1,
                         FirstStartListId = 26,
                         SecondStartListId = 27,
-                        NumberOfSensors = 5,
-                        Description = "Norwegian legend Sondre Norheim first began the trend of skis with " +
-                                      "curved sides, bindings with stiff heel bands made of willow, and the" +
-                                      " slalom turn style.",
+                        NumberOfSensors = 6,
+                        Description = "Skiing was an integral part of transportation in colder countries " +
+                                      "for thousands of years. In the late 19th century skiing converted " +
+                                      "from a method of transportation to a competitive and recreational " +
+                                      "sport.",
                         VenueId = 12,
                         Date = new DateTime(2017, 12, 28)
                     };
@@ -206,8 +197,8 @@ namespace Hurace.Core.Tests
                     {
                         Id = 311,
                         StartListId = 6,
-                        SkierId = 347,
-                        RaceStateId = 1
+                        SkierId = 108,
+                        RaceStateId = 0
                     };
                     return testObject;
                 case nameof(Domain.RaceState):
@@ -257,7 +248,7 @@ namespace Hurace.Core.Tests
                         DateOfBirth = new DateTime(1989, 3, 2),
                         CountryId = 3,
                         SexId = 1,
-                        ImageId = 120
+                        ImageUrl = "https://data.fis-ski.com/general/load-competitor-picture/106332.html"
                     };
                     return testObject;
                 case nameof(Domain.StartList):
@@ -270,18 +261,18 @@ namespace Hurace.Core.Tests
                     testObject = new Domain.StartPosition()
                     {
                         Id = 53,
-                        SkierId = 279,
+                        SkierId = 253,
                         StartListId = 1,
-                        Position = 9
+                        Position = 4
                     };
                     return testObject;
                 case nameof(Domain.TimeMeasurement):
                     testObject = new Domain.TimeMeasurement()
                     {
                         Id = 226,
-                        SensorId = 4,
-                        Measurement = 158000,
-                        RaceDataId = 37
+                        SensorId = 1,
+                        Measurement = 61000,
+                        RaceDataId = 45
                     };
                     return testObject;
                 case nameof(Domain.Venue):
