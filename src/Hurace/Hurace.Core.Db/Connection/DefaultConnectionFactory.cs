@@ -35,15 +35,13 @@ namespace Hurace.Core.Db.Connection
 
         private DbProviderFactory GetDbProviderFactory()
         {
-            switch (ProviderName)
+            return ProviderName switch
             {
-                case "Microsoft.Data.SqlClient":
-                    return Microsoft.Data.SqlClient.SqlClientFactory.Instance;
+                "Microsoft.Data.SqlClient" => Microsoft.Data.SqlClient.SqlClientFactory.Instance,
                 //case "MySql.Data.MySqlClient":
                 //    return MySql.Data.MySqlClient.MySqlClientFactory.Instance;
-                default:
-                    throw new ArgumentOutOfRangeException($"Invalid {nameof(ProviderName)} \"{ProviderName}\"");
-            }
+                _ => throw new ArgumentOutOfRangeException($"Invalid {nameof(ProviderName)} \"{ProviderName}\""),
+            };
         }
     }
 }
