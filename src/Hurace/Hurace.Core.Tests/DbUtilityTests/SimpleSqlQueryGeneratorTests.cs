@@ -49,15 +49,19 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public void GenerateSimpleUpdateQuery()
         {
-            string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = 35, [SkierId] = 18, [Position] = 25 WHERE [Id] = 135";
+            string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId, [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
-            string generatedQuery = queryGenerator.GenerateUpdateQuery(135, new Domain.StartPosition
+            (var generatedQuery, var generatedParameters) = queryGenerator.GenerateUpdateQuery(135, new Domain.StartPosition
             {
-                Position = 25,
+                StartListId = 35,
                 SkierId = 18,
-                StartListId = 35
+                Position = 25,
             });
             Assert.Equal(expectedQuery, generatedQuery);
+            Assert.Equal(35, generatedParameters[0].Value);
+            Assert.Equal(18, generatedParameters[1].Value);
+            Assert.Equal(25, generatedParameters[2].Value);
+            Assert.Equal(135, generatedParameters[3].Value);
         }
 
         [Fact]
@@ -69,37 +73,38 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(expectedQuery, generatedQuery);
         }
 
-        public class ParameterizedTests
+        public static IEnumerable<object[]> GetInsertSkiers()
         {
-            public static IEnumerable<object[]> GetInsertSkiers()
-            {
-                yield return new object[] { "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [CountryId], [SexId], [ImageId]) VALUES " +
-                    "('Viktoria', 'Rebensburg', '1989-10-04T00:00:00', 0, 0, 0)",
-                    "Viktoria", "Rebensburg", new DateTime(1989,10,04), 0, 0, 0, 0 };
-                yield return new object[] { "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [CountryId], [SexId], [ImageId]) VALUES " +
-                    "('Tessa', 'Worley', '1989-10-04T00:00:00', 1, 1, 0)",
-                    "Tessa", "Worley", new DateTime(1989,10,04), 1, 1, 0, 0 };
-            }
+            yield return new object[] { "Viktoria", "Rebensburg", new DateTime(1989, 10, 04), 0, 0, 0, 0 };
+            yield return new object[] { "Tessa", "Worley", new DateTime(1989, 10, 04), 1, 1, 0, 0 };
+        }
 
-            [Theory]
-            [MemberData(nameof(GetInsertSkiers))]
-            public void TestSkierQuerys(string expectedQuery, string fn, string ln, DateTime dob, int countryId, int SexId, int imageId, int id)
-            {
-                var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>();
-                (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(
-                    new Domain.Skier
-                    {
-                        FirstName = fn,
-                        LastName = ln,
-                        DateOfBirth = dob,
-                        CountryId = countryId,
-                        SexId = SexId,
-                        ImageId = imageId,
-                        Id = id
-                    });
+        [Theory]
+        [MemberData(nameof(GetInsertSkiers))]
+        public void TestSkierQuerys(string fn, string ln, DateTime dob, int countryId, int SexId, int imageId, int id)
+        {
+            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [CountryId], [SexId], [ImageId]) VALUES " +
+                "(@FirstName, @LastName, @DateOfBirth, @CountryId, @SexId, @ImageId)";
+            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>();
+            (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(
+                new Domain.Skier
+                {
+                    FirstName = fn,
+                    LastName = ln,
+                    DateOfBirth = dob,
+                    CountryId = countryId,
+                    SexId = SexId,
+                    ImageId = imageId,
+                    Id = id
+                });
 
-                Assert.Equal(expectedQuery, generatedQuery);
-            }
+            Assert.Equal(expectedQuery, generatedQuery);
+            Assert.Equal(fn, queryParameters[0].Value);
+            Assert.Equal(ln, queryParameters[1].Value);
+            Assert.Equal(dob, queryParameters[2].Value);
+            Assert.Equal(countryId, queryParameters[3].Value);
+            Assert.Equal(SexId, queryParameters[4].Value);
+            Assert.Equal(imageId, queryParameters[5].Value);
         }
     }
 }
