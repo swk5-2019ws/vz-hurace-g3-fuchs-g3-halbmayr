@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Hurace.Domain\Hurace.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

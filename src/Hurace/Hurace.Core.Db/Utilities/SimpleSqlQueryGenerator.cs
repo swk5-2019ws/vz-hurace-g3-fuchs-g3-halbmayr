@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hurace.Domain;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Hurace.Core.Db.Utilities
 {
-    public class SimpleSqlQueryGenerator<T>
+    public class SimpleSqlQueryGenerator<T> where T : DomainObjectBase
     {
         public string GenerateGetAllQuery()
         {
@@ -22,7 +23,7 @@ namespace Hurace.Core.Db.Utilities
             return sb.ToString();
         }
 
-        public string GenerateGetByIdQuery(int id)
+        public string  GenerateGetByIdQuery(int id)
         {
             var sb = new StringBuilder();
 
@@ -45,7 +46,7 @@ namespace Hurace.Core.Db.Utilities
 
             AppendDbColumnNames(sb, (m) => m.Name == "Id");
 
-            sb.Append($") VALUES (");
+            sb.Append($") OUTPUT Inserted.ID VALUES (");
 
             bool firstValue = true;
             foreach (var currentProperty in entity.GetType().GetProperties())
@@ -65,7 +66,7 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
-        public Tuple<string, QueryParameter[]> GenerateUpdateQuery(int Id, T entity)
+        public Tuple<string, QueryParameter[]> GenerateUpdateQuery(T entity)
         {
             var sb = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
@@ -87,11 +88,11 @@ namespace Hurace.Core.Db.Utilities
             sb.Append($" WHERE [Id] = @Id");
 
             queryParameters.Add(
-                        new QueryParameter("Id", Id));
+                        new QueryParameter("Id", entity.Id));
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
-        public string GenerateDeleteByIdQuery(int Id)
+        public string GenerateDeleteByIdQuery(int id)
         {
             //TODO: Set Skier Inaktive when there are already entries for him/her else delete Skier entry
             var sb = new StringBuilder();
