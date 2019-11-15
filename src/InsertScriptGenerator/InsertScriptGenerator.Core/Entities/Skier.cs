@@ -16,7 +16,7 @@ namespace InsertScriptGenerator.Core
         public override string ToString()
         {
             return "INSERT INTO [Hurace].[Skier] ([Id], [FirstName], [LastName], [DateOfBirth], [CountryId], [ImageUrl], [SexId]) "
-                + $"VALUES ({Id}, '{FirstName}', '{LastName}', '{DateOfBirth.ToString("s")}', {CountryId}, {ImageUrl}, {SexId});";
+                + $"VALUES ({Id}, '{FirstName}', '{LastName}', '{DateOfBirth.ToString("s")}', {CountryId}, '{ImageUrl}', {SexId});";
         }
     }
 }

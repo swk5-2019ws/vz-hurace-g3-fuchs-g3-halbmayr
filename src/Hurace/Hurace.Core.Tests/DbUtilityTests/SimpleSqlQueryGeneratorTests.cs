@@ -100,7 +100,6 @@ namespace Hurace.Core.Tests.DbUtilityTests
                     DateOfBirth = dob,
                     CountryId = countryId,
                     SexId = SexId,
-                    ImageId = imageId,
                     Id = id
                 });
 
