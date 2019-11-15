@@ -26,7 +26,6 @@ namespace InsertScriptGenerator.Core
             var raceStates = new List<RaceState>();
             var seasons = new List<Season>();
             var seasonPlans = new List<SeasonPlan>();
-            var images = new List<Image>();
             var raceDataList = new List<RaceData>();
             var timeMeasurements = new List<TimeMeasurement>();
 
@@ -166,33 +165,15 @@ namespace InsertScriptGenerator.Core
                     dobString = "01-01-" + dobString;
                 }
 
-                string avatarId = currentSkier.Value<string>("avatarUrl").Split('/').Last().Split('.').First();
-                string imageFileName = $"{avatarId}.jpg";
-                string folderPath = Path.Combine("..", "..", "..", "Resources", "images");
-                string filePath = Path.Combine(folderPath, imageFileName);
-                
-                if (!File.Exists(filePath))
-                {
-                    filePath = Path.Combine(folderPath, "default_image.jpg");
-                }
-
-                byte[] imageBytes = File.ReadAllBytes(filePath);
-                int nextImageId = images.Count;
-                images.Add(new Image()
-                {
-                    Id = nextImageId,
-                    Content = imageBytes
-                });
-
                 skiers.Add(new Skier()
                 {
                     Id = skiers.Count,
                     FirstName = currentSkier.Value<string>("firstName"),
                     LastName = currentSkier.Value<string>("lastName"),
                     DateOfBirth = DateTime.Parse(dobString),
+                    ImageUrl = currentSkier.Value<string>("avatarUrl"),
                     SexId = sexes.FirstOrDefault(sex => sex.Label == currentSexLabel).Id,
-                    CountryId = countries.FirstOrDefault(c => c.Name == currentCountryLabel).Id,
-                    ImageId = nextImageId
+                    CountryId = countries.FirstOrDefault(c => c.Name == currentCountryLabel).Id
                 });
             }
 
@@ -289,7 +270,6 @@ namespace InsertScriptGenerator.Core
             AddToInsertScript(startLists);
             AddToInsertScript(raceTypes);
             AddToInsertScript(sexes);
-            AddToInsertScript(images);
             AddToInsertScript(countries);
             AddToInsertScript(skiers);
             AddToInsertScript(startPositions);
