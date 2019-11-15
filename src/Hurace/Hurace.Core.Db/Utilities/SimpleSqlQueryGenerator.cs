@@ -65,9 +65,10 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
-        public string GenerateUpdateQuery(int Id, T entity)
+        public Tuple<string, QueryParameter[]> GenerateUpdateQuery(int Id, T entity)
         {
             var sb = new StringBuilder();
+            var queryParameters = new List<QueryParameter>();
 
             sb.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
             bool firstValue = true;
@@ -75,13 +76,19 @@ namespace Hurace.Core.Db.Utilities
             {
                 if (currentProperty.Name != "Id")
                 {
-                    var val = entity.GetType().GetProperty(currentProperty.Name).GetValue(entity);
-                    sb.Append($"{(firstValue ? "" : ",")} [{currentProperty.Name}] = {val}");
+                    sb.Append($"{(firstValue ? "" : ",")} [{currentProperty.Name}] = @{currentProperty.Name}");
+
+                    queryParameters.Add(
+                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(entity)));
+
                     firstValue = false;
                 }
             }
-            sb.Append($" WHERE [Id] = {Id}");
-            return sb.ToString();
+            sb.Append($" WHERE [Id] = @Id");
+
+            queryParameters.Add(
+                        new QueryParameter("Id", Id));
+            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
         public string GenerateDeleteByIdQuery(int Id)
