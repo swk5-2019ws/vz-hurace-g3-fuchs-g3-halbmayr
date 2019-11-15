@@ -25,6 +25,8 @@ namespace Hurace.Core.Db.Utilities
 
         public Tuple<string, QueryParameter[]> GenerateGetByIdQuery(int id)
         {
+            if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
+
             var sb = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
@@ -33,6 +35,7 @@ namespace Hurace.Core.Db.Utilities
             AppendDbColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
+
             sb.Append($" WHERE [Id] = @Id");
 
             queryParameters.Add(
@@ -43,6 +46,8 @@ namespace Hurace.Core.Db.Utilities
 
         public Tuple<string, QueryParameter[]> GenerateCreateQuery(T entity)
         {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
             var sb = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
@@ -72,6 +77,9 @@ namespace Hurace.Core.Db.Utilities
 
         public Tuple<string, QueryParameter[]> GenerateUpdateQuery(T entity)
         {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            if (entity.Id < 0) throw new ArgumentOutOfRangeException(nameof(entity));
+
             var sb = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
@@ -96,9 +104,11 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
+        //TODO: Set Skier Inaktive when there are already entries for him/her else delete Skier entry
         public Tuple<string, QueryParameter[]> GenerateDeleteByIdQuery(int id)
         {
-            //TODO: Set Skier Inaktive when there are already entries for him/her else delete Skier entry
+            if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
+
             var sb = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 

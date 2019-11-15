@@ -112,5 +112,44 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(SexId, queryParameters[4].Value);
             Assert.Equal(imageId, queryParameters[5].Value);
         }
+
+        [Fact]
+        public void GenerateSimpleSelectByIdOutOfRangeException()
+        {
+            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateGetByIdQuery(-1));
+        }
+
+        [Fact]
+        public static void GenerateCreateEmptyArgumentNullException()
+        {
+            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateCreateQuery(null));
+        }
+
+        [Fact]
+        public static void GenerateUpdateArgumentNullException()
+        {
+            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(null));
+        }
+
+        [Fact]
+        public static void GenerateUpdateOutOfRangeException()
+        {
+            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Country>();
+            Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateUpdateQuery(new Domain.Country
+            {
+                Name = "AUS",
+                Id = -3
+            }));
+        }
+
+        [Fact]
+        public void GenerateDeleteByIdOutOfRangeException()
+        {
+            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateDeleteByIdQuery(-1));
+        }
     }
 }
