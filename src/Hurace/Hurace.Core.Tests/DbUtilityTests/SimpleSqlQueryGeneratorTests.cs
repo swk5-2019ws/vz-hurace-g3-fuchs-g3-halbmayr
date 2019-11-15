@@ -21,8 +21,10 @@ namespace Hurace.Core.Tests.DbUtilityTests
         {
             string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex] WHERE [Id] = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
-            string generatedQuery = queryGenerator.GenerateGetByIdQuery(1);
+            (var generatedQuery, var queryParameters) = queryGenerator.GenerateGetByIdQuery(1);
             Assert.Equal(expectedQuery, generatedQuery);
+
+            Assert.Equal(1, queryParameters[0].Value);
         }
 
         [Fact]
@@ -56,6 +58,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
                 StartListId = 35,
                 SkierId = 18,
                 Position = 25,
+                Id = 135
             });
             Assert.Equal(expectedQuery, generatedQuery);
             Assert.Equal(35, generatedParameters[0].Value);
@@ -69,8 +72,11 @@ namespace Hurace.Core.Tests.DbUtilityTests
         {
             string expectedQuery = "DELETE FROM [Hurace].[StartPosition] WHERE Id = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
-            string generatedQuery = queryGenerator.GenerateDeleteByIdQuery(135);
+            (var generatedQuery, var generatedParameters) = queryGenerator.GenerateDeleteByIdQuery(135);
+
             Assert.Equal(expectedQuery, generatedQuery);
+
+            Assert.Equal(135, generatedParameters[0].Value);
         }
 
         public static IEnumerable<object[]> GetInsertSkiers()
