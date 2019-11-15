@@ -79,18 +79,22 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(135, generatedParameters[0].Value);
         }
 
-        public static IEnumerable<object[]> GetInsertSkiers()
-        {
-            yield return new object[] { "Viktoria", "Rebensburg", new DateTime(1989, 10, 04), 0, 0, 0, 0 };
-            yield return new object[] { "Tessa", "Worley", new DateTime(1989, 10, 04), 1, 1, 0, 0 };
+
+        public static IEnumerable<object[]> GetInsertSkiers {
+            get {
+                yield return new object[] { "Viktoria", "Rebensburg", new DateTime(1989, 10, 04), "https://nicetestimage", 0, 0, 0 };
+                yield return new object[] { "Tessa", "Worley", new DateTime(1989, 10, 04), "https://nicetestimage", 1, 1, 0 };
+            }
         }
 
         [Theory]
         [MemberData(nameof(GetInsertSkiers))]
-        public void TestSkierQuerys(string fn, string ln, DateTime dob, int countryId, int SexId, int imageId, int id)
+#pragma warning disable CA1054 // Uri parameters should not be strings
+        public void TestSkierQuerys(string fn, string ln, DateTime dob, string url, int countryId, int SexId, int id)
+#pragma warning restore CA1054 // Uri parameters should not be strings
         {
-            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [CountryId], [SexId], [ImageId]) OUTPUT Inserted.ID VALUES " +
-                "(@FirstName, @LastName, @DateOfBirth, @CountryId, @SexId, @ImageId)";
+            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId]) OUTPUT Inserted.ID VALUES " +
+                "(@FirstName, @LastName, @DateOfBirth, @ImageUrl, @CountryId, @SexId)";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(
                 new Domain.Skier
@@ -98,6 +102,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
                     FirstName = fn,
                     LastName = ln,
                     DateOfBirth = dob,
+                    ImageUrl = url,
                     CountryId = countryId,
                     SexId = SexId,
                     Id = id
@@ -107,9 +112,9 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(fn, queryParameters[0].Value);
             Assert.Equal(ln, queryParameters[1].Value);
             Assert.Equal(dob, queryParameters[2].Value);
-            Assert.Equal(countryId, queryParameters[3].Value);
-            Assert.Equal(SexId, queryParameters[4].Value);
-            Assert.Equal(imageId, queryParameters[5].Value);
+            Assert.Equal(url, queryParameters[3].Value);
+            Assert.Equal(countryId, queryParameters[4].Value);
+            Assert.Equal(SexId, queryParameters[5].Value);
         }
 
         [Fact]
