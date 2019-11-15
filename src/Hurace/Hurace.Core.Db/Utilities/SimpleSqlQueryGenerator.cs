@@ -107,7 +107,7 @@ namespace Hurace.Core.Db.Utilities
             queryParameters.Add(
                         new QueryParameter("Id", id));
 
-            return Tuple.Create(sb.ToString(), queryParameters.toArray());
+            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
         private void AppendDbColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)

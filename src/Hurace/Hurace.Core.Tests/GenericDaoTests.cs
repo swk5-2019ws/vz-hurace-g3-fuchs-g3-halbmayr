@@ -69,19 +69,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue), 31)]
         public async Task GetAllTest(Type domainType, int expectedResultCount)
         {
-            var adoDao = typeof(GenericDao<>)
-                .MakeGenericType(domainType);
-
-            var constructorParameterTypeList = new Type[] { typeof(IConnectionFactory) };
-            var constructorParameterList = new object[] { new DefaultConnectionFactory() };
-
-            var adoDaoInstance = adoDao.GetConstructor(constructorParameterTypeList)
-                .Invoke(constructorParameterList);
-
-            var getAllMethod = adoDao.GetMethods()
-                .FirstOrDefault(m => m.Name == "GetAllAsync");
-
-            var genericDomainObjectListType = typeof(List<>).MakeGenericType(domainType);
+            (var adoDaoInstance, var getAllMethod) = GetAdoDaoInstanceAndMethod(domainType, "GetAllAsync");
 
             var emptyParameterList = Array.Empty<object>();
 
@@ -116,17 +104,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue))]
         public async Task GetByIdTest(Type domainType)
         {
-            var adoDao = typeof(GenericDao<>)
-                .MakeGenericType(domainType);
-
-            var constructorParameterTypeList = new Type[] { typeof(IConnectionFactory) };
-            var constructorParameterList = new object[] { new DefaultConnectionFactory() };
-
-            var adoDaoInstance = adoDao.GetConstructor(constructorParameterTypeList)
-                .Invoke(constructorParameterList);
-
-            var getByIdMethod = adoDao.GetMethods()
-                .FirstOrDefault(m => m.Name == "GetByIdAsync");
+            (var adoDaoInstance, var getByIdMethod) = GetAdoDaoInstanceAndMethod(domainType, "GetByIdAsync");
 
             var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
 
@@ -141,7 +119,52 @@ namespace Hurace.Core.Tests
             }
         }
 
+        [Theory]
+        [InlineData(typeof(Domain.Country), 50000)]
+        [InlineData(typeof(Domain.Image), 50000)]
+        [InlineData(typeof(Domain.Race), 50000)]
+        [InlineData(typeof(Domain.RaceData), 50000)]
+        [InlineData(typeof(Domain.RaceState), 50000)]
+        [InlineData(typeof(Domain.RaceType), 50000)]
+        [InlineData(typeof(Domain.Season), 50000)]
+        [InlineData(typeof(Domain.SeasonPlan), 50000)]
+        [InlineData(typeof(Domain.Sex), 50000)]
+        [InlineData(typeof(Domain.Skier), 50000)]
+        [InlineData(typeof(Domain.StartList), 50000)]
+        [InlineData(typeof(Domain.StartPosition), 50000)]
+        [InlineData(typeof(Domain.TimeMeasurement), 50000)]
+        [InlineData(typeof(Domain.Venue), 50000)]
+        public async Task GetByNonExistingIdTest(Type domainType, int queryId)
+        {
+            (var adoDaoInstance, var getByIdMethod) = GetAdoDaoInstanceAndMethod(domainType, "GetByIdAsync");
+
+            var emptyParameterList = new object[] { queryId };
+
+            var actualDomainObjectDynamic = await (dynamic)getByIdMethod.Invoke(adoDaoInstance, emptyParameterList);
+            var actualDomainObject = (object)actualDomainObjectDynamic;
+        }
+
+        // test get by id on non existing id
+        // test create with sql injection
+
         #region Helper Methods
+
+        private Tuple<object, MethodInfo> GetAdoDaoInstanceAndMethod(Type domainType, string methodName)
+        {
+            var adoDao = typeof(GenericDao<>)
+                .MakeGenericType(domainType);
+
+            var constructorParameterTypeList = new Type[] { typeof(IConnectionFactory) };
+            var constructorParameterList = new object[] { new DefaultConnectionFactory() };
+
+            var adoDaoInstance = adoDao.GetConstructor(constructorParameterTypeList)
+                .Invoke(constructorParameterList);
+
+            var requestedMethod = adoDao.GetMethods()
+                .FirstOrDefault(m => m.Name == methodName);
+
+            return Tuple.Create(adoDaoInstance, requestedMethod);
+        }
 
         private Domain.DomainObjectBase GenerateTestableCompareObject(Type currentDomainType)
         {

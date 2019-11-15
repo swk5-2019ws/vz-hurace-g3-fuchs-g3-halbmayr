@@ -51,7 +51,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         {
             string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId, [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
-            (var generatedQuery, var generatedParameters) = queryGenerator.GenerateUpdateQuery(135, new Domain.StartPosition
+            (var generatedQuery, var generatedParameters) = queryGenerator.GenerateUpdateQuery(new Domain.StartPosition
             {
                 StartListId = 35,
                 SkierId = 18,

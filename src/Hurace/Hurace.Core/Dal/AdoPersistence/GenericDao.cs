@@ -1,4 +1,5 @@
-﻿using Hurace.Core.Db.Connection;
+﻿using Hurace.Core.Db;
+using Hurace.Core.Db.Connection;
 using Hurace.Core.Db.Utilities;
 using Hurace.Domain;
 using System;
@@ -25,7 +26,9 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<T> CreateAsync(T newInstance)
         {
-            throw new NotImplementedException();
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateCreateQuery(newInstance);
+            int id = await template.ExecuteAsync(query, parameters);
+            return await this.GetByIdAsync(id);
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -37,9 +40,8 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<T> GetByIdAsync(int id)
         {
-            return await template.QuerySingleAsync(
-                SqlQueryGenerator.GenerateGetByIdQuery(id),
-                RowMapper);
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateGetByIdQuery(id);
+            return await template.QuerySingleAsync(query, RowMapper, parameters);
         }
 
         public Task<bool> DeleteByIdAsync(int id)
