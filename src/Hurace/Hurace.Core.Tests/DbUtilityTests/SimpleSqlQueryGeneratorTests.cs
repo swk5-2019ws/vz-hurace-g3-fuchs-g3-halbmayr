@@ -19,7 +19,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public void GenerateSimpleSelectByIdEmptyList()
         {
-            string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex] WHERE [Id] = 1";
+            string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex] WHERE [Id] = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
             string generatedQuery = queryGenerator.GenerateGetByIdQuery(1);
             Assert.Equal(expectedQuery, generatedQuery);
@@ -67,7 +67,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public void GenerateSimpleDeleteQuery()
         {
-            string expectedQuery = "DELETE FROM [Hurace].[StartPosition] WHERE Id = 135";
+            string expectedQuery = "DELETE FROM [Hurace].[StartPosition] WHERE Id = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
             string generatedQuery = queryGenerator.GenerateDeleteByIdQuery(135);
             Assert.Equal(expectedQuery, generatedQuery);

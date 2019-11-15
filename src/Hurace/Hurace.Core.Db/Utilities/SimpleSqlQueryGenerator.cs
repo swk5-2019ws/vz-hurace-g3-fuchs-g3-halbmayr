@@ -31,7 +31,7 @@ namespace Hurace.Core.Db.Utilities
             AppendDbColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
-            sb.Append($" WHERE [Id] = {id}");
+            sb.Append($" WHERE [Id] = @Id");
 
             return sb.ToString();
         }
@@ -96,7 +96,7 @@ namespace Hurace.Core.Db.Utilities
             //TODO: Set Skier Inaktive when there are already entries for him/her else delete Skier entry
             var sb = new StringBuilder();
 
-            sb.Append($"DELETE FROM [Hurace].[{typeof(T).Name}] WHERE Id = {Id}");
+            sb.Append($"DELETE FROM [Hurace].[{typeof(T).Name}] WHERE Id = @Id");
 
             return sb.ToString();
         }
