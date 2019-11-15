@@ -23,9 +23,10 @@ namespace Hurace.Core.Db.Utilities
             return sb.ToString();
         }
 
-        public string  GenerateGetByIdQuery(int id)
+        public Tuple<string, QueryParameter[]> GenerateGetByIdQuery(int id)
         {
             var sb = new StringBuilder();
+            var queryParameters = new List<QueryParameter>();
 
             sb.Append("SELECT ");
 
@@ -34,7 +35,10 @@ namespace Hurace.Core.Db.Utilities
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
             sb.Append($" WHERE [Id] = @Id");
 
-            return sb.ToString();
+            queryParameters.Add(
+                new QueryParameter("Id", id));
+
+            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
         public Tuple<string, QueryParameter[]> GenerateCreateQuery(T entity)
@@ -92,14 +96,18 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
-        public string GenerateDeleteByIdQuery(int id)
+        public Tuple<string, QueryParameter[]> GenerateDeleteByIdQuery(int id)
         {
             //TODO: Set Skier Inaktive when there are already entries for him/her else delete Skier entry
             var sb = new StringBuilder();
+            var queryParameters = new List<QueryParameter>();
 
             sb.Append($"DELETE FROM [Hurace].[{typeof(T).Name}] WHERE Id = @Id");
 
-            return sb.ToString();
+            queryParameters.Add(
+                        new QueryParameter("Id", id));
+
+            return Tuple.Create(sb.ToString(), queryParameters.toArray());
         }
 
         private void AppendDbColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
