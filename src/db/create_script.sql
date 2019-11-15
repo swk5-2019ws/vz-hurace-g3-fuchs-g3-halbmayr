@@ -103,25 +103,6 @@ GO
 
 
 
--- ************************************** [Hurace].[Image]
-
-CREATE TABLE [Hurace].[Image]
-(
- [Id]      int IDENTITY (1, 1) NOT NULL ,
- [Content] varbinary(max) NOT NULL ,
-
-
- CONSTRAINT [Image_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC)
-);
-GO
-
-
-
-
-
-
-
-
 -- ************************************** [Hurace].[Country]
 
 CREATE TABLE [Hurace].[Country]
@@ -179,13 +160,12 @@ CREATE TABLE [Hurace].[Skier]
  [DateOfBirth] date NOT NULL ,
  [CountryId]   int NOT NULL ,
  [SexId]       int NOT NULL ,
- [ImageId]     int NOT NULL ,
+ [ImageUrl]    varchar(500) NOT NULL ,
 
 
  CONSTRAINT [Skier_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [Skier_ImageId_uq] UNIQUE NONCLUSTERED ([ImageId] ASC),
+ CONSTRAINT [Skier_ImageId_uq] UNIQUE NONCLUSTERED),
  CONSTRAINT [Skier_Country_fk] FOREIGN KEY ([CountryId])  REFERENCES [Hurace].[Country]([Id]),
- CONSTRAINT [Skier_Image_fk] FOREIGN KEY ([ImageId])  REFERENCES [Hurace].[Image]([Id]),
  CONSTRAINT [Skier_Sex_fk] FOREIGN KEY ([SexId])  REFERENCES [Hurace].[Sex]([Id])
 );
 GO
@@ -317,6 +297,14 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
+
+
+
+
+
+
+
+
 
 
 
