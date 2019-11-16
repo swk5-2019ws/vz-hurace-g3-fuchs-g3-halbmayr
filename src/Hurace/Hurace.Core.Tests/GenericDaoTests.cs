@@ -315,6 +315,20 @@ namespace Hurace.Core.Tests
             }
         }
 
+        [Fact]
+        public void GenerateDaoWithInvalidConnectionFactory()
+        {
+            try
+            {
+                var skierDao = new GenericDao<Domain.Skier>(null);
+                Assert.False(true);
+            }
+            catch (ArgumentNullException)
+            {
+                Assert.True(true);
+            }
+        }
+
         [Theory]
         [InlineData(typeof(Domain.Country))]
         [InlineData(typeof(Domain.Race))]
