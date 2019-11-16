@@ -2,6 +2,7 @@
 using Hurace.Core.Db.Connection;
 using Hurace.Core.Db.Utilities;
 using Hurace.Domain;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -48,18 +49,26 @@ namespace Hurace.Core.Dal.AdoPersistence
             return await template.QuerySingleObjectAsync(query, RowMapper, parameters);
         }
 
-        public async Task<bool> DeleteByIdAsync(int id)
-        {
-            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteByIdQuery(id);
-            int numberOfAffectedRows = await template.ExecuteAsync(query, parameters);
-            return numberOfAffectedRows == 1;
-        }
-
         public async Task<bool> UpdateAsync(T updatedInstance)
         {
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedInstance);
             int affectedRows = await template.ExecuteAsync(query, parameters);
             return affectedRows == 1;
+        }
+
+        public async Task<bool> DeleteByIdAsync(int id)
+        {
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteByIdQuery(id);
+
+            try
+            {
+                int numberOfAffectedRows = await template.ExecuteAsync(query, parameters);
+                return numberOfAffectedRows == 1;
+            }
+            catch (SqlException)
+            {
+                return false;
+            }
         }
     }
 }

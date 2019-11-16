@@ -21,7 +21,7 @@ namespace Hurace.Core.Tests
         private bool disposed = false;
 
         private readonly TransactionScope transactionScope;
-        private Random rnd = new Random();
+        private readonly Random rnd = new Random();
 
         #endregion
 
@@ -72,11 +72,11 @@ namespace Hurace.Core.Tests
         public async Task GetAllTest(Type domainType, int expectedResultCount)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var getAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllAsync");
+            var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllAsync");
 
             var emptyParameterList = Array.Empty<object>();
 
-            var allDomainObjectsDynamic = await (dynamic)getAllMethod.Invoke(adoDaoInstance, emptyParameterList);
+            var allDomainObjectsDynamic = await (dynamic)daoGetAllMethod.Invoke(adoDaoInstance, emptyParameterList);
             var allDomainObjects = (IEnumerable<object>)allDomainObjectsDynamic;
 
             Assert.Equal(expectedResultCount, allDomainObjects.Count());
@@ -107,13 +107,13 @@ namespace Hurace.Core.Tests
         public async Task GetByIdTest(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var getByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
+            var daoGetByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
 
             var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
 
             var emptyParameterList = new object[] { expectedDomainObject.Id };
 
-            var actualDomainObjectDynamic = await (dynamic)getByIdMethod.Invoke(adoDaoInstance, emptyParameterList);
+            var actualDomainObjectDynamic = await (dynamic)daoGetByIdMethod.Invoke(adoDaoInstance, emptyParameterList);
             var actualDomainObject = (object)actualDomainObjectDynamic;
 
             foreach (var currentProperty in expectedDomainObject.GetType().GetProperties())
@@ -139,11 +139,11 @@ namespace Hurace.Core.Tests
         public async Task GetByIdWithNonExistingId(Type domainType, int queryId)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var getByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
+            var daoGetByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
 
             var emptyParameterList = new object[] { queryId };
 
-            var actualDomainObjectDynamic = await (dynamic)getByIdMethod.Invoke(adoDaoInstance, emptyParameterList);
+            var actualDomainObjectDynamic = await (dynamic)daoGetByIdMethod.Invoke(adoDaoInstance, emptyParameterList);
             var actualDomainObject = (object)actualDomainObjectDynamic;
 
             Assert.Null(actualDomainObject);
@@ -159,7 +159,7 @@ namespace Hurace.Core.Tests
         public async Task CreateTest(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var createAsyncMethod = this.GetAdoDaoMethodInfo(domainType, "CreateAsync");
+            var daoCreateMethod = this.GetAdoDaoMethodInfo(domainType, "CreateAsync");
 
             var expectedDomainObject = domainType.GetConstructor(Array.Empty<Type>())
                 .Invoke(Array.Empty<object>());
@@ -167,7 +167,7 @@ namespace Hurace.Core.Tests
 
             var parameterList = new object[] { expectedDomainObject };
 
-            var actualDomainObjectDynamic = await (dynamic)createAsyncMethod.Invoke(adoDaoInstance, parameterList);
+            var actualDomainObjectDynamic = await (dynamic)daoCreateMethod.Invoke(adoDaoInstance, parameterList);
             var actualDomainObject = (object)actualDomainObjectDynamic;
 
             foreach (var currentProperty in domainType.GetProperties())
@@ -224,13 +224,13 @@ namespace Hurace.Core.Tests
         public async Task UpdateExistingDomainObjects(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var updateAsyncMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
+            var daoUpdateMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
 
             var expectedUpdatedDomainObject = this.GenerateTestableCompareObject(domainType);
             this.AlterDomainObjectRandomly(expectedUpdatedDomainObject);
 
             var updateParameterList = new object[] { expectedUpdatedDomainObject };
-            bool success = (bool)await (dynamic)updateAsyncMethod.Invoke(adoDaoInstance, updateParameterList);
+            bool success = (bool)await (dynamic)daoUpdateMethod.Invoke(adoDaoInstance, updateParameterList);
 
             Assert.True(success);
 
@@ -263,13 +263,80 @@ namespace Hurace.Core.Tests
         public async Task UpdateNotExistentDomainObjects(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var updateAsyncMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
+            var daoUpdateMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
 
             var expectedUpdatedDomainObject = this.GenerateTestableCompareObject(domainType);
             expectedUpdatedDomainObject.Id = 50000;
 
             var updateParameterList = new object[] { expectedUpdatedDomainObject };
-            bool success = (bool)await (dynamic)updateAsyncMethod.Invoke(adoDaoInstance, updateParameterList);
+            bool success = (bool)await (dynamic)daoUpdateMethod.Invoke(adoDaoInstance, updateParameterList);
+
+            Assert.False(success);
+        }
+
+        [Theory]
+        [InlineData(typeof(Domain.Country), false)]
+        [InlineData(typeof(Domain.Race), false)]
+        [InlineData(typeof(Domain.RaceData), false)]
+        [InlineData(typeof(Domain.RaceState), false)]
+        [InlineData(typeof(Domain.RaceType), false)]
+        [InlineData(typeof(Domain.Season), false)]
+        [InlineData(typeof(Domain.SeasonPlan), true)]
+        [InlineData(typeof(Domain.Sex), false)]
+        [InlineData(typeof(Domain.Skier), false)]
+        [InlineData(typeof(Domain.StartList), false)]
+        [InlineData(typeof(Domain.StartPosition), true)]
+        [InlineData(typeof(Domain.TimeMeasurement), true)]
+        [InlineData(typeof(Domain.Venue), false)]
+        public async Task DeleteByIdExistingIdTest(Type domainType, bool expectedSuccess)
+        {
+            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
+            var daoDeleteByIdMethod = this.GetAdoDaoMethodInfo(domainType, "DeleteByIdAsync");
+
+            int deleteIdParam = 0;
+            var paramList = new object[] { deleteIdParam };
+            var actualSuccess = (bool)await (dynamic)daoDeleteByIdMethod.Invoke(adoDaoInstance, paramList);
+
+            Assert.Equal(expectedSuccess, actualSuccess);
+
+            var daoGetByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
+            var expectedNotFoundDomainObject =
+                (Domain.DomainObjectBase)await
+                    (dynamic)daoGetByIdMethod.Invoke(adoDaoInstance, paramList);
+
+            if (expectedSuccess)
+            {
+                Assert.Null(expectedNotFoundDomainObject);
+            }
+            else
+            {
+                Assert.NotNull(expectedNotFoundDomainObject);
+                Assert.Equal(deleteIdParam, expectedNotFoundDomainObject.Id);
+            }
+        }
+
+        [Theory]
+        [InlineData(typeof(Domain.Country))]
+        [InlineData(typeof(Domain.Race))]
+        [InlineData(typeof(Domain.RaceData))]
+        [InlineData(typeof(Domain.RaceState))]
+        [InlineData(typeof(Domain.RaceType))]
+        [InlineData(typeof(Domain.Season))]
+        [InlineData(typeof(Domain.SeasonPlan))]
+        [InlineData(typeof(Domain.Sex))]
+        [InlineData(typeof(Domain.Skier))]
+        [InlineData(typeof(Domain.StartList))]
+        [InlineData(typeof(Domain.StartPosition))]
+        [InlineData(typeof(Domain.TimeMeasurement))]
+        [InlineData(typeof(Domain.Venue))]
+        public async Task DeleteByNotExistingIdTest(Type domainType)
+        {
+            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
+            var daoDeleteByIdMethod = this.GetAdoDaoMethodInfo(domainType, "DeleteByIdAsync");
+
+            int deleteIdParam = 50000;
+            var paramList = new object[] { deleteIdParam };
+            var success = (bool)await (dynamic)daoDeleteByIdMethod.Invoke(adoDaoInstance, paramList);
 
             Assert.False(success);
         }
