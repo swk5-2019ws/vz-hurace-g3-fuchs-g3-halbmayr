@@ -27,13 +27,17 @@ namespace Hurace.Core.Dal.AdoPersistence
         public async Task<T> CreateAsync(T newInstance)
         {
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateCreateQuery(newInstance);
-            int id = await template.ExecuteAsync(query, parameters);
+
+            await template.ExecuteAsync(query, parameters);
+
+            int id = await template.QuerySingleIntAsync(SqlQueryGenerator.GenerateGetLastIdentityQuery());
+
             return await this.GetByIdAsync(id);
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await template.QueryAsync(
+            return await template.QueryObjectSetAsync(
                 SqlQueryGenerator.GenerateGetAllQuery(),
                 RowMapper);
         }
@@ -41,7 +45,7 @@ namespace Hurace.Core.Dal.AdoPersistence
         public async Task<T> GetByIdAsync(int id)
         {
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateGetByIdQuery(id);
-            return await template.QuerySingleAsync(query, RowMapper, parameters);
+            return await template.QuerySingleObjectAsync(query, RowMapper, parameters);
         }
 
         public Task<bool> DeleteByIdAsync(int id)

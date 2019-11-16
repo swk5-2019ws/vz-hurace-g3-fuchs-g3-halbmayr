@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
 namespace Hurace.Core.Dal.AdoPersistence
 {
     internal class AdoTemplate
@@ -18,7 +19,7 @@ namespace Hurace.Core.Dal.AdoPersistence
             this.connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
-        public async Task<IEnumerable<T>> QueryAsync<T>(
+        public async Task<IEnumerable<T>> QueryObjectSetAsync<T>(
             string sqlQuery,
             RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
@@ -41,14 +42,30 @@ namespace Hurace.Core.Dal.AdoPersistence
             return resultItems;
         }
 
-        public async Task<T> QuerySingleAsync<T>(
+        public async Task<T> QuerySingleObjectAsync<T>(
             string sqlQuery,
             RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
         {
             return
-                (await this.QueryAsync(sqlQuery, rowMapper, queryParameters))
+                (await this.QueryObjectSetAsync(sqlQuery, rowMapper, queryParameters))
                 .SingleOrDefault();
+        }
+
+        public async Task<int> QuerySingleIntAsync(
+            string sqlQuery,
+            params QueryParameter[] queryParameters)
+        {
+            using var dbConnection = await connectionFactory.CreateConnectionAsync();
+            using var dbCommand = dbConnection.CreateCommand();
+
+            dbCommand.CommandText = sqlQuery;
+            dbCommand.AddParameters(queryParameters);
+
+            using var dbDataReader = await dbCommand.ExecuteReaderAsync();
+
+            await dbDataReader.ReadAsync();
+            return Convert.ToInt32(dbDataReader.GetValue(0));
         }
 
         public async Task<int> ExecuteAsync(

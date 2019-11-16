@@ -44,6 +44,11 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
+        public string GenerateGetLastIdentityQuery()
+        {
+            return $"SELECT IDENT_CURRENT('[Hurace].[{typeof(T).Name}]')";
+        }
+
         public Tuple<string, QueryParameter[]> GenerateCreateQuery(T entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));

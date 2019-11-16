@@ -11,6 +11,7 @@ using System.Transactions;
 using Xunit;
 
 #pragma warning disable CA1062 // Validate arguments of public methods
+#pragma warning disable CA5394 // Do not use insecure randomness
 namespace Hurace.Core.Tests
 {
     public class GenericDaoTests : IDisposable
@@ -131,7 +132,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition), 50000)]
         [InlineData(typeof(Domain.TimeMeasurement), 50000)]
         [InlineData(typeof(Domain.Venue), 50000)]
-        public async Task GetByNonExistingIdTest(Type domainType, int queryId)
+        public async Task GetByIdWithNonExistingId(Type domainType, int queryId)
         {
             (var adoDaoInstance, var getByIdMethod) = GetAdoDaoInstanceAndMethod(domainType, "GetByIdAsync");
 
@@ -139,10 +140,91 @@ namespace Hurace.Core.Tests
 
             var actualDomainObjectDynamic = await (dynamic)getByIdMethod.Invoke(adoDaoInstance, emptyParameterList);
             var actualDomainObject = (object)actualDomainObjectDynamic;
+
+            Assert.Null(actualDomainObject);
         }
 
-        // test get by id on non existing id
-        // test create with sql injection
+        [Theory]
+        [InlineData(typeof(Domain.Country))]
+        [InlineData(typeof(Domain.RaceState))]
+        [InlineData(typeof(Domain.RaceType))]
+        [InlineData(typeof(Domain.Season))]
+        [InlineData(typeof(Domain.Sex))]
+        [InlineData(typeof(Domain.Venue))]
+        public async Task CreateTest(Type domainType)
+        {
+            (var adoDaoInstance, var createAsyncMethod) = GetAdoDaoInstanceAndMethod(domainType, "CreateAsync");
+
+            var expectedDomainObject = domainType.GetConstructor(Array.Empty<Type>())
+                .Invoke(Array.Empty<object>());
+
+            Random rnd = new Random();
+            string defaultString = "test";
+            foreach (var currentProperty in domainType.GetProperties())
+            {
+                if (currentProperty.PropertyType == typeof(int))
+                {
+                    if (!currentProperty.Name.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        currentProperty.SetValue(expectedDomainObject, rnd.Next(int.MinValue, int.MaxValue));
+                    }
+                    else
+                    {
+                        currentProperty.SetValue(expectedDomainObject, 0);
+                    }
+                }
+                else if (currentProperty.PropertyType == typeof(string))
+                {
+                    currentProperty.SetValue(expectedDomainObject, defaultString);
+                }
+                else if (currentProperty.PropertyType == typeof(DateTime))
+                {
+                    currentProperty.SetValue(expectedDomainObject, DateTime.Now.Date);
+                }
+            }
+
+            var parameterList = new object[] { expectedDomainObject };
+
+            var actualDomainObjectDynamic = await (dynamic)createAsyncMethod.Invoke(adoDaoInstance, parameterList);
+            var actualDomainObject = (object)actualDomainObjectDynamic;
+
+            foreach (var currentProperty in domainType.GetProperties())
+            {
+                if (currentProperty.Name == "Id")
+                {
+                    Assert.NotEqual(0, (int)currentProperty.GetValue(actualDomainObject));
+                }
+                else
+                {
+                    Assert.Equal(
+                        currentProperty.GetValue(expectedDomainObject),
+                        currentProperty.GetValue(actualDomainObject));
+                }
+            }
+        }
+
+        [Fact]
+        public async Task CreateWithSqlInjectionTest()
+        {
+            var connectionFactory = new DefaultConnectionFactory();
+            var seasonDao = new GenericDao<Domain.Season>(connectionFactory);
+
+            var expectedDomainObject = new Domain.Season()
+            {
+                Name = "'DELETE FROM [Hurace].[Sex];--",
+                StartDate = DateTime.Now.AddDays(-365).Date,
+                EndDate = DateTime.Now.Date
+            };
+
+            var actualDomainObject = await seasonDao.CreateAsync(expectedDomainObject);
+
+            Assert.Equal(expectedDomainObject.Name, actualDomainObject.Name);
+            Assert.Equal(expectedDomainObject.StartDate, actualDomainObject.StartDate);
+            Assert.Equal(expectedDomainObject.EndDate, actualDomainObject.EndDate);
+
+            var sexDao = new GenericDao<Domain.Sex>(connectionFactory);
+            Assert.Equal(2, (await sexDao.GetAllAsync()).Count());
+        }
 
         #region Helper Methods
 
