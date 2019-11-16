@@ -226,6 +226,44 @@ namespace Hurace.Core.Tests
             Assert.Equal(2, (await sexDao.GetAllAsync()).Count());
         }
 
+        [Theory]
+        [InlineData(typeof(Domain.Country))]
+        [InlineData(typeof(Domain.Race))]
+        [InlineData(typeof(Domain.RaceData))]
+        [InlineData(typeof(Domain.RaceState))]
+        [InlineData(typeof(Domain.RaceType))]
+        [InlineData(typeof(Domain.Season))]
+        [InlineData(typeof(Domain.SeasonPlan))]
+        [InlineData(typeof(Domain.Sex))]
+        [InlineData(typeof(Domain.Skier))]
+        [InlineData(typeof(Domain.StartList))]
+        [InlineData(typeof(Domain.StartPosition))]
+        [InlineData(typeof(Domain.TimeMeasurement))]
+        [InlineData(typeof(Domain.Venue))]
+        public async Task UpdateExistingDomainObjects(Type domainType)
+        {
+
+        }
+
+        [Theory]
+        [InlineData(typeof(Domain.Country))]
+        [InlineData(typeof(Domain.Race))]
+        [InlineData(typeof(Domain.RaceData))]
+        [InlineData(typeof(Domain.RaceState))]
+        [InlineData(typeof(Domain.RaceType))]
+        [InlineData(typeof(Domain.Season))]
+        [InlineData(typeof(Domain.SeasonPlan))]
+        [InlineData(typeof(Domain.Sex))]
+        [InlineData(typeof(Domain.Skier))]
+        [InlineData(typeof(Domain.StartList))]
+        [InlineData(typeof(Domain.StartPosition))]
+        [InlineData(typeof(Domain.TimeMeasurement))]
+        [InlineData(typeof(Domain.Venue))]
+        public async Task UpdateNotExistentDomainObjects(Type domainType)
+        {
+
+        }
+
         #region Helper Methods
 
         private Tuple<object, MethodInfo> GetAdoDaoInstanceAndMethod(Type domainType, string methodName)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
+#pragma warning disable CA1054 // Uri parameters should not be strings
 namespace Hurace.Core.Tests.DbUtilityTests
 {
     public class SimpleSqlQueryGeneratorTests
@@ -25,6 +26,15 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(expectedQuery, generatedQuery);
 
             Assert.Equal(1, queryParameters[0].Value);
+        }
+
+        [Fact]
+        public void GenerateSimpleGetLastIndentQueryTest()
+        {
+            string expected = "SELECT IDENT_CURRENT('[Hurace].[Skier]')";
+            string actual = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>().GenerateGetLastIdentityQuery();
+
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -91,9 +101,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
 
         [Theory]
         [MemberData(nameof(GetInsertSkiers))]
-#pragma warning disable CA1054 // Uri parameters should not be strings
         public void TestSkierQuerys(string fn, string ln, DateTime dob, string url, int countryId, int SexId, int id)
-#pragma warning restore CA1054 // Uri parameters should not be strings
         {
             string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId]) OUTPUT Inserted.ID VALUES " +
                 "(@FirstName, @LastName, @DateOfBirth, @ImageUrl, @CountryId, @SexId)";

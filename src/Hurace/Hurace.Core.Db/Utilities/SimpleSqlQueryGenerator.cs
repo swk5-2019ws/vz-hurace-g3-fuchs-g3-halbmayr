@@ -44,33 +44,28 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
-        public string GenerateGetLastIdentityQuery()
+        public Tuple<string, QueryParameter[]> GenerateCreateQuery(T newDomainObjct)
         {
-            return $"SELECT IDENT_CURRENT('[Hurace].[{typeof(T).Name}]')";
-        }
-
-        public Tuple<string, QueryParameter[]> GenerateCreateQuery(T entity)
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            if (newDomainObjct == null) throw new ArgumentNullException(nameof(newDomainObjct));
 
             var sb = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
-            sb.Append($"INSERT INTO [Hurace].[{entity.GetType().Name}] (");
+            sb.Append($"INSERT INTO [Hurace].[{newDomainObjct.GetType().Name}] (");
 
             AppendDbColumnNames(sb, (m) => m.Name == "Id");
 
             sb.Append($") OUTPUT Inserted.ID VALUES (");
 
             bool firstValue = true;
-            foreach (var currentProperty in entity.GetType().GetProperties())
+            foreach (var currentProperty in newDomainObjct.GetType().GetProperties())
             {
                 if (currentProperty.Name != "Id")
                 {
                     sb.Append($"{(firstValue ? "" : ", ")}@{currentProperty.Name}");
 
                     queryParameters.Add(
-                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(entity)));
+                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(newDomainObjct)));
 
                     firstValue = false;
                 }
@@ -80,24 +75,24 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
-        public Tuple<string, QueryParameter[]> GenerateUpdateQuery(T entity)
+        public Tuple<string, QueryParameter[]> GenerateUpdateQuery(T updatedDomainObject)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            if (entity.Id < 0) throw new ArgumentOutOfRangeException(nameof(entity));
+            if (updatedDomainObject == null) throw new ArgumentNullException(nameof(updatedDomainObject));
+            if (updatedDomainObject.Id < 0) throw new ArgumentOutOfRangeException(nameof(updatedDomainObject));
 
             var sb = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
             sb.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
             bool firstValue = true;
-            foreach (var currentProperty in entity.GetType().GetProperties())
+            foreach (var currentProperty in updatedDomainObject.GetType().GetProperties())
             {
                 if (currentProperty.Name != "Id")
                 {
                     sb.Append($"{(firstValue ? "" : ",")} [{currentProperty.Name}] = @{currentProperty.Name}");
 
                     queryParameters.Add(
-                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(entity)));
+                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(updatedDomainObject)));
 
                     firstValue = false;
                 }
@@ -105,7 +100,7 @@ namespace Hurace.Core.Db.Utilities
             sb.Append($" WHERE [Id] = @Id");
 
             queryParameters.Add(
-                        new QueryParameter("Id", entity.Id));
+                        new QueryParameter("Id", updatedDomainObject.Id));
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
@@ -123,6 +118,11 @@ namespace Hurace.Core.Db.Utilities
                         new QueryParameter("Id", id));
 
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
+        }
+
+        public string GenerateGetLastIdentityQuery()
+        {
+            return $"SELECT IDENT_CURRENT('[Hurace].[{typeof(T).Name}]')";
         }
 
         private void AppendDbColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)

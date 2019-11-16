@@ -53,9 +53,11 @@ namespace Hurace.Core.Dal.AdoPersistence
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAsync(T updatedInstance)
+        public async Task<bool> UpdateAsync(T updatedInstance)
         {
-            throw new NotImplementedException();
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedInstance);
+            int affectedRows = await template.ExecuteAsync(query, parameters);
+            return affectedRows == 1;
         }
     }
 }
