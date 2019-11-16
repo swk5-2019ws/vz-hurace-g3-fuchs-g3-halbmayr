@@ -90,8 +90,10 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
 
-        public static IEnumerable<object[]> GetInsertSkiers {
-            get {
+        public static IEnumerable<object[]> GetInsertSkiers
+        {
+            get
+            {
                 yield return new object[] { "Viktoria", "Rebensburg", new DateTime(1989, 10, 04), "https://nicetestimage", 0, 0, 0 };
                 yield return new object[] { "Tessa", "Worley", new DateTime(1989, 10, 04), "https://nicetestimage", 1, 1, 0 };
             }
