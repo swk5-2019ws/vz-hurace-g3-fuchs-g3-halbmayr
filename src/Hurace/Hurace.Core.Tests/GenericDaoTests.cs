@@ -58,7 +58,7 @@ namespace Hurace.Core.Tests
         [Theory]
         [InlineData(typeof(Domain.Country), 52)]
         [InlineData(typeof(Domain.Race), 37)]
-        [InlineData(typeof(Domain.RaceData), 3707)]
+        [InlineData(typeof(Domain.RaceData), 3710)]
         [InlineData(typeof(Domain.RaceState), 5)]
         [InlineData(typeof(Domain.RaceType), 2)]
         [InlineData(typeof(Domain.Season), 2)]
@@ -66,8 +66,8 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Sex), 2)]
         [InlineData(typeof(Domain.Skier), 521)]
         [InlineData(typeof(Domain.StartList), 74)]
-        [InlineData(typeof(Domain.StartPosition), 3707)]
-        [InlineData(typeof(Domain.TimeMeasurement), 19312)]
+        [InlineData(typeof(Domain.StartPosition), 3710)]
+        [InlineData(typeof(Domain.TimeMeasurement), 18745)]
         [InlineData(typeof(Domain.Venue), 31)]
         public async Task GetAllTest(Type domainType, int expectedResultCount)
         {
@@ -276,7 +276,7 @@ namespace Hurace.Core.Tests
 
         [Theory]
         [InlineData(typeof(Domain.Country), false)]
-        [InlineData(typeof(Domain.Race), false)]
+        [InlineData(typeof(Domain.Race), true)]
         [InlineData(typeof(Domain.RaceData), false)]
         [InlineData(typeof(Domain.RaceState), false)]
         [InlineData(typeof(Domain.RaceType), false)]
@@ -402,11 +402,10 @@ namespace Hurace.Core.Tests
                         RaceTypeId = 1,
                         FirstStartListId = 26,
                         SecondStartListId = 27,
-                        NumberOfSensors = 4,
-                        Description = "Sondre Norheim was the champion of the first downhill skiing competition, " +
-                                      "reportedly held in Oslo, Norway in 1868. Two to three decades later, the " +
-                                      "sport spread to the rest of Europe and the U.S. The first slalom ski competition " +
-                                      "occurred in Mürren, Switzerland in 1922.",
+                        NumberOfSensors = 6,
+                        Description = "Norwegian legend Sondre Norheim first began the trend " +
+                                      "of skis with curved sides, bindings with stiff heel bands " +
+                                      "made of willow, and the slalom turn style.",
                         VenueId = 12,
                         Date = new DateTime(2017, 12, 28)
                     };
@@ -416,8 +415,8 @@ namespace Hurace.Core.Tests
                     {
                         Id = 311,
                         StartListId = 6,
-                        SkierId = 416,
-                        RaceStateId = 0
+                        SkierId = 164,
+                        RaceStateId = 1
                     };
                     return testObject;
                 case nameof(Domain.RaceState):
@@ -481,18 +480,18 @@ namespace Hurace.Core.Tests
                     testObject = new Domain.StartPosition()
                     {
                         Id = 53,
-                        SkierId = 197,
-                        StartListId = 1,
-                        Position = 9
+                        SkierId = 0,
+                        StartListId = 0,
+                        Position = 54
                     };
                     return testObject;
                 case nameof(Domain.TimeMeasurement):
                     testObject = new Domain.TimeMeasurement()
                     {
                         Id = 226,
-                        SensorId = 4,
-                        Measurement = 149000,
-                        RaceDataId = 37
+                        SensorId = 1,
+                        Measurement = 59000,
+                        RaceDataId = 45
                     };
                     return testObject;
                 case nameof(Domain.Venue):
@@ -517,13 +516,10 @@ namespace Hurace.Core.Tests
                 {
                     currentProperty.SetValue(domainObject, rnd.Next(0, 2) == 1);
                 }
-                else if (currentProperty.PropertyType == typeof(int))
+                else if (currentProperty.PropertyType == typeof(int)
+                    && !currentProperty.Name.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (currentProperty.Name.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        currentProperty.SetValue(domainObject, 0);
-                    }
-                    else if (currentProperty.Name == "NumberOfSensors")
+                    if (currentProperty.Name == "NumberOfSensors")
                     {
                         currentProperty.SetValue(domainObject, rnd.Next(1, int.MaxValue));
                     }
