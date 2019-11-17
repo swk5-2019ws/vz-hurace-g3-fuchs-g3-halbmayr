@@ -4,8 +4,6 @@
 CREATE SCHEMA [Hurace];
 GO
 
--- ****************** SqlDBM: Microsoft SQL Server ******************
--- ******************************************************************
 
 -- ************************************** [Hurace].[StartList]
 
@@ -224,6 +222,30 @@ GO
 
 
 
+-- ************************************** [Hurace].[RaceData]
+
+CREATE TABLE [Hurace].[RaceData]
+(
+ [Id]          int IDENTITY (1, 1) NOT NULL ,
+ [StartListId] int NOT NULL ,
+ [SkierId]     int NOT NULL ,
+ [RaceStateId] int NOT NULL ,
+
+
+ CONSTRAINT [RaceData_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
+ CONSTRAINT [RaceData_RaceState_fk] FOREIGN KEY ([RaceStateId])  REFERENCES [Hurace].[RaceState]([Id]),
+ CONSTRAINT [RaceData_Skier_fk] FOREIGN KEY ([SkierId])  REFERENCES [Hurace].[Skier]([Id]),
+ CONSTRAINT [RaceData_StartList_fk] FOREIGN KEY ([StartListId])  REFERENCES [Hurace].[StartList]([Id])
+);
+GO
+
+
+
+
+
+
+
+
 -- ************************************** [Hurace].[Race]
 
 CREATE TABLE [Hurace].[Race]
@@ -256,32 +278,6 @@ GO
 
 
 
--- ************************************** [Hurace].[RaceData]
-
-CREATE TABLE [Hurace].[RaceData]
-(
- [RaceId]      int NOT NULL ,
- [Id]          int IDENTITY (1, 1) NOT NULL ,
- [StartListId] int NOT NULL ,
- [SkierId]     int NOT NULL ,
- [RaceStateId] int NOT NULL ,
-
-
- CONSTRAINT [RaceData_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
- CONSTRAINT [RaceData_Race_fk] FOREIGN KEY ([RaceId])  REFERENCES [Hurace].[Race]([Id]),
- CONSTRAINT [RaceData_RaceState_fk] FOREIGN KEY ([RaceStateId])  REFERENCES [Hurace].[RaceState]([Id]),
- CONSTRAINT [RaceData_Skier_fk] FOREIGN KEY ([SkierId])  REFERENCES [Hurace].[Skier]([Id]),
- CONSTRAINT [RaceData_StartList_fk] FOREIGN KEY ([StartListId])  REFERENCES [Hurace].[StartList]([Id])
-);
-GO
-
-
-
-
-
-
-
-
 -- ************************************** [Hurace].[TimeMeasurement]
 
 CREATE TABLE [Hurace].[TimeMeasurement]
@@ -297,5 +293,12 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
+
+
+
+
+
+
+
 
 
