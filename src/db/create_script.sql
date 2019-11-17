@@ -161,7 +161,7 @@ CREATE TABLE [Hurace].[Skier]
  [CountryId]   int NOT NULL ,
  [SexId]       int NOT NULL ,
  [ImageUrl]    varchar(500) NOT NULL ,
- [removed]     bit NOT NULL ,
+ [IsRemoved]   bit NOT NULL ,
 
 
  CONSTRAINT [Skier_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
