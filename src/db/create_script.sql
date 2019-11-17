@@ -161,6 +161,7 @@ CREATE TABLE [Hurace].[Skier]
  [CountryId]   int NOT NULL ,
  [SexId]       int NOT NULL ,
  [ImageUrl]    varchar(500) NOT NULL ,
+ [removed]     bit NOT NULL ,
 
 
  CONSTRAINT [Skier_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
@@ -296,27 +297,5 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  CONSTRAINT [TimeMeasurement_sensorid_gt_or_eq_zero] CHECK ( [SensorId] >= 0 )
 );
 GO
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
