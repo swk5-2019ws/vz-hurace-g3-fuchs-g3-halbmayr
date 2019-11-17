@@ -58,16 +58,16 @@ namespace Hurace.Core.Tests
         [Theory]
         [InlineData(typeof(Domain.Country), 52)]
         [InlineData(typeof(Domain.Race), 37)]
-        [InlineData(typeof(Domain.RaceData), 3700)]
-        [InlineData(typeof(Domain.RaceState), 4)]
+        [InlineData(typeof(Domain.RaceData), 3707)]
+        [InlineData(typeof(Domain.RaceState), 5)]
         [InlineData(typeof(Domain.RaceType), 2)]
         [InlineData(typeof(Domain.Season), 2)]
         [InlineData(typeof(Domain.SeasonPlan), 62)]
         [InlineData(typeof(Domain.Sex), 2)]
         [InlineData(typeof(Domain.Skier), 521)]
         [InlineData(typeof(Domain.StartList), 74)]
-        [InlineData(typeof(Domain.StartPosition), 3700)]
-        [InlineData(typeof(Domain.TimeMeasurement), 18416)]
+        [InlineData(typeof(Domain.StartPosition), 3707)]
+        [InlineData(typeof(Domain.TimeMeasurement), 19312)]
         [InlineData(typeof(Domain.Venue), 31)]
         public async Task GetAllTest(Type domainType, int expectedResultCount)
         {
@@ -402,11 +402,11 @@ namespace Hurace.Core.Tests
                         RaceTypeId = 1,
                         FirstStartListId = 26,
                         SecondStartListId = 27,
-                        NumberOfSensors = 6,
-                        Description = "Skiing was an integral part of transportation in colder countries " +
-                                      "for thousands of years. In the late 19th century skiing converted " +
-                                      "from a method of transportation to a competitive and recreational " +
-                                      "sport.",
+                        NumberOfSensors = 4,
+                        Description = "Sondre Norheim was the champion of the first downhill skiing competition, " +
+                                      "reportedly held in Oslo, Norway in 1868. Two to three decades later, the " +
+                                      "sport spread to the rest of Europe and the U.S. The first slalom ski competition " +
+                                      "occurred in Mürren, Switzerland in 1922.",
                         VenueId = 12,
                         Date = new DateTime(2017, 12, 28)
                     };
@@ -416,7 +416,7 @@ namespace Hurace.Core.Tests
                     {
                         Id = 311,
                         StartListId = 6,
-                        SkierId = 108,
+                        SkierId = 416,
                         RaceStateId = 0
                     };
                     return testObject;
@@ -467,7 +467,8 @@ namespace Hurace.Core.Tests
                         DateOfBirth = new DateTime(1989, 3, 2),
                         CountryId = 3,
                         SexId = 1,
-                        ImageUrl = "https://data.fis-ski.com/general/load-competitor-picture/106332.html"
+                        ImageUrl = "https://data.fis-ski.com/general/load-competitor-picture/106332.html",
+                        IsRemoved = false
                     };
                     return testObject;
                 case nameof(Domain.StartList):
@@ -480,18 +481,18 @@ namespace Hurace.Core.Tests
                     testObject = new Domain.StartPosition()
                     {
                         Id = 53,
-                        SkierId = 253,
+                        SkierId = 197,
                         StartListId = 1,
-                        Position = 4
+                        Position = 9
                     };
                     return testObject;
                 case nameof(Domain.TimeMeasurement):
                     testObject = new Domain.TimeMeasurement()
                     {
                         Id = 226,
-                        SensorId = 1,
-                        Measurement = 61000,
-                        RaceDataId = 45
+                        SensorId = 4,
+                        Measurement = 149000,
+                        RaceDataId = 37
                     };
                     return testObject;
                 case nameof(Domain.Venue):
@@ -512,7 +513,11 @@ namespace Hurace.Core.Tests
             string defaultString = "test";
             foreach (var currentProperty in domainObject.GetType().GetProperties())
             {
-                if (currentProperty.PropertyType == typeof(int))
+                if (currentProperty.PropertyType == typeof(bool))
+                {
+                    currentProperty.SetValue(domainObject, rnd.Next(0, 2) == 1);
+                }
+                else if (currentProperty.PropertyType == typeof(int))
                 {
                     if (currentProperty.Name.EndsWith("Id", StringComparison.InvariantCultureIgnoreCase))
                     {

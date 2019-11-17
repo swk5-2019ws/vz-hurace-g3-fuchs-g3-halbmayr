@@ -8,7 +8,11 @@
         internal QueryParameter(string name, object value)
         {
             this.ParameterName = name;
-            this.Value = value;
+
+            if (value.GetType() == typeof(bool))
+                this.Value = (bool)value ? "TRUE" : "FALSE";
+            else
+                this.Value = value;
         }
     }
 }

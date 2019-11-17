@@ -61,6 +61,11 @@ namespace InsertScriptGenerator.Core
                 Id = raceStates.Count,
                 Label = "Laufend"
             });
+            raceStates.Add(new RaceState()
+            {
+                Id = raceStates.Count,
+                Label = "Startbereit"
+            });
 
             foreach (var currentSkier in skiersJson)
             {
@@ -249,7 +254,6 @@ namespace InsertScriptGenerator.Core
                 raceDataList.Add(new RaceData()
                 {
                     Id = nextRaceDataId,
-                    RaceId = currentRaceId,
                     StartListId = currentStartPosition.StartListId,
                     SkierId = currentStartPosition.SkierId,
                     RaceStateId = raceStateId
@@ -281,7 +285,7 @@ namespace InsertScriptGenerator.Core
             AddToInsertScript(raceDataList);
             AddToInsertScript(timeMeasurements);
 
-            using (var streamWriter = new StreamWriter("..\\..\\..\\..\\..\\db\\insert_script.sql"))
+            using (var streamWriter = new StreamWriter("..\\..\\..\\..\\..\\db\\insert_script2.sql"))
             {
                 foreach (var line in insertScript)
                 {
