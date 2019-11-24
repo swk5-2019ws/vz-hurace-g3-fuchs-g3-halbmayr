@@ -42,7 +42,7 @@ namespace Hurace.Core.Dal.AdoPersistence
             return resultItems;
         }
 
-        public async Task<T> QuerySingleObjectAsync<T>(
+        public async Task<T> QuerySingleInt32Async<T>(
             string sqlQuery,
             RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()

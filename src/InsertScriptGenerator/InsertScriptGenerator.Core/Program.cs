@@ -9,6 +9,7 @@ namespace InsertScriptGenerator.Core
 {
     class Program
     {
+        private static string insertScriptPath = "..\\..\\..\\..\\..\\db\\insert_script.sql";
         private static List<string> insertScript = new List<string>();
 
         static void Main()
@@ -70,7 +71,7 @@ namespace InsertScriptGenerator.Core
             foreach (var currentSkier in skiersJson)
             {
                 var currentCountryLabel = currentSkier.Value<string>("country");
-                if (countries.FirstOrDefault(c => c.Name == currentCountryLabel) == null)
+                if (countries.Any(c => c.Name == currentCountryLabel))
                 {
                     countries.Add(new Country()
                     {
@@ -86,7 +87,7 @@ namespace InsertScriptGenerator.Core
                 var currentCountryLabel = currentPlace.Value<string>("country");
 
                 var currentVenueLabel = currentPlace.Value<string>("place");
-                if (venues.FirstOrDefault(v => v.Name == currentVenueLabel) == null)
+                if (venues.Any(v => v.Name == currentVenueLabel))
                 {
                     venues.Add(new Venue()
                     {
@@ -266,7 +267,10 @@ namespace InsertScriptGenerator.Core
                         Id = timeMeasurements.Count,
                         RaceDataId = nextRaceDataId,
                         SensorId = sensorId,
-                        Measurement = Enumerable.Range(0, sensorId + 1).ToList().Select(i => random.Next(25,36)).Sum() * 1000
+                        Measurement = Enumerable.Range(0, sensorId + 1)
+                            .ToList()
+                            .Select(i => random.Next(25,36))
+                            .Sum() * 1000
                     });
                 }
             }
@@ -285,7 +289,7 @@ namespace InsertScriptGenerator.Core
             AddToInsertScript(raceDataList);
             AddToInsertScript(timeMeasurements);
 
-            using (var streamWriter = new StreamWriter("..\\..\\..\\..\\..\\db\\insert_script2.sql"))
+            using (var streamWriter = new StreamWriter(insertScriptPath))
             {
                 foreach (var line in insertScript)
                 {
