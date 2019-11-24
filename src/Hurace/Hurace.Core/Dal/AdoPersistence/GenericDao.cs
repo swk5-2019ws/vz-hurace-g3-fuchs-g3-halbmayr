@@ -28,10 +28,15 @@ namespace Hurace.Core.Dal.AdoPersistence
         public async Task<T> CreateAsync(T newInstance)
         {
             (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateCreateQuery(newInstance);
-            await template.ExecuteAsync(createQuery, parameters);
+            int affectedRowCount = await template.ExecuteAsync(createQuery, parameters);
+
+            if (affectedRowCount != 1)
+            {
+                throw new InvalidOperationException($"The INSERT Query affected {affectedRowCount} rows -> should only affect 1");
+            }
 
             string getLastGivenIdentityQuery = SqlQueryGenerator.GenerateGetLastIdentityQuery();
-            int id = await template.QuerySingleIntAsync(getLastGivenIdentityQuery);
+            int id = await template.QuerySingleInt32Async(getLastGivenIdentityQuery);
 
             return await this.GetByIdAsync(id);
         }
