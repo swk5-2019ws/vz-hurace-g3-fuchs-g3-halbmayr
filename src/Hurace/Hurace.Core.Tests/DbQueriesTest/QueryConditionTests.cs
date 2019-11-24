@@ -9,7 +9,77 @@ namespace Hurace.Core.Tests.DbQueriesTest
 {
     public class IQueryConditionTests
     {
-        //TODO test with invalid parameters
+        [Fact]
+        public void QueryConditionBuildWithInvalidStringBuilder()
+        {
+            var condition = new QueryCondition()
+            {
+                ColumnToCheck = "Id",
+                CompareValue = 1,
+                ConditionType = QueryCondition.Type.Equals
+            };
+
+            Assert.Throws<ArgumentNullException>(() => condition.Build(null));
+        }
+
+        [Fact]
+        public void QueryConditionCombinationBuildWithInvalidStringBuilder()
+        {
+            var condition = new QueryConditionCombination()
+            {
+                CombinationType = QueryConditionCombination.Type.AND,
+                FirstCondition = new QueryCondition()
+                {
+                    ColumnToCheck = "FirstName",
+                    CompareValue = "Marcel",
+                    ConditionType = QueryCondition.Type.Equals
+                },
+                SecondCondition = new QueryCondition()
+                {
+                    ColumnToCheck = "LastName",
+                    CompareValue = "Hirscher",
+                    ConditionType = QueryCondition.Type.Equals
+                }
+            };
+
+            Assert.Throws<ArgumentNullException>(() => condition.Build(null));
+        }
+
+        [Fact]
+        public void QueryConditionCombinationWithInvalidFirstCondition()
+        {
+            var condition = new QueryConditionCombination()
+            {
+                CombinationType = QueryConditionCombination.Type.AND,
+                FirstCondition = null,
+                SecondCondition = new QueryCondition()
+                {
+                    ColumnToCheck = "LastName",
+                    CompareValue = "Hirscher",
+                    ConditionType = QueryCondition.Type.Equals
+                }
+            };
+
+            Assert.Throws<InvalidOperationException>(() => condition.Build(new StringBuilder()));
+        }
+
+        [Fact]
+        public void QueryConditionCombinationWithInvalidSecondCondition()
+        {
+            var condition = new QueryConditionCombination()
+            {
+                CombinationType = QueryConditionCombination.Type.AND,
+                FirstCondition = new QueryCondition()
+                {
+                    ColumnToCheck = "FirstName",
+                    CompareValue = "Marcel",
+                    ConditionType = QueryCondition.Type.Equals
+                },
+                SecondCondition = null
+            };
+
+            Assert.Throws<InvalidOperationException>(() => condition.Build(new StringBuilder()));
+        }
 
         [Theory]
         [InlineData("Name", QueryCondition.Type.Equals, "Marcel", "[Name] = 'Marcel'")]
