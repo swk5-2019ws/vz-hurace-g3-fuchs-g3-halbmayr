@@ -79,7 +79,7 @@ namespace InsertScriptGenerator.Core
             foreach (var currentSkier in skiersJson)
             {
                 var currentCountryLabel = currentSkier.Value<string>("country");
-                if (countries.Any(c => c.Name == currentCountryLabel))
+                if (!countries.Any(c => c.Name == currentCountryLabel))
                 {
                     countries.Add(new Country()
                     {
@@ -95,7 +95,7 @@ namespace InsertScriptGenerator.Core
                 var currentCountryLabel = currentPlace.Value<string>("country");
 
                 var currentVenueLabel = currentPlace.Value<string>("place");
-                if (venues.Any(v => v.Name == currentVenueLabel))
+                if (!venues.Any(v => v.Name == currentVenueLabel))
                 {
                     venues.Add(new Venue()
                     {
@@ -117,7 +117,7 @@ namespace InsertScriptGenerator.Core
                 {
                     int nextRaceId = races.Count;
 
-                    if (raceTypes.Any(rt => rt.Label == currentRaceType))
+                    if (!raceTypes.Any(rt => rt.Label == currentRaceType))
                     {
                         raceTypes.Add(new RaceType()
                         {
@@ -162,7 +162,7 @@ namespace InsertScriptGenerator.Core
                 else if (currentSexLabel == "Male")
                     currentSexLabel = "Männlich";
                 
-                if (sexes.FirstOrDefault(s => s.Label == currentSexLabel) == null)
+                if (!sexes.Any(s => s.Label == currentSexLabel))
                 {
                     sexes.Add(new Sex()
                     {
