@@ -22,4 +22,4 @@ jobs:
       run: dotnet build --configuration Release src/Hurace/Hurace.sln
 
     - name: Execute unit tests
-      run: dotnet test --filter ClassName=Hurace.Core.Tests.GenericDaoTests src/Hurace/Hurace.sln
+      run: dotnet test --filter DisplayName!~GenericDaoTests src/Hurace/Hurace.sln
