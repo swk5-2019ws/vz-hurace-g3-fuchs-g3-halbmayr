@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -22,7 +22,4 @@ jobs:
       run: dotnet build --configuration Release src/Hurace/Hurace.sln
 
     - name: Execute unit tests
-      inputs:
-        command: test
-        projects: '**/*Tests/*.csproj'
-        arguments: '--configuration $(buildConfiguration)'
+      run: dotnet test src/Hurace/Hurace.sln
