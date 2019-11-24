@@ -57,6 +57,26 @@ namespace Hurace.Core.Tests
 
         #endregion
 
+        [Fact]
+        public void InitializeNewDaoWithInvalidConnectionFactoryTest()
+        {
+            Assert.Throws<ArgumentNullException>(() => new GenericDao<Domain.Skier>(null));
+        }
+
+        [Fact]
+        public void CreateWithInvalidNewObject()
+        {
+            var skierDao = new GenericDao<Domain.Skier>(new DefaultConnectionFactory());
+            Assert.ThrowsAsync<ArgumentNullException>(() => skierDao.CreateAsync(null));
+        }
+
+        [Fact]
+        public void UpdateWithInvalidNewObject()
+        {
+            var skierDao = new GenericDao<Domain.Skier>(new DefaultConnectionFactory());
+            Assert.ThrowsAsync<ArgumentNullException>(() => skierDao.UpdateAsync(null));
+        }
+
         [Theory]
         [InlineData(typeof(Domain.Country), 52)]
         [InlineData(typeof(Domain.Race), 37)]
@@ -71,7 +91,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition), 3710)]
         [InlineData(typeof(Domain.TimeMeasurement), 18745)]
         [InlineData(typeof(Domain.Venue), 31)]
-        public async Task GetAllUnconditionalTest(Type domainType, int expectedResultCount)
+        public async Task GetAllUnconditionalTests(Type domainType, int expectedResultCount)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
             var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
@@ -106,7 +126,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition))]
         [InlineData(typeof(Domain.TimeMeasurement))]
         [InlineData(typeof(Domain.Venue))]
-        public async Task GetAllConditionalTest(Type domainType)
+        public async Task GetAllConditionalTests(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
             var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
@@ -145,7 +165,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition))]
         [InlineData(typeof(Domain.TimeMeasurement))]
         [InlineData(typeof(Domain.Venue))]
-        public async Task GetByIdTest(Type domainType)
+        public async Task GetByIdTests(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
             var daoGetByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
@@ -197,7 +217,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Season))]
         [InlineData(typeof(Domain.Sex))]
         [InlineData(typeof(Domain.Venue))]
-        public async Task CreateTest(Type domainType)
+        public async Task CreateTests(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
             var daoCreateMethod = this.GetAdoDaoMethodInfo(domainType, "CreateAsync");
@@ -262,7 +282,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition))]
         [InlineData(typeof(Domain.TimeMeasurement))]
         [InlineData(typeof(Domain.Venue))]
-        public async Task UpdateExistingDomainObjects(Type domainType)
+        public async Task UpdateExistingDomainObjectTests(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
             var daoUpdateMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
@@ -301,7 +321,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition))]
         [InlineData(typeof(Domain.TimeMeasurement))]
         [InlineData(typeof(Domain.Venue))]
-        public async Task UpdateNotExistentDomainObjects(Type domainType)
+        public async Task UpdateNotExistentDomainObjectTests(Type domainType)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
             var daoUpdateMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
@@ -329,7 +349,7 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition), true)]
         [InlineData(typeof(Domain.TimeMeasurement), true)]
         [InlineData(typeof(Domain.Venue), false)]
-        public async Task DeleteByIdExistingIdTest(Type domainType, bool expectedSuccess)
+        public async Task DeleteByIdExistingIdTests(Type domainType, bool expectedSuccess)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
             var daoDeleteByIdMethod = this.GetAdoDaoMethodInfo(domainType, "DeleteByIdAsync");
@@ -353,20 +373,6 @@ namespace Hurace.Core.Tests
             {
                 Assert.NotNull(expectedNotFoundDomainObject);
                 Assert.Equal(deleteIdParam, expectedNotFoundDomainObject.Id);
-            }
-        }
-
-        [Fact]
-        public void GenerateDaoWithInvalidConnectionFactory()
-        {
-            try
-            {
-                var skierDao = new GenericDao<Domain.Skier>(null);
-                Assert.False(true);
-            }
-            catch (ArgumentNullException)
-            {
-                Assert.True(true);
             }
         }
 

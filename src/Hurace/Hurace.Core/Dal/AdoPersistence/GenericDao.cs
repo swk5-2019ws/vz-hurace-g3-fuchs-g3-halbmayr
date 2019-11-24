@@ -20,6 +20,11 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public GenericDao(IConnectionFactory connectionFactory)
         {
+            if (connectionFactory is null)
+            {
+                throw new ArgumentNullException(nameof(connectionFactory));
+            }
+
             template = new AdoTemplate(connectionFactory);
 
             RowMapper = new RowMapper<T>();
@@ -28,6 +33,11 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<T> CreateAsync(T newInstance)
         {
+            if (newInstance is null)
+            {
+                throw new ArgumentNullException(nameof(newInstance));
+            }
+
             (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateCreateQuery(newInstance);
             await template.ExecuteAsync(createQuery, parameters);
 
@@ -52,6 +62,11 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<bool> UpdateAsync(T updatedInstance)
         {
+            if (updatedInstance is null)
+            {
+                throw new ArgumentNullException(nameof(updatedInstance));
+            }
+
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedInstance);
             int affectedRows = await template.ExecuteAsync(query, parameters);
             return affectedRows == 1;
