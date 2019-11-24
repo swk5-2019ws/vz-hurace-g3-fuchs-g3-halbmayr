@@ -1,4 +1,4 @@
-name: .NET Core
+name: Build and test solution
 
 on:
   pull_request:
@@ -12,9 +12,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.101
+
     - name: Build with dotnet
       run: dotnet build --configuration Release src/Hurace/Hurace.sln
+
+    - name: Execute unit tests
+      inputs:
+        command: test
+        projects: '**/*Tests/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
