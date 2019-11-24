@@ -117,7 +117,7 @@ namespace InsertScriptGenerator.Core
                 {
                     int nextRaceId = races.Count;
 
-                    if (raceTypes.FirstOrDefault(rt => rt.Label == currentRaceType) == null)
+                    if (raceTypes.Any(rt => rt.Label == currentRaceType))
                     {
                         raceTypes.Add(new RaceType()
                         {
