@@ -16,7 +16,7 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append("SELECT ");
 
-            AppendDbColumnNames(sb);
+            AppendPropertiesAsColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
@@ -32,7 +32,7 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append("SELECT ");
 
-            AppendDbColumnNames(sb);
+            AppendPropertiesAsColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
@@ -53,7 +53,7 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append($"INSERT INTO [Hurace].[{newDomainObjct.GetType().Name}] (");
 
-            AppendDbColumnNames(sb, (m) => m.Name == "Id");
+            AppendPropertiesAsColumnNames(sb, (m) => m.Name == "Id");
 
             sb.Append($") OUTPUT Inserted.ID VALUES (");
 
@@ -125,7 +125,7 @@ namespace Hurace.Core.Db.Utilities
             return $"SELECT IDENT_CURRENT('[Hurace].[{typeof(T).Name}]')";
         }
 
-        private void AppendDbColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
+        private void AppendPropertiesAsColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
         {
             bool firstProperty = true;
             foreach (var currentProperty in typeof(T).GetProperties())

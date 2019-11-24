@@ -38,8 +38,6 @@ namespace Hurace.Core.Db.Connection
             return ProviderName switch
             {
                 "Microsoft.Data.SqlClient" => Microsoft.Data.SqlClient.SqlClientFactory.Instance,
-                //case "MySql.Data.MySqlClient":
-                //    return MySql.Data.MySqlClient.MySqlClientFactory.Instance;
                 _ => throw new ArgumentOutOfRangeException($"Invalid {nameof(ProviderName)} \"{ProviderName}\""),
             };
         }
