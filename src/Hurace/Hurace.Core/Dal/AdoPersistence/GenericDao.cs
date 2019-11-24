@@ -1,5 +1,6 @@
 ﻿using Hurace.Core.Db;
 using Hurace.Core.Db.Connection;
+using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
 using Hurace.Domain;
 using Microsoft.Data.SqlClient;

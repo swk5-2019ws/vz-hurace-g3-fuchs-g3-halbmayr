@@ -1,5 +1,5 @@
 ﻿#pragma warning disable IDE0045 // Convert to conditional expression
-namespace Hurace.Core.Db
+namespace Hurace.Core.Db.Queries
 {
     public class QueryParameter
     {

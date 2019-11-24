@@ -1,4 +1,5 @@
-﻿using Hurace.Domain;
+﻿using Hurace.Core.Db.Queries;
+using Hurace.Domain;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -42,6 +43,11 @@ namespace Hurace.Core.Db.Utilities
                 new QueryParameter("Id", id));
 
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
+        }
+
+        public Tuple<string, QueryParameter[]> GenerateConditionalQuery(IEnumerable<QueryCondition> queryConditions)
+        {
+            return null;
         }
 
         public Tuple<string, QueryParameter[]> GenerateCreateQuery(T newDomainObjct)
