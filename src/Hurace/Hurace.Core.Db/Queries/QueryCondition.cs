@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+#pragma warning disable IDE0046 // Convert to conditional expression
 namespace Hurace.Core.Db.Queries
 {
     public class QueryCondition : IQueryCondition
@@ -10,8 +11,8 @@ namespace Hurace.Core.Db.Queries
         {
             Equals,
             NotEquals,
-            LowerThan,
-            LowerThanOrEquals,
+            LessThan,
+            LessThanOrEquals,
             GreaterThan,
             GreaterThanOrEquals,
             Like
@@ -47,10 +48,10 @@ namespace Hurace.Core.Db.Queries
                 case Type.Like:
                     queryBuilder.Append("LIKE");
                     break;
-                case Type.LowerThan:
+                case Type.LessThan:
                     queryBuilder.Append("<");
                     break;
-                case Type.LowerThanOrEquals:
+                case Type.LessThanOrEquals:
                     queryBuilder.Append("<=");
                     break;
                 default:
@@ -63,7 +64,7 @@ namespace Hurace.Core.Db.Queries
             if (useApostrophesForValue)
                 queryBuilder.Append("'");
 
-            queryBuilder.Append(CompareValue);
+            queryBuilder.Append(GetStringRepresentationOfCompareValue());
 
             if (useApostrophesForValue)
                 queryBuilder.Append("'");
@@ -72,7 +73,24 @@ namespace Hurace.Core.Db.Queries
         private bool WriteValueInApostrophes()
         {
             return this.CompareValue is string
-                || this.CompareValue is char;
+                || this.CompareValue is char
+                || this.CompareValue is DateTime;
+        }
+
+        private string GetStringRepresentationOfCompareValue()
+        {
+            if (CompareValue is DateTime compareValueDateTime)
+            {
+                return compareValueDateTime.ToString("s");
+            }
+            else if (CompareValue is bool compareValueBool)
+            {
+                return compareValueBool ? "1" : "0";
+            }
+            else
+            {
+                return CompareValue.ToString();
+            }
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Hurace.Core.Tests.DbQueriesTest
 {
     public class IQueryConditionTests
     {
+        //TODO test with invalid parameters
+
         [Theory]
         [InlineData("Name", QueryCondition.Type.Equals, "Marcel", "[Name] = 'Marcel'")]
         [InlineData("Id", QueryCondition.Type.Equals, 15, "[Id] = 15")]
@@ -20,11 +22,11 @@ namespace Hurace.Core.Tests.DbQueriesTest
         [InlineData("Id", QueryCondition.Type.GreaterThanOrEquals, 15, "[Id] >= 15")]
         [InlineData("Name", QueryCondition.Type.Like, "Marcel", "[Name] LIKE 'Marcel'")]
         [InlineData("Id", QueryCondition.Type.Like, 15, "[Id] LIKE 15")]
-        [InlineData("Name", QueryCondition.Type.LowerThan, "Marcel", "[Name] < 'Marcel'")]
-        [InlineData("Id", QueryCondition.Type.LowerThan, 15, "[Id] < 15")]
-        [InlineData("Name", QueryCondition.Type.LowerThanOrEquals, "Marcel", "[Name] <= 'Marcel'")]
-        [InlineData("Id", QueryCondition.Type.LowerThanOrEquals, 15, "[Id] <= 15")]
-        public void QueryConditionTests(
+        [InlineData("Name", QueryCondition.Type.LessThan, "Marcel", "[Name] < 'Marcel'")]
+        [InlineData("Id", QueryCondition.Type.LessThan, 15, "[Id] < 15")]
+        [InlineData("Name", QueryCondition.Type.LessThanOrEquals, "Marcel", "[Name] <= 'Marcel'")]
+        [InlineData("Id", QueryCondition.Type.LessThanOrEquals, 15, "[Id] <= 15")]
+        public void QueryConditionWithValueTypesTests(
             string columnToCheck,
             QueryCondition.Type conditionType,
             object compareValue,
@@ -35,6 +37,28 @@ namespace Hurace.Core.Tests.DbQueriesTest
                 ColumnToCheck = columnToCheck,
                 ConditionType = conditionType,
                 CompareValue = compareValue
+            };
+
+            var actualQueryBuilder = new StringBuilder();
+            condition.Build(actualQueryBuilder);
+
+            Assert.Equal(expectedConditionString, actualQueryBuilder.ToString());
+        }
+
+        [Theory]
+        [InlineData(QueryCondition.Type.Equals, "[DateOfBirth] = '2000-01-01T00:00:00'")]
+        [InlineData(QueryCondition.Type.NotEquals, "[DateOfBirth] != '2000-01-01T00:00:00'")]
+        [InlineData(QueryCondition.Type.GreaterThan, "[DateOfBirth] > '2000-01-01T00:00:00'")]
+        [InlineData(QueryCondition.Type.GreaterThanOrEquals, "[DateOfBirth] >= '2000-01-01T00:00:00'")]
+        [InlineData(QueryCondition.Type.LessThan, "[DateOfBirth] < '2000-01-01T00:00:00'")]
+        [InlineData(QueryCondition.Type.LessThanOrEquals, "[DateOfBirth] <= '2000-01-01T00:00:00'")]
+        public void QueryConditionWithDateTimeTests(QueryCondition.Type conditionType, string expectedConditionString)
+        {
+            var condition = new QueryCondition()
+            {
+                ColumnToCheck = "DateOfBirth",
+                CompareValue = new DateTime(2000, 1, 1),
+                ConditionType = conditionType
             };
 
             var actualQueryBuilder = new StringBuilder();

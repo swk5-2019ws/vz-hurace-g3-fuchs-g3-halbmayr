@@ -11,7 +11,7 @@ namespace Hurace.Core.Db.Utilities
 {
     public class SimpleSqlQueryGenerator<T> where T : DomainObjectBase
     {
-        public string GenerateGetAllQuery()
+        public string GenerateGetAllConditionalQuery(IQueryCondition condition = null)
         {
             var sb = new StringBuilder();
 
@@ -20,6 +20,12 @@ namespace Hurace.Core.Db.Utilities
             AppendDbColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
+
+            if (condition != null)
+            {
+                sb.Append(" WHERE ");
+                condition.Build(sb);
+            }
 
             return sb.ToString();
         }
@@ -43,11 +49,6 @@ namespace Hurace.Core.Db.Utilities
                 new QueryParameter("Id", id));
 
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
-        }
-
-        public Tuple<string, QueryParameter[]> GenerateConditionalQuery(IEnumerable<QueryCondition> queryConditions)
-        {
-            return null;
         }
 
         public Tuple<string, QueryParameter[]> GenerateCreateQuery(T newDomainObjct)

@@ -1,5 +1,6 @@
 ﻿using Hurace.Core.Dal.AdoPersistence;
 using Hurace.Core.Db.Connection;
+using Hurace.Core.Db.Queries;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,7 @@ using Xunit;
 
 #pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA5394 // Do not use insecure randomness
+#pragma warning disable IDE0045 // Convert to conditional expression
 namespace Hurace.Core.Tests
 {
     public class GenericDaoTests : IDisposable
@@ -69,12 +71,12 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.StartPosition), 3710)]
         [InlineData(typeof(Domain.TimeMeasurement), 18745)]
         [InlineData(typeof(Domain.Venue), 31)]
-        public async Task GetAllTest(Type domainType, int expectedResultCount)
+        public async Task GetAllUnconditionalTest(Type domainType, int expectedResultCount)
         {
             var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllAsync");
+            var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
 
-            var emptyParameterList = Array.Empty<object>();
+            var emptyParameterList = new object[] { null };
 
             var allDomainObjectsDynamic = await (dynamic)daoGetAllMethod.Invoke(adoDaoInstance, emptyParameterList);
             var allDomainObjects = (IEnumerable<object>)allDomainObjectsDynamic;
@@ -83,6 +85,45 @@ namespace Hurace.Core.Tests
 
             var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
             var actualDomainObject = allDomainObjects.Skip(expectedDomainObject.Id).First();
+
+            foreach (var currentProperty in expectedDomainObject.GetType().GetProperties())
+            {
+                Assert.Equal(currentProperty.GetValue(expectedDomainObject), currentProperty.GetValue(actualDomainObject));
+            }
+        }
+
+        [Theory]
+        [InlineData(typeof(Domain.Country))]
+        [InlineData(typeof(Domain.Race))]
+        [InlineData(typeof(Domain.RaceData))]
+        [InlineData(typeof(Domain.RaceState))]
+        [InlineData(typeof(Domain.RaceType))]
+        [InlineData(typeof(Domain.Season))]
+        [InlineData(typeof(Domain.SeasonPlan))]
+        [InlineData(typeof(Domain.Sex))]
+        [InlineData(typeof(Domain.Skier))]
+        [InlineData(typeof(Domain.StartList))]
+        [InlineData(typeof(Domain.StartPosition))]
+        [InlineData(typeof(Domain.TimeMeasurement))]
+        [InlineData(typeof(Domain.Venue))]
+        public async Task GetAllConditionalTest(Type domainType)
+        {
+            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
+            var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
+
+            var tmp = new StringBuilder();
+            var emptyParameterList = new object[]
+            {
+                GenerateQueryConditionsForRuntimeType(domainType)
+            };
+
+            var allDomainObjectsDynamic = await (dynamic)daoGetAllMethod.Invoke(adoDaoInstance, emptyParameterList);
+            var allDomainObjects = (IEnumerable<object>)allDomainObjectsDynamic;
+
+            var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
+            Assert.Single(allDomainObjects);
+
+            var actualDomainObject = allDomainObjects.First();
 
             foreach (var currentProperty in expectedDomainObject.GetType().GetProperties())
             {
@@ -205,7 +246,7 @@ namespace Hurace.Core.Tests
             Assert.Equal(expectedDomainObject.EndDate, actualDomainObject.EndDate);
 
             var sexDao = new GenericDao<Domain.Sex>(connectionFactory);
-            Assert.Equal(2, (await sexDao.GetAllAsync()).Count());
+            Assert.Equal(2, (await sexDao.GetAllConditionalAsync()).Count());
         }
 
         [Theory]
@@ -380,6 +421,39 @@ namespace Hurace.Core.Tests
                 .FirstOrDefault(m => m.Name == methodName);
 
             return requestedMethod;
+        }
+
+        private IQueryCondition GenerateQueryConditionsForRuntimeType(Type currentDomainType)
+        {
+            IQueryCondition condition = null;
+
+            var testableDomainObject = this.GenerateTestableCompareObject(currentDomainType);
+
+            foreach (var currentProperty in currentDomainType.GetProperties())
+            {
+                var newQueryCondition = new QueryCondition()
+                {
+                    ColumnToCheck = currentProperty.Name,
+                    CompareValue = currentProperty.GetValue(testableDomainObject),
+                    ConditionType = QueryCondition.Type.Equals
+                };
+
+                if (condition == null)
+                {
+                    condition = newQueryCondition;
+                }
+                else
+                {
+                    condition = new QueryConditionCombination()
+                    {
+                        CombinationType = QueryConditionCombination.Type.AND,
+                        FirstCondition = condition,
+                        SecondCondition = newQueryCondition
+                    };
+                }
+            }
+
+            return condition;
         }
 
         private Domain.DomainObjectBase GenerateTestableCompareObject(Type currentDomainType)

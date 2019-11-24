@@ -37,10 +37,10 @@ namespace Hurace.Core.Dal.AdoPersistence
             return await this.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllConditionalAsync(IQueryCondition condition = null)
         {
             return await template.QueryObjectSetAsync(
-                SqlQueryGenerator.GenerateGetAllQuery(),
+                SqlQueryGenerator.GenerateGetAllConditionalQuery(condition),
                 RowMapper);
         }
 

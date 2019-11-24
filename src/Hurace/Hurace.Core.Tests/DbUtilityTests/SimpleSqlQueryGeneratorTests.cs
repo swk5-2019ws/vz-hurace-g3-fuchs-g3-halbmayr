@@ -15,7 +15,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         {
             string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex]";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
-            string generatedQuery = queryGenerator.GenerateGetAllQuery();
+            string generatedQuery = queryGenerator.GenerateGetAllConditionalQuery();
             Assert.Equal(expectedQuery, generatedQuery);
         }
 
