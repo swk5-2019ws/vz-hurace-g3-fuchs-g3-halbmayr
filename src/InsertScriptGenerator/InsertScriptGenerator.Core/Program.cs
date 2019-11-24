@@ -35,11 +35,19 @@ namespace InsertScriptGenerator.Core
 
             var raceDescriptionArr = new string[]
             {
-                "Sondre Norheim was the champion of the first downhill skiing competition, reportedly held in Oslo, Norway in 1868. Two to three decades later, the sport spread to the rest of Europe and the U.S. The first slalom ski competition occurred in Mürren, Switzerland in 1922.",
-                "Norwegian legend Sondre Norheim first began the trend of skis with curved sides, bindings with stiff heel bands made of willow, and the slalom turn style.",
-                "Skiing was an integral part of transportation in colder countries for thousands of years. In the late 19th century skiing converted from a method of transportation to a competitive and recreational sport.",
-                "The Norwegian army held skill competitions involving skiing down slopes, around trees and obstacles while shooting. The birth of modern alpine skiing is often dated to the 1850s.",
-                "The ancient origins of skiing can be traced back to prehistoric times in Russia, Finland, Sweden and Norway where varying sizes and shapes of wooden planks were preserved in peat bogs. Skis were first invented to cross wetlands and marshes in the winter when they froze over."
+                "Sondre Norheim was the champion of the first downhill skiing competition, reportedly held " +
+                    "in Oslo, Norway in 1868. Two to three decades later, the sport spread to the rest of " +
+                    "Europe and the U.S. The first slalom ski competition occurred in Mürren, Switzerland in 1922.",
+                "Norwegian legend Sondre Norheim first began the trend of skis with curved sides, bindings " +
+                    "with stiff heel bands made of willow, and the slalom turn style.",
+                "Skiing was an integral part of transportation in colder countries for thousands of years. " +
+                    "In the late 19th century skiing converted from a method of transportation to a competitive " +
+                    "and recreational sport.",
+                "The Norwegian army held skill competitions involving skiing down slopes, around trees and obstacles " +
+                    "while shooting. The birth of modern alpine skiing is often dated to the 1850s.",
+                "The ancient origins of skiing can be traced back to prehistoric times in Russia, Finland, Sweden " +
+                    "and Norway where varying sizes and shapes of wooden planks were preserved in peat bogs. " +
+                    "Skis were first invented to cross wetlands and marshes in the winter when they froze over."
             };
 
             raceStates.Add(new RaceState()
