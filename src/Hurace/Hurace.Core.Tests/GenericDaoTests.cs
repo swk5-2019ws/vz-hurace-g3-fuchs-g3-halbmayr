@@ -23,7 +23,8 @@ namespace Hurace.Core.Tests
         private bool disposed = false;
 
         private readonly TransactionScope transactionScope;
-        private readonly Random rnd = new Random();
+
+        private static readonly Random rnd = new Random();
 
         #endregion
 
@@ -93,8 +94,8 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue), 31)]
         public async Task GetAllUnconditionalTests(Type domainType, int expectedResultCount)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoGetAllMethod = GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
 
             var emptyParameterList = new object[] { null };
 
@@ -103,7 +104,7 @@ namespace Hurace.Core.Tests
 
             Assert.Equal(expectedResultCount, allDomainObjects.Count());
 
-            var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
+            var expectedDomainObject = GenerateTestableCompareObject(domainType);
             var actualDomainObject = allDomainObjects.Skip(expectedDomainObject.Id).First();
 
             foreach (var currentProperty in expectedDomainObject.GetType().GetProperties())
@@ -128,10 +129,9 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue))]
         public async Task GetAllConditionalTests(Type domainType)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoGetAllMethod = this.GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoGetAllMethod = GetAdoDaoMethodInfo(domainType, "GetAllConditionalAsync");
 
-            var tmp = new StringBuilder();
             var emptyParameterList = new object[]
             {
                 GenerateQueryConditionsForRuntimeType(domainType)
@@ -140,7 +140,7 @@ namespace Hurace.Core.Tests
             var allDomainObjectsDynamic = await (dynamic)daoGetAllMethod.Invoke(adoDaoInstance, emptyParameterList);
             var allDomainObjects = (IEnumerable<object>)allDomainObjectsDynamic;
 
-            var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
+            var expectedDomainObject = GenerateTestableCompareObject(domainType);
             Assert.Single(allDomainObjects);
 
             var actualDomainObject = allDomainObjects.First();
@@ -167,10 +167,10 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue))]
         public async Task GetByIdTests(Type domainType)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoGetByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoGetByIdMethod = GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
 
-            var expectedDomainObject = this.GenerateTestableCompareObject(domainType);
+            var expectedDomainObject = GenerateTestableCompareObject(domainType);
 
             var emptyParameterList = new object[] { expectedDomainObject.Id };
 
@@ -199,8 +199,8 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue), 50000)]
         public async Task GetByIdWithNonExistingId(Type domainType, int queryId)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoGetByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoGetByIdMethod = GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
 
             var emptyParameterList = new object[] { queryId };
 
@@ -219,12 +219,12 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue))]
         public async Task CreateTests(Type domainType)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoCreateMethod = this.GetAdoDaoMethodInfo(domainType, "CreateAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoCreateMethod = GetAdoDaoMethodInfo(domainType, "CreateAsync");
 
             var expectedDomainObject = domainType.GetConstructor(Array.Empty<Type>())
                 .Invoke(Array.Empty<object>());
-            this.AlterDomainObjectRandomly(expectedDomainObject);
+            AlterDomainObjectRandomly(expectedDomainObject);
 
             var parameterList = new object[] { expectedDomainObject };
 
@@ -284,18 +284,18 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue))]
         public async Task UpdateExistingDomainObjectTests(Type domainType)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoUpdateMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoUpdateMethod = GetAdoDaoMethodInfo(domainType, "UpdateAsync");
 
-            var expectedUpdatedDomainObject = this.GenerateTestableCompareObject(domainType);
-            this.AlterDomainObjectRandomly(expectedUpdatedDomainObject);
+            var expectedUpdatedDomainObject = GenerateTestableCompareObject(domainType);
+            AlterDomainObjectRandomly(expectedUpdatedDomainObject);
 
             var updateParameterList = new object[] { expectedUpdatedDomainObject };
             bool success = (bool)await (dynamic)daoUpdateMethod.Invoke(adoDaoInstance, updateParameterList);
 
             Assert.True(success);
 
-            var getByIdAsyncMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
+            var getByIdAsyncMethod = GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
             var getByIdParamList = new object[] { expectedUpdatedDomainObject.Id };
 
             var actualUpdatedDomainObject = await (dynamic)getByIdAsyncMethod.Invoke(adoDaoInstance, getByIdParamList);
@@ -323,10 +323,10 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue))]
         public async Task UpdateNotExistentDomainObjectTests(Type domainType)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoUpdateMethod = this.GetAdoDaoMethodInfo(domainType, "UpdateAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoUpdateMethod = GetAdoDaoMethodInfo(domainType, "UpdateAsync");
 
-            var expectedUpdatedDomainObject = this.GenerateTestableCompareObject(domainType);
+            var expectedUpdatedDomainObject = GenerateTestableCompareObject(domainType);
             expectedUpdatedDomainObject.Id = 50000;
 
             var updateParameterList = new object[] { expectedUpdatedDomainObject };
@@ -351,8 +351,8 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue), false)]
         public async Task DeleteByIdExistingIdTests(Type domainType, bool expectedSuccess)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoDeleteByIdMethod = this.GetAdoDaoMethodInfo(domainType, "DeleteByIdAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoDeleteByIdMethod = GetAdoDaoMethodInfo(domainType, "DeleteByIdAsync");
 
             int deleteIdParam = 0;
             var paramList = new object[] { deleteIdParam };
@@ -360,7 +360,7 @@ namespace Hurace.Core.Tests
 
             Assert.Equal(expectedSuccess, actualSuccess);
 
-            var daoGetByIdMethod = this.GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
+            var daoGetByIdMethod = GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
             var expectedNotFoundDomainObject =
                 (Domain.DomainObjectBase)await
                     (dynamic)daoGetByIdMethod.Invoke(adoDaoInstance, paramList);
@@ -392,8 +392,8 @@ namespace Hurace.Core.Tests
         [InlineData(typeof(Domain.Venue))]
         public async Task DeleteByNotExistingIdTest(Type domainType)
         {
-            var adoDaoInstance = this.GetAdoDaoInstance(domainType);
-            var daoDeleteByIdMethod = this.GetAdoDaoMethodInfo(domainType, "DeleteByIdAsync");
+            var adoDaoInstance = GetAdoDaoInstance(domainType);
+            var daoDeleteByIdMethod = GetAdoDaoMethodInfo(domainType, "DeleteByIdAsync");
 
             int deleteIdParam = 50000;
             var paramList = new object[] { deleteIdParam };
@@ -404,7 +404,7 @@ namespace Hurace.Core.Tests
 
         #region Helper Methods
 
-        private object GetAdoDaoInstance(Type domainType)
+        private static object GetAdoDaoInstance(Type domainType)
         {
             var adoDao = typeof(GenericDao<>)
                 .MakeGenericType(domainType);
@@ -418,7 +418,7 @@ namespace Hurace.Core.Tests
             return adoDaoInstance;
         }
 
-        private MethodInfo GetAdoDaoMethodInfo(Type domainType, string methodName)
+        private static MethodInfo GetAdoDaoMethodInfo(Type domainType, string methodName)
         {
             var adoDao = typeof(GenericDao<>)
                 .MakeGenericType(domainType);
@@ -429,11 +429,11 @@ namespace Hurace.Core.Tests
             return requestedMethod;
         }
 
-        private IQueryCondition GenerateQueryConditionsForRuntimeType(Type currentDomainType)
+        private static IQueryCondition GenerateQueryConditionsForRuntimeType(Type currentDomainType)
         {
             IQueryCondition condition = null;
 
-            var testableDomainObject = this.GenerateTestableCompareObject(currentDomainType);
+            var testableDomainObject = GenerateTestableCompareObject(currentDomainType);
 
             foreach (var currentProperty in currentDomainType.GetProperties())
             {
@@ -462,7 +462,7 @@ namespace Hurace.Core.Tests
             return condition;
         }
 
-        private Domain.DomainObjectBase GenerateTestableCompareObject(Type currentDomainType)
+        private static Domain.DomainObjectBase GenerateTestableCompareObject(Type currentDomainType)
         {
             Domain.DomainObjectBase testObject;
 
@@ -587,7 +587,7 @@ namespace Hurace.Core.Tests
             }
         }
 
-        private void AlterDomainObjectRandomly(object domainObject)
+        private static void AlterDomainObjectRandomly(object domainObject)
         {
             string defaultString = "test";
             foreach (var currentProperty in domainObject.GetType().GetProperties())
