@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hurace.Core.Db.Queries
 {
-    public class QueryConditionCombination : IQueryCondition
+    public sealed class QueryConditionCombination : QueryConditionBase
     {
         public enum Type
         {
@@ -12,36 +12,38 @@ namespace Hurace.Core.Db.Queries
             Or
         }
 
-        public IQueryCondition FirstCondition { get; set; }
-        public IQueryCondition SecondCondition { get; set; }
+        public QueryConditionBase FirstCondition { get; set; }
+        public QueryConditionBase SecondCondition { get; set; }
         public Type CombinationType { get; set; }
 
-        public void Build(StringBuilder queryBuilder)
+        internal override void AppendTo(StringBuilder conditionStringBuilder, IList<QueryParameter> queryParameters)
         {
-            if (queryBuilder is null)
-                throw new ArgumentNullException(nameof(queryBuilder));
+            if (conditionStringBuilder is null)
+                throw new ArgumentNullException(nameof(conditionStringBuilder));
+            else if (queryParameters is null)
+                throw new ArgumentNullException(nameof(queryParameters));
             else if (FirstCondition == null)
                 throw new InvalidOperationException(nameof(FirstCondition));
             else if (SecondCondition == null)
                 throw new InvalidOperationException(nameof(SecondCondition));
 
-            queryBuilder.Append("(");
-            FirstCondition.Build(queryBuilder);
+            conditionStringBuilder.Append("(");
+            FirstCondition.AppendTo(conditionStringBuilder, queryParameters);
 
             switch (CombinationType)
             {
                 case Type.And:
-                    queryBuilder.Append(" AND ");
+                    conditionStringBuilder.Append(" AND ");
                     break;
                 case Type.Or:
-                    queryBuilder.Append(" OR ");
+                    conditionStringBuilder.Append(" OR ");
                     break;
                 default:
                     throw new InvalidOperationException(nameof(CombinationType));
             }
 
-            SecondCondition.Build(queryBuilder);
-            queryBuilder.Append(")");
+            SecondCondition.AppendTo(conditionStringBuilder, queryParameters);
+            conditionStringBuilder.Append(")");
         }
     }
 }

@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Hurace.Core.Db.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 #pragma warning disable IDE0046 // Convert to conditional expression
 namespace Hurace.Core.Db.Queries
 {
-    public class QueryCondition : IQueryCondition
+    public sealed class QueryCondition : QueryConditionBase
     {
         public enum Type
         {
@@ -22,67 +24,51 @@ namespace Hurace.Core.Db.Queries
         public Type ConditionType { get; set; }
         public object CompareValue { get; set; }
 
-        public void Build(StringBuilder queryBuilder)
+        internal override void AppendTo(StringBuilder conditionStringBuilder, IList<QueryParameter> queryParameters)
         {
-            if (queryBuilder is null)
-                throw new ArgumentNullException(nameof(queryBuilder));
+            if (conditionStringBuilder is null)
+                throw new ArgumentNullException(nameof(conditionStringBuilder));
+            else if (queryParameters is null)
+                throw new ArgumentNullException(nameof(queryParameters));
 
-            queryBuilder.Append($"[{ColumnToCheck}] ");
+            conditionStringBuilder.Append($"[{ColumnToCheck}] ");
 
             switch (ConditionType)
             {
                 case Type.Equals:
-                    queryBuilder.Append("=");
+                    conditionStringBuilder.Append("=");
                     break;
                 case Type.NotEquals:
-                    queryBuilder.Append("!=");
+                    conditionStringBuilder.Append("!=");
                     break;
                 case Type.GreaterThan:
-                    queryBuilder.Append(">");
+                    conditionStringBuilder.Append(">");
                     break;
                 case Type.GreaterThanOrEquals:
-                    queryBuilder.Append(">=");
+                    conditionStringBuilder.Append(">=");
                     break;
                 case Type.Like:
-                    queryBuilder.Append("LIKE");
+                    conditionStringBuilder.Append("LIKE");
                     break;
                 case Type.LessThan:
-                    queryBuilder.Append("<");
+                    conditionStringBuilder.Append("<");
                     break;
                 case Type.LessThanOrEquals:
-                    queryBuilder.Append("<=");
+                    conditionStringBuilder.Append("<=");
                     break;
                 default:
                     throw new InvalidOperationException(nameof(ConditionType));
             }
 
-            queryBuilder.Append(' ');
+            conditionStringBuilder.Append(' ');
 
-            var useApostrophesForValue = this.WriteValueInApostrophes();
-            if (useApostrophesForValue)
-                queryBuilder.Append("'");
+            var newQueryParameter =
+                queryParameters.AddQueryParameter(
+                    ColumnToCheck,
+                    CompareValue,
+                    QueryParameterType.WhereConditionParameter);
 
-            queryBuilder.Append(GetStringRepresentationOfCompareValue());
-
-            if (useApostrophesForValue)
-                queryBuilder.Append("'");
-        }
-
-        private bool WriteValueInApostrophes()
-        {
-            return this.CompareValue is string
-                || this.CompareValue is char
-                || this.CompareValue is DateTime;
-        }
-
-        private string GetStringRepresentationOfCompareValue()
-        {
-            if (CompareValue is DateTime compareValueDateTime)
-                return compareValueDateTime.ToString("s");
-            else if (CompareValue is bool compareValueBool)
-                return compareValueBool ? "1" : "0";
-            else
-                return CompareValue.ToString();
+            conditionStringBuilder.Append($"@{newQueryParameter.ParameterName}");
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿#pragma warning disable IDE0045 // Convert to conditional expression
+using System;
+
 namespace Hurace.Core.Db.Queries
 {
     public class QueryParameter
@@ -12,6 +14,8 @@ namespace Hurace.Core.Db.Queries
 
             if (value.GetType() == typeof(bool))
                 this.Value = (bool)value ? "TRUE" : "FALSE";
+            else if (value is DateTime valueAsDateTime)
+                this.Value = valueAsDateTime.ToString("s");
             else
                 this.Value = value;
         }

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Hurace.Core.Db.Utilities
 {
-    public class SimpleSqlQueryGenerator<T> where T : DomainObjectBase
+    public class SqlQueryGenerator<T> where T : DomainObjectBase
     {
         private enum Context
         {
@@ -17,7 +17,7 @@ namespace Hurace.Core.Db.Utilities
             Update
         }
 
-        public string GenerateGetAllConditionalQuery(IQueryCondition condition = null)
+        public (string, QueryParameter[]) GenerateGetAllConditionalQuery(IQueryCondition condition = null)
         {
             var sb = new StringBuilder();
 
@@ -27,16 +27,20 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
+            var queryParameters = Enumerable.Empty<QueryParameter>();
             if (condition != null)
             {
                 sb.Append(" WHERE ");
-                condition.Build(sb);
+                //fix sql injection problem with conditions
+                (var conditionString, var queryParametersResult) = condition.Build();
+                sb.Append(conditionString);
+                queryParameters = queryParametersResult;
             }
 
-            return sb.ToString();
+            return (sb.ToString(), queryParameters.ToArray());
         }
 
-        public Tuple<string, QueryParameter[]> GenerateGetByIdQuery(int id)
+        public (string, QueryParameter[]) GenerateGetByIdQuery(int id)
         {
             if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
 
@@ -54,7 +58,7 @@ namespace Hurace.Core.Db.Utilities
             queryParameters.Add(
                 new QueryParameter("Id", id));
 
-            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
+            return (sb.ToString(), queryParameters.ToArray());
         }
 
         public Tuple<string, QueryParameter[]> GenerateCreateQuery(T newDomainObjct)

@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Hurace.Core.Db.Queries
 {
-    public interface IQueryCondition
+    public enum QueryParameterType
     {
-        (string, IEnumerable<QueryParameter>) Build();
+        InsertValueParameter,
+        WhereConditionParameter
     }
 }

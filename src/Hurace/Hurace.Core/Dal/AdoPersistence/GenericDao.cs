@@ -15,7 +15,7 @@ namespace Hurace.Core.Dal.AdoPersistence
     {
         private readonly AdoTemplate template;
 
-        private SimpleSqlQueryGenerator<T> SqlQueryGenerator { get; }
+        private SqlQueryGenerator<T> SqlQueryGenerator { get; }
         private RowMapper<T> RowMapper { get; }
 
         public GenericDao(IConnectionFactory connectionFactory)
@@ -26,7 +26,7 @@ namespace Hurace.Core.Dal.AdoPersistence
             template = new AdoTemplate(connectionFactory);
 
             RowMapper = new RowMapper<T>();
-            SqlQueryGenerator = new SimpleSqlQueryGenerator<T>();
+            SqlQueryGenerator = new SqlQueryGenerator<T>();
         }
 
         public async Task<T> CreateAsync(T newInstance)
@@ -48,9 +48,11 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<IEnumerable<T>> GetAllConditionalAsync(IQueryCondition condition = null)
         {
+            (var query, var queryParameters) = SqlQueryGenerator.GenerateGetAllConditionalQuery(condition);
             return await template.QueryObjectSetAsync(
-                SqlQueryGenerator.GenerateGetAllConditionalQuery(condition),
-                RowMapper);
+                query,
+                RowMapper,
+                queryParameters);
         }
 
         public async Task<T> GetByIdAsync(int id)
