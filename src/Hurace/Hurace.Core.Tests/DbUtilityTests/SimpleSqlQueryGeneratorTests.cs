@@ -58,11 +58,11 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(expectedParameterValue, queryParameters[0].Value);
         }
 
-        //INSERT INTO [Hurace].[StartPosition] ([Id], [StartListId], [SkierId], [Position]) VALUES (58, 1, 149, '18');
         [Fact]
         public void GenerateSimpleUpdateQuery()
         {
-            string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId, [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
+            string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId," +
+                " [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
             (var generatedQuery, var generatedParameters) = queryGenerator.GenerateUpdateQuery(new Domain.StartPosition
             {
