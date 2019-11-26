@@ -57,7 +57,7 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append($") VALUES (");
 
-            queryParameters = AppendPropertiesAndGetValues(sb, Context.create, newDomainObjct);
+            queryParameters = AppendPropertiesAndGetValues(sb, Context.Create, newDomainObjct);
 
             sb.Append(")");
 
@@ -74,7 +74,7 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
 
-            queryParameters = AppendPropertiesAndGetValues(sb, Context.update, updatedDomainObject);
+            queryParameters = AppendPropertiesAndGetValues(sb, Context.Update, updatedDomainObject);
 
             sb.Append($" WHERE [Id] = @Id");
 
@@ -117,40 +117,29 @@ namespace Hurace.Core.Db.Utilities
             }
         }
 
-        private List<QueryParameter> AppendPropertiesAndGetValues(StringBuilder sb, Context context, T domainObject, Predicate<PropertyInfo>propertyFilter = null)
+        private List<QueryParameter> AppendPropertiesAndGetValues(
+            StringBuilder sb,
+            Context context,
+            T domainObject,
+            Predicate<PropertyInfo> propertyFilter = null)
         {
-
             List<QueryParameter> queryParameters = new List<QueryParameter>();
             bool firstProperty = true;
 
-            if (context == Context.create)
+
+            foreach (var currentProperty in typeof(T).GetProperties())
             {
-                foreach (var currentProperty in typeof(T).GetProperties())
+                if (currentProperty.Name != "Id" && (propertyFilter == null || !propertyFilter(currentProperty)))
                 {
-                    if (currentProperty.Name != "Id" && (propertyFilter == null || !propertyFilter(currentProperty)))
-                    {
+                    if (context == Context.Create)
                         sb.Append($"{(firstProperty ? "" : ", ")}@{currentProperty.Name}");
-
-                        queryParameters.Add(
-                            new QueryParameter(currentProperty.Name, currentProperty.GetValue(domainObject)));
-
-                        firstProperty = false;
-                    }
-                }
-            }
-            else if (context == Context.update)
-            {
-                foreach (var currentProperty in typeof(T).GetProperties())
-                {
-                    if (currentProperty.Name != "Id" && (propertyFilter == null || !propertyFilter(currentProperty)))
-                    {
+                    else
                         sb.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}] = @{currentProperty.Name}");
 
-                        queryParameters.Add(
+                    queryParameters.Add(
                             new QueryParameter(currentProperty.Name, currentProperty.GetValue(domainObject)));
 
-                        firstProperty = false;
-                    }
+                    firstProperty = false;
                 }
             }
 
@@ -159,8 +148,8 @@ namespace Hurace.Core.Db.Utilities
 
         private enum Context
         {
-            create,
-            update
+            Create,
+            Update
         }
     }
 }
