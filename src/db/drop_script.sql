@@ -8,7 +8,6 @@ DROP TABLE IF EXISTS [Hurace].[Season];
 DROP TABLE IF EXISTS [Hurace].[StartPosition];
 DROP TABLE IF EXISTS [Hurace].[Skier];
 DROP TABLE IF EXISTS [Hurace].[Country];
-DROP TABLE IF EXISTS [Hurace].[Image];
 DROP TABLE IF EXISTS [Hurace].[Sex];
 DROP TABLE IF EXISTS [Hurace].[RaceType];
 DROP TABLE IF EXISTS [Hurace].[StartList];
