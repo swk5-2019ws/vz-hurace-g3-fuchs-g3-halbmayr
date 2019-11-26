@@ -25,9 +25,7 @@ namespace Hurace.Core.Db.Queries
         public void Build(StringBuilder queryBuilder)
         {
             if (queryBuilder is null)
-            {
                 throw new ArgumentNullException(nameof(queryBuilder));
-            }
 
             queryBuilder.Append($"[{ColumnToCheck}] ");
 
