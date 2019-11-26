@@ -1,4 +1,5 @@
 ﻿using Hurace.Core.Db.Queries;
+using Hurace.Core.Db.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,20 +11,71 @@ namespace Hurace.Core.Tests.DbUtilityTests
 {
     public class SimpleSqlQueryGeneratorTests
     {
+        public static IEnumerable<object[]> GetInsertSkiers
+        {
+            get
+            {
+                yield return new object[] { "Viktoria", "Rebensburg", new DateTime(1989, 10, 04), "https://nicetestimage", 0, 0, 0, false };
+                yield return new object[] { "Tessa", "Worley", new DateTime(1989, 10, 04), "https://nicetestimage", 1, 1, 0, true };
+            }
+        }
+
         [Fact]
-        public void GenerateSimpleSelectQueryEmptyList()
+        public void SimpleSelectQueryTest()
         {
             string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex]";
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Sex>();
             string generatedQuery = queryGenerator.GenerateGetAllConditionalQuery();
             Assert.Equal(expectedQuery, generatedQuery);
         }
 
         [Fact]
-        public void GenerateSimpleSelectByIdEmptyList()
+        public void GenerateSelectQueryWithConditionsTest()
+        {
+            string expectedQuery =
+                "SELECT [FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved], [Id] " +
+                "FROM [Hurace].[Skier] " +
+                "WHERE ([Id] != 15 AND ([FirstName] = 'Marcel' OR [FirstName] = 'Viktoria'))";
+
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Skier>();
+
+            var conditions = new QueryConditionCombination()
+            {
+                CombinationType = QueryConditionCombination.Type.And,
+                FirstCondition = new QueryCondition()
+                {
+                    ColumnToCheck = "Id",
+                    CompareValue = 15,
+                    ConditionType = QueryCondition.Type.NotEquals
+                },
+                SecondCondition = new QueryConditionCombination()
+                {
+                    CombinationType = QueryConditionCombination.Type.Or,
+                    FirstCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "FirstName",
+                        CompareValue = "Marcel",
+                        ConditionType = QueryCondition.Type.Equals
+                    },
+                    SecondCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "FirstName",
+                        CompareValue = "Viktoria",
+                        ConditionType = QueryCondition.Type.Equals
+                    }
+                }
+            };
+
+            string actualQuery = queryGenerator.GenerateGetAllConditionalQuery(conditions);
+
+            Assert.Equal(expectedQuery, actualQuery);
+        }
+
+        [Fact]
+        public void GenerateSelectByIdTest()
         {
             string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex] WHERE [Id] = @Id";
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Sex>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateGetByIdQuery(1);
             Assert.Equal(expectedQuery, generatedQuery);
 
@@ -31,22 +83,22 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
         [Fact]
-        public void GenerateSimpleGetLastIndentQueryTest()
+        public void GenerateGetLastIndentQueryTest()
         {
             string expected = "SELECT IDENT_CURRENT('[Hurace].[Skier]')";
-            string actual = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>().GenerateGetLastIdentityQuery();
+            string actual = new SimpleSqlQueryGenerator<Domain.Skier>().GenerateGetLastIdentityQuery();
 
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public void GenerateSimpleInsertQuery()
+        public void GenerateInsertQueryTest()
         {
             string expectedParameterName = "Name";
             string expectedParameterValue = "AUS";
             string expectedQuery = $"INSERT INTO [Hurace].[Country] ([Name]) VALUES (@{expectedParameterName})";
 
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Country>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Country>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(new Domain.Country
             {
                 Name = expectedParameterValue
@@ -60,18 +112,23 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
         [Fact]
-        public void GenerateSimpleUpdateQuery()
+        public void GenerateUpdateQueryTest()
         {
             string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId," +
                 " [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
-            (var generatedQuery, var generatedParameters) = queryGenerator.GenerateUpdateQuery(new Domain.StartPosition
-            {
-                StartListId = 35,
-                SkierId = 18,
-                Position = 25,
-                Id = 135
-            });
+
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.StartPosition>();
+
+            (var generatedQuery, var generatedParameters) =
+                queryGenerator.GenerateUpdateQuery(
+                    new Domain.StartPosition
+                    {
+                        StartListId = 35,
+                        SkierId = 18,
+                        Position = 25,
+                        Id = 135
+                    });
+
             Assert.Equal(expectedQuery, generatedQuery);
             Assert.Equal(35, generatedParameters[0].Value);
             Assert.Equal(18, generatedParameters[1].Value);
@@ -80,10 +137,10 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
         [Fact]
-        public void GenerateSimpleDeleteQuery()
+        public void GenerateDeleteQueryTest()
         {
             string expectedQuery = "DELETE FROM [Hurace].[StartPosition] WHERE Id = @Id";
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.StartPosition>();
             (var generatedQuery, var generatedParameters) = queryGenerator.GenerateDeleteByIdQuery(135);
 
             Assert.Equal(expectedQuery, generatedQuery);
@@ -91,24 +148,23 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(135, generatedParameters[0].Value);
         }
 
-
-        public static IEnumerable<object[]> GetInsertSkiers
-        {
-            get
-            {
-                yield return new object[] { "Viktoria", "Rebensburg", new DateTime(1989, 10, 04), "https://nicetestimage", 0, 0, 0, false };
-                yield return new object[] { "Tessa", "Worley", new DateTime(1989, 10, 04), "https://nicetestimage", 1, 1, 0, true };
-            }
-        }
-
         [Theory]
         [MemberData(nameof(GetInsertSkiers))]
-        public void TestSkierQuerys(string fn, string ln, DateTime dob, string url, int countryId, int sexId, int id, bool isRemoved)
+        public void GenerateSkierInsertQueryTest(
+            string fn,
+            string ln,
+            DateTime dob,
+            string url,
+            int countryId,
+            int sexId,
+            int id,
+            bool isRemoved)
         {
-            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) VALUES " +
+            string expectedQuery = "INSERT INTO [Hurace].[Skier] " +
+                "([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) VALUES " +
                 "(@FirstName, @LastName, @DateOfBirth, @ImageUrl, @CountryId, @SexId, @IsRemoved)";
 
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Skier>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(
                 new Domain.Skier
                 {
@@ -133,41 +189,43 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
         [Fact]
-        public void GenerateSimpleSelectByIdOutOfRangeException()
+        public void GenerateSelectByIdWithInvalidIdTest()
         {
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Sex>();
             Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateGetByIdQuery(-1));
         }
 
         [Fact]
-        public static void GenerateCreateEmptyArgumentNullException()
+        public static void GenerateCreateQueryWithInvalidParametersTest()
         {
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Sex>();
             Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateCreateQuery(null));
         }
 
         [Fact]
-        public static void GenerateUpdateArgumentNullException()
+        public static void GenerateUpdateQueryWithInvalidParameterTest1()
         {
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Sex>();
             Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(null));
         }
 
         [Fact]
-        public static void GenerateUpdateOutOfRangeException()
+        public static void GenerateUpdateQueryWithInvalidParameterTest2()
         {
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Country>();
-            Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateUpdateQuery(new Domain.Country
-            {
-                Name = "AUS",
-                Id = -3
-            }));
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Country>();
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => queryGenerator.GenerateUpdateQuery(
+                    new Domain.Country
+                    {
+                        Name = "AUS",
+                        Id = -3
+                    }));
         }
 
         [Fact]
-        public void GenerateDeleteByIdOutOfRangeException()
+        public void GenerateDeleteByIdQueryWithInvalidParameterTest()
         {
-            var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SimpleSqlQueryGenerator<Domain.Sex>();
             Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateDeleteByIdQuery(-1));
         }
     }

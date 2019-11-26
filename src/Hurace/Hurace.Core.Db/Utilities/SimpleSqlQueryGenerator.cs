@@ -11,6 +11,12 @@ namespace Hurace.Core.Db.Utilities
 {
     public class SimpleSqlQueryGenerator<T> where T : DomainObjectBase
     {
+        private enum Context
+        {
+            Create,
+            Update
+        }
+
         public string GenerateGetAllConditionalQuery(IQueryCondition condition = null)
         {
             var sb = new StringBuilder();
@@ -151,12 +157,6 @@ namespace Hurace.Core.Db.Utilities
             }
 
             return queryParameters;
-        }
-
-        private enum Context
-        {
-            Create,
-            Update
         }
     }
 }
