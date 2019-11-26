@@ -43,7 +43,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         {
             string expectedParameterName = "Name";
             string expectedParameterValue = "AUS";
-            string expectedQuery = $"INSERT INTO [Hurace].[Country] ([Name]) OUTPUT Inserted.ID VALUES (@{expectedParameterName})";
+            string expectedQuery = $"INSERT INTO [Hurace].[Country] ([Name]) VALUES (@{expectedParameterName})";
 
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Country>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(new Domain.Country
@@ -104,7 +104,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [MemberData(nameof(GetInsertSkiers))]
         public void TestSkierQuerys(string fn, string ln, DateTime dob, string url, int countryId, int sexId, int id, bool isRemoved)
         {
-            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) OUTPUT Inserted.ID VALUES " +
+            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) VALUES " +
                 "(@FirstName, @LastName, @DateOfBirth, @ImageUrl, @CountryId, @SexId, @IsRemoved)";
 
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>();
