@@ -21,9 +21,7 @@ namespace Hurace.Core.Dal.AdoPersistence
         public GenericDao(IConnectionFactory connectionFactory)
         {
             if (connectionFactory is null)
-            {
                 throw new ArgumentNullException(nameof(connectionFactory));
-            }
 
             template = new AdoTemplate(connectionFactory);
 
@@ -34,17 +32,13 @@ namespace Hurace.Core.Dal.AdoPersistence
         public async Task<T> CreateAsync(T newInstance)
         {
             if (newInstance is null)
-            {
                 throw new ArgumentNullException(nameof(newInstance));
-            }
 
             (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateCreateQuery(newInstance);
             int affectedRowCount = await template.ExecuteAsync(createQuery, parameters);
 
             if (affectedRowCount != 1)
-            {
                 throw new InvalidOperationException($"The INSERT Query affected {affectedRowCount} rows -> should only affect 1");
-            }
 
             string getLastGivenIdentityQuery = SqlQueryGenerator.GenerateGetLastIdentityQuery();
             int id = await template.QuerySingleInt32Async(getLastGivenIdentityQuery);
@@ -68,9 +62,7 @@ namespace Hurace.Core.Dal.AdoPersistence
         public async Task<bool> UpdateAsync(T updatedInstance)
         {
             if (updatedInstance is null)
-            {
                 throw new ArgumentNullException(nameof(updatedInstance));
-            }
 
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedInstance);
             int affectedRows = await template.ExecuteAsync(query, parameters);

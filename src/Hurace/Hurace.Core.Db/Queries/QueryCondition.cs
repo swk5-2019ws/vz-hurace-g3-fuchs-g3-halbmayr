@@ -80,17 +80,11 @@ namespace Hurace.Core.Db.Queries
         private string GetStringRepresentationOfCompareValue()
         {
             if (CompareValue is DateTime compareValueDateTime)
-            {
                 return compareValueDateTime.ToString("s");
-            }
             else if (CompareValue is bool compareValueBool)
-            {
                 return compareValueBool ? "1" : "0";
-            }
             else
-            {
                 return CompareValue.ToString();
-            }
         }
     }
 }
