@@ -53,7 +53,7 @@ namespace Hurace.Core.Dal.AdoPersistence
                 .SingleOrDefault();
         }
 
-        public async Task<int> QuerySingleIntAsync(
+        public async Task<int> QuerySingleInt32Async(
             string sqlQuery,
             params QueryParameter[] queryParameters)
         {

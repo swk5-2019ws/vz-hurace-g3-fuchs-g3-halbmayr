@@ -17,7 +17,7 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append("SELECT ");
 
-            AppendDbColumnNames(sb);
+            AppendPropertiesAsColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
@@ -39,7 +39,7 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append("SELECT ");
 
-            AppendDbColumnNames(sb);
+            AppendPropertiesAsColumnNames(sb);
 
             sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
@@ -60,23 +60,12 @@ namespace Hurace.Core.Db.Utilities
 
             sb.Append($"INSERT INTO [Hurace].[{newDomainObjct.GetType().Name}] (");
 
-            AppendDbColumnNames(sb, (m) => m.Name == "Id");
+            AppendPropertiesAsColumnNames(sb, (m) => m.Name == "Id");
 
-            sb.Append($") OUTPUT Inserted.ID VALUES (");
+            sb.Append($") VALUES (");
 
-            bool firstValue = true;
-            foreach (var currentProperty in newDomainObjct.GetType().GetProperties())
-            {
-                if (currentProperty.Name != "Id")
-                {
-                    sb.Append($"{(firstValue ? "" : ", ")}@{currentProperty.Name}");
+            queryParameters = AppendPropertiesAndGetValues(sb, Context.Create, newDomainObjct);
 
-                    queryParameters.Add(
-                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(newDomainObjct)));
-
-                    firstValue = false;
-                }
-            }
             sb.Append(")");
 
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
@@ -91,19 +80,9 @@ namespace Hurace.Core.Db.Utilities
             var queryParameters = new List<QueryParameter>();
 
             sb.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
-            bool firstValue = true;
-            foreach (var currentProperty in updatedDomainObject.GetType().GetProperties())
-            {
-                if (currentProperty.Name != "Id")
-                {
-                    sb.Append($"{(firstValue ? "" : ",")} [{currentProperty.Name}] = @{currentProperty.Name}");
 
-                    queryParameters.Add(
-                        new QueryParameter(currentProperty.Name, currentProperty.GetValue(updatedDomainObject)));
+            queryParameters = AppendPropertiesAndGetValues(sb, Context.Update, updatedDomainObject);
 
-                    firstValue = false;
-                }
-            }
             sb.Append($" WHERE [Id] = @Id");
 
             queryParameters.Add(
@@ -111,7 +90,7 @@ namespace Hurace.Core.Db.Utilities
             return Tuple.Create(sb.ToString(), queryParameters.ToArray());
         }
 
-        //TODO: Set Skier Inaktive when there are already entries for him/her else delete Skier entry
+
         public Tuple<string, QueryParameter[]> GenerateDeleteByIdQuery(int id)
         {
             if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
@@ -132,7 +111,7 @@ namespace Hurace.Core.Db.Utilities
             return $"SELECT IDENT_CURRENT('[Hurace].[{typeof(T).Name}]')";
         }
 
-        private void AppendDbColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
+        private void AppendPropertiesAsColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
         {
             bool firstProperty = true;
             foreach (var currentProperty in typeof(T).GetProperties())
@@ -143,6 +122,41 @@ namespace Hurace.Core.Db.Utilities
                     firstProperty = false;
                 }
             }
+        }
+
+        private List<QueryParameter> AppendPropertiesAndGetValues(
+            StringBuilder sb,
+            Context context,
+            T domainObject,
+            Predicate<PropertyInfo> propertyFilter = null)
+        {
+            List<QueryParameter> queryParameters = new List<QueryParameter>();
+            bool firstProperty = true;
+
+
+            foreach (var currentProperty in typeof(T).GetProperties())
+            {
+                if (currentProperty.Name != "Id" && (propertyFilter == null || !propertyFilter(currentProperty)))
+                {
+                    if (context == Context.Create)
+                        sb.Append($"{(firstProperty ? "" : ", ")}@{currentProperty.Name}");
+                    else
+                        sb.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}] = @{currentProperty.Name}");
+
+                    queryParameters.Add(
+                            new QueryParameter(currentProperty.Name, currentProperty.GetValue(domainObject)));
+
+                    firstProperty = false;
+                }
+            }
+
+            return queryParameters;
+        }
+
+        private enum Context
+        {
+            Create,
+            Update
         }
     }
 }

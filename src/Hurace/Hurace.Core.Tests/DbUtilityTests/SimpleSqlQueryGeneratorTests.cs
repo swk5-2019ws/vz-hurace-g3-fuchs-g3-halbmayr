@@ -44,7 +44,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         {
             string expectedParameterName = "Name";
             string expectedParameterValue = "AUS";
-            string expectedQuery = $"INSERT INTO [Hurace].[Country] ([Name]) OUTPUT Inserted.ID VALUES (@{expectedParameterName})";
+            string expectedQuery = $"INSERT INTO [Hurace].[Country] ([Name]) VALUES (@{expectedParameterName})";
 
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Country>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(new Domain.Country
@@ -59,11 +59,11 @@ namespace Hurace.Core.Tests.DbUtilityTests
             Assert.Equal(expectedParameterValue, queryParameters[0].Value);
         }
 
-        //INSERT INTO [Hurace].[StartPosition] ([Id], [StartListId], [SkierId], [Position]) VALUES (58, 1, 149, '18');
         [Fact]
         public void GenerateSimpleUpdateQuery()
         {
-            string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId, [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
+            string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId," +
+                " [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.StartPosition>();
             (var generatedQuery, var generatedParameters) = queryGenerator.GenerateUpdateQuery(new Domain.StartPosition
             {
@@ -105,7 +105,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [MemberData(nameof(GetInsertSkiers))]
         public void TestSkierQuerys(string fn, string ln, DateTime dob, string url, int countryId, int sexId, int id, bool isRemoved)
         {
-            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) OUTPUT Inserted.ID VALUES " +
+            string expectedQuery = "INSERT INTO [Hurace].[Skier] ([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) VALUES " +
                 "(@FirstName, @LastName, @DateOfBirth, @ImageUrl, @CountryId, @SexId, @IsRemoved)";
 
             var queryGenerator = new Db.Utilities.SimpleSqlQueryGenerator<Domain.Skier>();

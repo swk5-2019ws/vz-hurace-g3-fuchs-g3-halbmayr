@@ -9,6 +9,7 @@ namespace InsertScriptGenerator.Core
 {
     class Program
     {
+        private static string insertScriptPath = "..\\..\\..\\..\\..\\db\\insert_script.sql";
         private static List<string> insertScript = new List<string>();
 
         static void Main()
@@ -34,11 +35,19 @@ namespace InsertScriptGenerator.Core
 
             var raceDescriptionArr = new string[]
             {
-                "Sondre Norheim was the champion of the first downhill skiing competition, reportedly held in Oslo, Norway in 1868. Two to three decades later, the sport spread to the rest of Europe and the U.S. The first slalom ski competition occurred in Mürren, Switzerland in 1922.",
-                "Norwegian legend Sondre Norheim first began the trend of skis with curved sides, bindings with stiff heel bands made of willow, and the slalom turn style.",
-                "Skiing was an integral part of transportation in colder countries for thousands of years. In the late 19th century skiing converted from a method of transportation to a competitive and recreational sport.",
-                "The Norwegian army held skill competitions involving skiing down slopes, around trees and obstacles while shooting. The birth of modern alpine skiing is often dated to the 1850s.",
-                "The ancient origins of skiing can be traced back to prehistoric times in Russia, Finland, Sweden and Norway where varying sizes and shapes of wooden planks were preserved in peat bogs. Skis were first invented to cross wetlands and marshes in the winter when they froze over."
+                "Sondre Norheim was the champion of the first downhill skiing competition, reportedly held " +
+                    "in Oslo, Norway in 1868. Two to three decades later, the sport spread to the rest of " +
+                    "Europe and the U.S. The first slalom ski competition occurred in Mürren, Switzerland in 1922.",
+                "Norwegian legend Sondre Norheim first began the trend of skis with curved sides, bindings " +
+                    "with stiff heel bands made of willow, and the slalom turn style.",
+                "Skiing was an integral part of transportation in colder countries for thousands of years. " +
+                    "In the late 19th century skiing converted from a method of transportation to a competitive " +
+                    "and recreational sport.",
+                "The Norwegian army held skill competitions involving skiing down slopes, around trees and obstacles " +
+                    "while shooting. The birth of modern alpine skiing is often dated to the 1850s.",
+                "The ancient origins of skiing can be traced back to prehistoric times in Russia, Finland, Sweden " +
+                    "and Norway where varying sizes and shapes of wooden planks were preserved in peat bogs. " +
+                    "Skis were first invented to cross wetlands and marshes in the winter when they froze over."
             };
 
             raceStates.Add(new RaceState()
@@ -70,7 +79,7 @@ namespace InsertScriptGenerator.Core
             foreach (var currentSkier in skiersJson)
             {
                 var currentCountryLabel = currentSkier.Value<string>("country");
-                if (countries.FirstOrDefault(c => c.Name == currentCountryLabel) == null)
+                if (!countries.Any(c => c.Name == currentCountryLabel))
                 {
                     countries.Add(new Country()
                     {
@@ -86,7 +95,7 @@ namespace InsertScriptGenerator.Core
                 var currentCountryLabel = currentPlace.Value<string>("country");
 
                 var currentVenueLabel = currentPlace.Value<string>("place");
-                if (venues.FirstOrDefault(v => v.Name == currentVenueLabel) == null)
+                if (!venues.Any(v => v.Name == currentVenueLabel))
                 {
                     venues.Add(new Venue()
                     {
@@ -108,7 +117,7 @@ namespace InsertScriptGenerator.Core
                 {
                     int nextRaceId = races.Count;
 
-                    if (raceTypes.FirstOrDefault(rt => rt.Label == currentRaceType) == null)
+                    if (!raceTypes.Any(rt => rt.Label == currentRaceType))
                     {
                         raceTypes.Add(new RaceType()
                         {
@@ -153,7 +162,7 @@ namespace InsertScriptGenerator.Core
                 else if (currentSexLabel == "Male")
                     currentSexLabel = "Männlich";
                 
-                if (sexes.FirstOrDefault(s => s.Label == currentSexLabel) == null)
+                if (!sexes.Any(s => s.Label == currentSexLabel))
                 {
                     sexes.Add(new Sex()
                     {
@@ -266,7 +275,10 @@ namespace InsertScriptGenerator.Core
                         Id = timeMeasurements.Count,
                         RaceDataId = nextRaceDataId,
                         SensorId = sensorId,
-                        Measurement = Enumerable.Range(0, sensorId + 1).ToList().Select(i => random.Next(25,36)).Sum() * 1000
+                        Measurement = Enumerable.Range(0, sensorId + 1)
+                            .ToList()
+                            .Select(i => random.Next(25,36))
+                            .Sum() * 1000
                     });
                 }
             }
@@ -285,7 +297,7 @@ namespace InsertScriptGenerator.Core
             AddToInsertScript(raceDataList);
             AddToInsertScript(timeMeasurements);
 
-            using (var streamWriter = new StreamWriter("..\\..\\..\\..\\..\\db\\insert_script2.sql"))
+            using (var streamWriter = new StreamWriter(insertScriptPath))
             {
                 foreach (var line in insertScript)
                 {
