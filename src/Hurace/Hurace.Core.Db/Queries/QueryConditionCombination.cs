@@ -8,8 +8,8 @@ namespace Hurace.Core.Db.Queries
     {
         public enum Type
         {
-            AND,
-            OR
+            And,
+            Or
         }
 
         public IQueryCondition FirstCondition { get; set; }
@@ -30,10 +30,10 @@ namespace Hurace.Core.Db.Queries
 
             switch (CombinationType)
             {
-                case Type.AND:
+                case Type.And:
                     queryBuilder.Append(" AND ");
                     break;
-                case Type.OR:
+                case Type.Or:
                     queryBuilder.Append(" OR ");
                     break;
                 default:

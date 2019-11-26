@@ -27,7 +27,7 @@ namespace Hurace.Core.Tests.DbQueriesTest
         {
             var condition = new QueryConditionCombination()
             {
-                CombinationType = QueryConditionCombination.Type.AND,
+                CombinationType = QueryConditionCombination.Type.And,
                 FirstCondition = new QueryCondition()
                 {
                     ColumnToCheck = "FirstName",
@@ -50,7 +50,7 @@ namespace Hurace.Core.Tests.DbQueriesTest
         {
             var condition = new QueryConditionCombination()
             {
-                CombinationType = QueryConditionCombination.Type.AND,
+                CombinationType = QueryConditionCombination.Type.And,
                 FirstCondition = null,
                 SecondCondition = new QueryCondition()
                 {
@@ -68,7 +68,7 @@ namespace Hurace.Core.Tests.DbQueriesTest
         {
             var condition = new QueryConditionCombination()
             {
-                CombinationType = QueryConditionCombination.Type.AND,
+                CombinationType = QueryConditionCombination.Type.And,
                 FirstCondition = new QueryCondition()
                 {
                     ColumnToCheck = "FirstName",
@@ -138,8 +138,8 @@ namespace Hurace.Core.Tests.DbQueriesTest
         }
 
         [Theory]
-        [InlineData(QueryConditionCombination.Type.AND, "({0} AND {1})")]
-        [InlineData(QueryConditionCombination.Type.OR, "({0} OR {1})")]
+        [InlineData(QueryConditionCombination.Type.And, "({0} AND {1})")]
+        [InlineData(QueryConditionCombination.Type.Or, "({0} OR {1})")]
         public void QueryConditionCombinationTests(
             QueryConditionCombination.Type combinationType,
             string expectedConditionStringFormat)
@@ -182,14 +182,14 @@ namespace Hurace.Core.Tests.DbQueriesTest
         }
 
         [Theory]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.AND, true, "(({0} AND {1}) AND {2})")]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.AND, false, "({0} AND ({1} AND {2}))")]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.OR, true, "(({0} OR {1}) AND {2})")]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.OR, false, "({0} AND ({1} OR {2}))")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.AND, true, "(({0} AND {1}) OR {2})")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.AND, false, "({0} OR ({1} AND {2}))")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.OR, true, "(({0} OR {1}) OR {2})")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.OR, false, "({0} OR ({1} OR {2}))")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And, true, "(({0} AND {1}) AND {2})")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And, false, "({0} AND ({1} AND {2}))")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or, true, "(({0} OR {1}) AND {2})")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or, false, "({0} AND ({1} OR {2}))")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And, true, "(({0} AND {1}) OR {2})")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And, false, "({0} OR ({1} AND {2}))")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or, true, "(({0} OR {1}) OR {2})")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or, false, "({0} OR ({1} OR {2}))")]
         public void UnbalancedInterlacedQueryConditionCombinationTests(
             QueryConditionCombination.Type combinationTypeOnFirstLayer,
             QueryConditionCombination.Type combinationTypeForInterlacedCondition,
@@ -259,22 +259,22 @@ namespace Hurace.Core.Tests.DbQueriesTest
         }
 
         [Theory]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.AND,
-                    QueryConditionCombination.Type.AND, "(({0} AND {1}) AND ({2} AND {3}))")]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.AND,
-                    QueryConditionCombination.Type.OR, "(({0} AND {1}) AND ({2} OR {3}))")]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.OR,
-                    QueryConditionCombination.Type.AND, "(({0} OR {1}) AND ({2} AND {3}))")]
-        [InlineData(QueryConditionCombination.Type.AND, QueryConditionCombination.Type.OR,
-                    QueryConditionCombination.Type.OR, "(({0} OR {1}) AND ({2} OR {3}))")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.AND,
-                    QueryConditionCombination.Type.AND, "(({0} AND {1}) OR ({2} AND {3}))")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.AND,
-                    QueryConditionCombination.Type.OR, "(({0} AND {1}) OR ({2} OR {3}))")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.OR,
-                    QueryConditionCombination.Type.AND, "(({0} OR {1}) OR ({2} AND {3}))")]
-        [InlineData(QueryConditionCombination.Type.OR, QueryConditionCombination.Type.OR,
-                    QueryConditionCombination.Type.OR, "(({0} OR {1}) OR ({2} OR {3}))")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And,
+                    QueryConditionCombination.Type.And, "(({0} AND {1}) AND ({2} AND {3}))")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And,
+                    QueryConditionCombination.Type.Or, "(({0} AND {1}) AND ({2} OR {3}))")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or,
+                    QueryConditionCombination.Type.And, "(({0} OR {1}) AND ({2} AND {3}))")]
+        [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or,
+                    QueryConditionCombination.Type.Or, "(({0} OR {1}) AND ({2} OR {3}))")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And,
+                    QueryConditionCombination.Type.And, "(({0} AND {1}) OR ({2} AND {3}))")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And,
+                    QueryConditionCombination.Type.Or, "(({0} AND {1}) OR ({2} OR {3}))")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or,
+                    QueryConditionCombination.Type.And, "(({0} OR {1}) OR ({2} AND {3}))")]
+        [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or,
+                    QueryConditionCombination.Type.Or, "(({0} OR {1}) OR ({2} OR {3}))")]
         public void BalancedInterlacedConditionCombinationTests(
             QueryConditionCombination.Type combinationTypeOnFirstLayer,
             QueryConditionCombination.Type combinationInFirstInterlacedCondition,

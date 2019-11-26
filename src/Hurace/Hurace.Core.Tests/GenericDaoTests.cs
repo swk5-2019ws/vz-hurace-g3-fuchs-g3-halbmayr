@@ -452,7 +452,7 @@ namespace Hurace.Core.Tests
                 {
                     condition = new QueryConditionCombination()
                     {
-                        CombinationType = QueryConditionCombination.Type.AND,
+                        CombinationType = QueryConditionCombination.Type.And,
                         FirstCondition = condition,
                         SecondCondition = newQueryCondition
                     };
