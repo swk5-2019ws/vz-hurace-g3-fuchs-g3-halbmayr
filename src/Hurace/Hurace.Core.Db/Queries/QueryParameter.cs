@@ -1,8 +1,11 @@
-﻿#pragma warning disable IDE0045 // Convert to conditional expression
-using System;
+﻿using System;
 
+#pragma warning disable IDE0045 // Convert to conditional expression
 namespace Hurace.Core.Db.Queries
 {
+    /// <summary>
+    /// Abstracts the concept of parameter passing to a DbCommand instance.
+    /// </summary>
     public class QueryParameter
     {
         public string ParameterName { get; set; }

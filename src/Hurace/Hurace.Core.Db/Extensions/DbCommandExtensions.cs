@@ -6,6 +6,11 @@ namespace Hurace.Core.Db.Extensions
 {
     public static class DbCommandExtensions
     {
+        /// <summary>
+        /// Resolve a <see cref="QueryParameter[]"/> and apply it to a <see cref="DbCommand"/>
+        /// </summary>
+        /// <param name="dbCommand">a command to which the parameters should be applied</param>
+        /// <param name="queryParameters">a set of parameters that should be applied</param>
         public static void AddParameters(this DbCommand dbCommand, params QueryParameter[] queryParameters)
         {
             if (dbCommand == null)

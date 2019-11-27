@@ -9,6 +9,9 @@ namespace Hurace.Core.Db.Queries
 {
     public sealed class QueryCondition : IQueryCondition
     {
+        /// <summary>
+        /// Describes how a <see cref="QueryCondition"/> compares a column to a concrete value
+        /// </summary>
         public enum Type
         {
             Equals,

@@ -10,8 +10,22 @@ using System.Text;
 
 namespace Hurace.Core.Db.Utilities
 {
+    /// <summary>
+    /// Consists of methods that generate Select, Insert, Update and Delete queries.
+    /// The queries are also sanitized with <see cref="QueryParameter"/>s.
+    /// </summary>
+    /// <typeparam name="T">the specific domain-object type</typeparam>
     public class SqlQueryGenerator<T> where T : DomainObjectBase
     {
+        /// <summary>
+        /// Generates a SELECT query that supplies the executer with either all rows, or rows
+        /// that fall into passed rules
+        /// </summary>
+        /// <param name="selectCondition">gets transformed into a where clause</param>
+        /// <returns>a <see cref="ValueTuple{string, QueryParameter[]}" containing the
+        /// select query as a string and optionally the parameters of the
+        /// passed condition/>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/>
+        /// that contains the sanitized values of the passed <see cref="IQueryCondition"/></returns>
         public (string query, QueryParameter[] queryParameters) GenerateSelectQuery(IQueryCondition selectCondition = null)
         {
             var queryStringBuilder = new StringBuilder();
@@ -33,6 +47,13 @@ namespace Hurace.Core.Db.Utilities
             return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
+        /// <summary>
+        /// Generates a INSERT query that inserts a passed domain-object into
+        /// a db-table.
+        /// </summary>
+        /// <param name="newDomainObjct">the domain-object that should be inserted</param>
+        /// <returns>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/> containing
+        /// the sanitized column-values that should be inserted.</returns>
         public (string query, QueryParameter[] queryParameters) GenerateInsertQuery(T newDomainObjct)
         {
             if (newDomainObjct == null) throw new ArgumentNullException(nameof(newDomainObjct));
@@ -53,6 +74,15 @@ namespace Hurace.Core.Db.Utilities
             return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
+        /// <summary>
+        /// Generates a UPDATE query that updates a specific domainobject identified by its 
+        /// Id-property. The query consists of all property values of the domain-object.
+        /// It is important, that the Id is not updated, since it links the updated object
+        /// to a row in the db.
+        /// </summary>
+        /// <param name="newDomainObjct">the updated domain-object</param>
+        /// <returns>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/> that
+        /// contains a single <see cref="QueryParameter"/> describing the sanitized Id</returns>
         public (string query, QueryParameter[] queryParameters) GenerateUpdateQuery(
             T updatedDomainObject)
         {
@@ -74,6 +104,18 @@ namespace Hurace.Core.Db.Utilities
             return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
+        /// <summary>
+        /// Generates a UPDATE query that applies a set of values passed with a
+        /// anonymous object, to a set of rows that fulfill the passed <see cref="IQueryCondition"/>.
+        /// It is mandatory to use a anonymous object that only contains the Properties
+        /// that should be updated, because a passed domain-object would result in a query
+        /// updating all columns and that is not the desired behaviour most of the time.
+        /// </summary>
+        /// <param name="objectContainingChanges">the anonymous object containig the updated values</param>
+        /// <param name="updateCondition">the condition, which rows should be updated</param>
+        /// <returns>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/>
+        /// that contains the updated values and the values used in the WHERE clause.
+        /// Both types of parameters are sanitized.</returns>
         public (string query, QueryParameter[] queryParameters) GenerateUpdateQuery(
             object objectContainingChanges,
             IQueryCondition updateCondition)
@@ -108,7 +150,13 @@ namespace Hurace.Core.Db.Utilities
             return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
-
+        /// <summary>
+        /// Generates a DELETE query that removes a single row from the db, that is
+        /// identified by a passed id.
+        /// </summary>
+        /// <param name="id">the id that identifies the row to delete</param>
+        /// <returns>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/>
+        /// that contains the sanitized id-value</returns>
         public (string query, QueryParameter[] queryParameters) GenerateDeleteQuery(int id)
         {
             return this.GenerateDeleteQuery(
@@ -120,6 +168,13 @@ namespace Hurace.Core.Db.Utilities
                 });
         }
 
+        /// <summary>
+        /// Generates a DELETE query that removes all rows from the db, that fulfill
+        /// a passed condition.
+        /// </summary>
+        /// <param name="deleteCondition">if a row fulfills this condition, the generated query will delete it.</param>
+        /// <returns>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/> that
+        /// contains all parameters used in the WHERE-clause in a sanitized way.</returns>
         public (string query, QueryParameter[] queryParameters) GenerateDeleteQuery(IQueryCondition deleteCondition)
         {
             if (deleteCondition is null)
@@ -135,6 +190,11 @@ namespace Hurace.Core.Db.Utilities
             return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
+        /// <summary>
+        /// Generates a query that returns the last generated Id for a specific table.
+        /// </summary>
+        /// <returns>a query-<see cref="string"/> that, when executed, returns the
+        /// last generated identity for a specific table</returns>
         public string GenerateGetLastIdentityQuery()
         {
             return $"SELECT IDENT_CURRENT('[Hurace].[{typeof(T).Name}]')";
