@@ -1,5 +1,6 @@
 ﻿using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
+using Hurace.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,12 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
         [Fact]
-        public void SimpleSelectQueryTest()
+        public void GenerateBasicSelectQueryTest()
         {
             string expectedQueryString = "SELECT [Label], [Id] FROM [Hurace].[Sex]";
-            var queryGenerator = new SqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SqlQueryGenerator<Sex>();
 
-            (var actualQueryString, var queryParameters) = queryGenerator.GenerateGetAllConditionalQuery();
+            (var actualQueryString, var queryParameters) = queryGenerator.GenerateSelectQuery();
 
             Assert.Equal(expectedQueryString, actualQueryString);
             Assert.Empty(queryParameters);
@@ -40,7 +41,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
                 "FROM [Hurace].[Skier] " +
                 "WHERE ([Id] != @{0} AND ([FirstName] = @{1} OR [FirstName] = @{2}))";
 
-            var queryGenerator = new SqlQueryGenerator<Domain.Skier>();
+            var queryGenerator = new SqlQueryGenerator<Skier>();
 
             var idExpectedValue = 15;
             var firstName1ExpectedValue = "Marcel";
@@ -73,19 +74,19 @@ namespace Hurace.Core.Tests.DbUtilityTests
                 }
             };
 
-            (var actualQuery, var queryParameters) = queryGenerator.GenerateGetAllConditionalQuery(conditions);
+            (var actualQuery, var queryParameters) = queryGenerator.GenerateSelectQuery(conditions);
 
             var idParameter =
                 queryParameters.First(
-                    qp => qp.ParameterName.Contains("Id", StringComparison.OrdinalIgnoreCase));
+                    qp => qp.ParameterName.Contains("Id0", StringComparison.OrdinalIgnoreCase));
 
             var firstName1Parameter =
                 queryParameters.First(
-                    qp => qp.ParameterName.Contains("FirstName_0", StringComparison.OrdinalIgnoreCase));
+                    qp => qp.ParameterName.Contains("FirstName0", StringComparison.OrdinalIgnoreCase));
 
             var firstName2Parameter =
                 queryParameters.First(
-                    qp => qp.ParameterName.Contains("FirstName_1", StringComparison.OrdinalIgnoreCase));
+                    qp => qp.ParameterName.Contains("FirstName1", StringComparison.OrdinalIgnoreCase));
 
             string expectedQuery = string.Format(
                 expectedQueryFormat,
@@ -100,80 +101,43 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
         [Fact]
-        public void GenerateSelectByIdTest()
+        public void GenerateSelectWithIdConditionTest()
         {
-            string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex] WHERE [Id] = @Id";
-            var queryGenerator = new SqlQueryGenerator<Domain.Sex>();
-            (var generatedQuery, var queryParameters) = queryGenerator.GenerateGetByIdQuery(1);
+            string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex] WHERE [Id] = @Id0";
+            var queryGenerator = new SqlQueryGenerator<Sex>();
+
+            (var generatedQuery, var queryParameters) = queryGenerator.GenerateSelectQuery(
+                new QueryCondition()
+                {
+                    ColumnToCheck = "Id",
+                    CompareValue = 1,
+                    ConditionType = QueryCondition.Type.Equals
+                });
+
             Assert.Equal(expectedQuery, generatedQuery);
-
             Assert.Equal(1, queryParameters[0].Value);
-        }
-
-        [Fact]
-        public void GenerateGetLastIndentQueryTest()
-        {
-            string expected = "SELECT IDENT_CURRENT('[Hurace].[Skier]')";
-            string actual = new SqlQueryGenerator<Domain.Skier>().GenerateGetLastIdentityQuery();
-
-            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void GenerateInsertQueryTest()
         {
-            string expectedParameterName = "Name";
+            string expectedParameterName = "Name0";
             string expectedParameterValue = "AUS";
             string expectedQuery = $"INSERT INTO [Hurace].[Country] ([Name]) VALUES (@{expectedParameterName})";
 
-            var queryGenerator = new SqlQueryGenerator<Domain.Country>();
-            (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(new Domain.Country
-            {
-                Name = expectedParameterValue
-            });
+            var queryGenerator = new SqlQueryGenerator<Country>();
+            (var generatedQuery, var queryParameters) =
+                queryGenerator.GenerateInsertQuery(
+                new Country
+                {
+                    Name = expectedParameterValue
+                });
 
             Assert.Equal(expectedQuery, generatedQuery);
 
             Assert.Single(queryParameters);
             Assert.Equal(expectedParameterName, queryParameters[0].ParameterName);
             Assert.Equal(expectedParameterValue, queryParameters[0].Value);
-        }
-
-        [Fact]
-        public void GenerateUpdateQueryTest()
-        {
-            string expectedQuery = "UPDATE [Hurace].[StartPosition] SET [StartListId] = @StartListId," +
-                " [SkierId] = @SkierId, [Position] = @Position WHERE [Id] = @Id";
-
-            var queryGenerator = new SqlQueryGenerator<Domain.StartPosition>();
-
-            (var generatedQuery, var generatedParameters) =
-                queryGenerator.GenerateUpdateQuery(
-                    new Domain.StartPosition
-                    {
-                        StartListId = 35,
-                        SkierId = 18,
-                        Position = 25,
-                        Id = 135
-                    });
-
-            Assert.Equal(expectedQuery, generatedQuery);
-            Assert.Equal(35, generatedParameters[0].Value);
-            Assert.Equal(18, generatedParameters[1].Value);
-            Assert.Equal(25, generatedParameters[2].Value);
-            Assert.Equal(135, generatedParameters[3].Value);
-        }
-
-        [Fact]
-        public void GenerateDeleteQueryTest()
-        {
-            string expectedQuery = "DELETE FROM [Hurace].[StartPosition] WHERE Id = @Id";
-            var queryGenerator = new SqlQueryGenerator<Domain.StartPosition>();
-            (var generatedQuery, var generatedParameters) = queryGenerator.GenerateDeleteByIdQuery(135);
-
-            Assert.Equal(expectedQuery, generatedQuery);
-
-            Assert.Equal(135, generatedParameters[0].Value);
         }
 
         [Theory]
@@ -190,11 +154,11 @@ namespace Hurace.Core.Tests.DbUtilityTests
         {
             string expectedQuery = "INSERT INTO [Hurace].[Skier] " +
                 "([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) VALUES " +
-                "(@FirstName, @LastName, @DateOfBirth, @ImageUrl, @CountryId, @SexId, @IsRemoved)";
+                "(@FirstName0, @LastName0, @DateOfBirth0, @ImageUrl0, @CountryId0, @SexId0, @IsRemoved0)";
 
-            var queryGenerator = new SqlQueryGenerator<Domain.Skier>();
-            (var generatedQuery, var queryParameters) = queryGenerator.GenerateCreateQuery(
-                new Domain.Skier
+            var queryGenerator = new SqlQueryGenerator<Skier>();
+            (var generatedQuery, var queryParameters) = queryGenerator.GenerateInsertQuery(
+                new Skier
                 {
                     FirstName = fn,
                     LastName = ln,
@@ -208,46 +172,148 @@ namespace Hurace.Core.Tests.DbUtilityTests
 
             Assert.Equal(expectedQuery, generatedQuery);
 
-            Assert.Equal(fn, queryParameters.FirstOrDefault(qp => qp.ParameterName == "FirstName").Value);
-            Assert.Equal(ln, queryParameters.FirstOrDefault(qp => qp.ParameterName == "LastName").Value);
-            Assert.Equal(dob.ToString("s"), queryParameters.FirstOrDefault(qp => qp.ParameterName == "DateOfBirth").Value);
-            Assert.Equal(url, queryParameters.FirstOrDefault(qp => qp.ParameterName == "ImageUrl").Value);
-            Assert.Equal(countryId, queryParameters.FirstOrDefault(qp => qp.ParameterName == "CountryId").Value);
-            Assert.Equal(sexId, queryParameters.FirstOrDefault(qp => qp.ParameterName == "SexId").Value);
+            Assert.Equal(fn, queryParameters.FirstOrDefault(qp => qp.ParameterName == "FirstName0").Value);
+            Assert.Equal(ln, queryParameters.FirstOrDefault(qp => qp.ParameterName == "LastName0").Value);
+            Assert.Equal(dob.ToString("s"), queryParameters.FirstOrDefault(qp => qp.ParameterName == "DateOfBirth0").Value);
+            Assert.Equal(url, queryParameters.FirstOrDefault(qp => qp.ParameterName == "ImageUrl0").Value);
+            Assert.Equal(countryId, queryParameters.FirstOrDefault(qp => qp.ParameterName == "CountryId0").Value);
+            Assert.Equal(sexId, queryParameters.FirstOrDefault(qp => qp.ParameterName == "SexId0").Value);
 
             Assert.Equal(
                 isRemoved ? "TRUE" : "FALSE",
-                queryParameters.FirstOrDefault(qp => qp.ParameterName == "IsRemoved").Value);
+                queryParameters.FirstOrDefault(qp => qp.ParameterName == "IsRemoved0").Value);
         }
 
         [Fact]
-        public void GenerateSelectByIdWithInvalidIdTest()
+        public static void GenerateInsertQueryWithInvalidParametersTest()
         {
-            var queryGenerator = new SqlQueryGenerator<Domain.Sex>();
-            Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateGetByIdQuery(-1));
+            var queryGenerator = new SqlQueryGenerator<Sex>();
+            Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateInsertQuery(null));
         }
 
         [Fact]
-        public static void GenerateCreateQueryWithInvalidParametersTest()
+        public void GenerateUpdateQueryTest()
         {
-            var queryGenerator = new SqlQueryGenerator<Domain.Sex>();
-            Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateCreateQuery(null));
+            string expectedQuery = "UPDATE [Hurace].[StartPosition] " +
+                "SET [StartListId] = @StartListId0, [SkierId] = @SkierId0, [Position] = @Position0 " +
+                "WHERE [Id] = @Id0";
+
+            var queryGenerator = new SqlQueryGenerator<StartPosition>();
+
+            (var generatedQuery, var generatedParameters) =
+                queryGenerator.GenerateUpdateQuery(
+                    new StartPosition
+                    {
+                        StartListId = 35,
+                        SkierId = 18,
+                        Position = 25,
+                        Id = 135
+                    });
+
+            Assert.Equal(expectedQuery, generatedQuery);
+            Assert.Equal(35, generatedParameters[0].Value);
+            Assert.Equal(18, generatedParameters[1].Value);
+            Assert.Equal(25, generatedParameters[2].Value);
+            Assert.Equal(135, generatedParameters[3].Value);
+        }
+
+        [Fact]
+        public void GenerateUpdateQueryWithConditionsTest()
+        {
+            var updateCondition = new QueryConditionCombination()
+            {
+                CombinationType = QueryConditionCombination.Type.And,
+                FirstCondition = new QueryConditionCombination()
+                {
+                    CombinationType = QueryConditionCombination.Type.And,
+                    FirstCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "FirstName",
+                        CompareValue = "Marcel",
+                        ConditionType = QueryCondition.Type.NotEquals
+                    },
+                    SecondCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "DateOfBirth",
+                        CompareValue = new DateTime(2005, 1, 1),
+                        ConditionType = QueryCondition.Type.LessThan
+                    }
+                },
+                SecondCondition = new QueryConditionCombination()
+                {
+                    CombinationType = QueryConditionCombination.Type.Or,
+                    FirstCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "LastName",
+                        CompareValue = "Halbmayr",
+                        ConditionType = QueryCondition.Type.Equals
+                    },
+                    SecondCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "LastName",
+                        CompareValue = "Fuchs",
+                        ConditionType = QueryCondition.Type.Equals
+                    }
+                }
+            };
+
+            var expectedUpdatedDateOfBirth = new DateTime(2001, 1, 1);
+            var expectedUpdatedImageUrl = "https://robohash.org/1";
+            var expectedUpdatedSexId = 0;
+
+            var updatedObject = new
+            {
+                DateOfBirth = expectedUpdatedDateOfBirth,
+                ImageUrl = expectedUpdatedImageUrl,
+                SexId = expectedUpdatedSexId
+            };
+
+            string expectedUpdateQuery =
+                "UPDATE [Hurace].[Skier] " +
+                "SET [DateOfBirth] = @DateOfBirth0, [ImageUrl] = @ImageUrl0, [SexId] = @SexId0 " +
+                "WHERE (([FirstName] != @FirstName0 AND [DateOfBirth] < @DateOfBirth1)" +
+                " AND ([LastName] = @LastName0 OR [LastName] = @LastName1))";
+
+            var queryGenerator = new SqlQueryGenerator<Skier>();
+
+            (var actualUpdateQuery, var queryParameters) = queryGenerator.GenerateUpdateQuery(updatedObject, updateCondition);
+
+            Assert.Equal(expectedUpdateQuery, actualUpdateQuery);
+            Assert.Equal(7, queryParameters.Length);
+
+            var updateDateOfBirthParam = queryParameters.First(qp => qp.ParameterName == "DateOfBirth0");
+            var updatedImageUrlParam = queryParameters.First(qp => qp.ParameterName == "ImageUrl0");
+            var updateSexIdParam = queryParameters.First(qp => qp.ParameterName == "SexId0");
+
+            Assert.Equal(expectedUpdatedDateOfBirth.ToString("s"), updateDateOfBirthParam.Value);
+            Assert.Equal(expectedUpdatedImageUrl, updatedImageUrlParam.Value);
+            Assert.Equal(expectedUpdatedSexId, updateSexIdParam.Value);
+
+            var conditionFirstName = queryParameters.First(qp => qp.ParameterName == "FirstName0");
+            var conditionDateOfBirth = queryParameters.First(qp => qp.ParameterName == "DateOfBirth1");
+            var conditionLastName1 = queryParameters.First(qp => qp.ParameterName == "LastName0");
+            var conditionLastName2 = queryParameters.First(qp => qp.ParameterName == "LastName1");
+
+            Assert.Equal("Marcel", conditionFirstName.Value);
+            Assert.Equal("2005-01-01T00:00:00", conditionDateOfBirth.Value);
+            Assert.Equal("Halbmayr", conditionLastName1.Value);
+            Assert.Equal("Fuchs", conditionLastName2.Value);
         }
 
         [Fact]
         public static void GenerateUpdateQueryWithInvalidParameterTest1()
         {
-            var queryGenerator = new SqlQueryGenerator<Domain.Sex>();
+            var queryGenerator = new SqlQueryGenerator<Sex>();
             Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(null));
         }
 
         [Fact]
         public static void GenerateUpdateQueryWithInvalidParameterTest2()
         {
-            var queryGenerator = new SqlQueryGenerator<Domain.Country>();
+            var queryGenerator = new SqlQueryGenerator<Country>();
             Assert.Throws<ArgumentOutOfRangeException>(
                 () => queryGenerator.GenerateUpdateQuery(
-                    new Domain.Country
+                    new Country
                     {
                         Name = "AUS",
                         Id = -3
@@ -255,10 +321,98 @@ namespace Hurace.Core.Tests.DbUtilityTests
         }
 
         [Fact]
-        public void GenerateDeleteByIdQueryWithInvalidParameterTest()
+        public static void GenerateUpdateQueryWithInvalidParameterTest3()
         {
-            var queryGenerator = new SqlQueryGenerator<Domain.Sex>();
-            Assert.Throws<ArgumentOutOfRangeException>(() => queryGenerator.GenerateDeleteByIdQuery(-1));
+            var queryGenerator = new SqlQueryGenerator<Skier>();
+            Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(null, null));
+        }
+
+        [Fact]
+        public static void GenerateUpdateQueryWithInvalidParameterTest4()
+        {
+            var queryGenerator = new SqlQueryGenerator<Skier>();
+            Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(new { }, null));
+        }
+
+        [Fact]
+        public static void GenerateUpdateQueryWithInvalidParameterTest5()
+        {
+            var queryGenerator = new SqlQueryGenerator<Skier>();
+            Assert.Throws<InvalidOperationException>(() => queryGenerator.GenerateUpdateQuery(new Skier(), new QueryCondition()));
+        }
+
+        [Fact]
+        public void GenerateDeleteByIdQueryTest()
+        {
+            string expectedQuery = "DELETE FROM [Hurace].[StartPosition] WHERE [Id] = @Id0";
+
+            int idToDelete = 135;
+
+            var queryGenerator = new SqlQueryGenerator<StartPosition>();
+            (var generatedQuery, var queryParameters) = queryGenerator.GenerateDeleteQuery(idToDelete);
+
+            Assert.Equal(expectedQuery, generatedQuery);
+
+            Assert.Single(queryParameters);
+            Assert.Equal(idToDelete, queryParameters.First().Value);
+        }
+
+        [Fact]
+        public void GenerateDeleteWithConditionsParameterTest()
+        {
+            var condition = new QueryConditionCombination()
+            {
+                CombinationType = QueryConditionCombination.Type.And,
+                FirstCondition = new QueryCondition()
+                {
+                    ColumnToCheck = "FirstName",
+                    CompareValue = "Stevenie",
+                    ConditionType = QueryCondition.Type.NotEquals
+                },
+                SecondCondition = new QueryConditionCombination()
+                {
+                    CombinationType = QueryConditionCombination.Type.Or,
+                    FirstCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "LastName",
+                        CompareValue = "Zeitlhofinger",
+                        ConditionType = QueryCondition.Type.NotEquals
+                    },
+                    SecondCondition = new QueryCondition()
+                    {
+                        ColumnToCheck = "LastName",
+                        CompareValue = "Halbmayr",
+                        ConditionType = QueryCondition.Type.Like
+                    }
+                }
+            };
+
+            string expectedQuery = "DELETE FROM [Hurace].[Skier] " +
+                "WHERE ([FirstName] != @FirstName0 AND ([LastName] != @LastName0 OR [LastName] LIKE @LastName1))";
+
+            var queryGenerator = new SqlQueryGenerator<Skier>();
+
+            (var actualQuery, var actualQueryParameters) = queryGenerator.GenerateDeleteQuery(condition);
+
+            Assert.Equal(expectedQuery, actualQuery);
+            Assert.Equal(3, actualQueryParameters.Length);
+
+            var firstNameParameter = actualQueryParameters.First(qp => qp.ParameterName == "FirstName0");
+            var lastNameParameter1 = actualQueryParameters.First(qp => qp.ParameterName == "LastName0");
+            var lastNameParameter2 = actualQueryParameters.First(qp => qp.ParameterName == "LastName1");
+
+            Assert.Equal("Stevenie", firstNameParameter.Value);
+            Assert.Equal("Zeitlhofinger", lastNameParameter1.Value);
+            Assert.Equal("Halbmayr", lastNameParameter2.Value);
+        }
+
+        [Fact]
+        public void GenerateGetLastIndentyQueryTest()
+        {
+            string expected = "SELECT IDENT_CURRENT('[Hurace].[Skier]')";
+            string actual = new SqlQueryGenerator<Skier>().GenerateGetLastIdentityQuery();
+
+            Assert.Equal(expected, actual);
         }
     }
 }

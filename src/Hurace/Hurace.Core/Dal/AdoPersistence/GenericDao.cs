@@ -34,7 +34,7 @@ namespace Hurace.Core.Dal.AdoPersistence
             if (newInstance is null)
                 throw new ArgumentNullException(nameof(newInstance));
 
-            (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateCreateQuery(newInstance);
+            (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateInsertQuery(newInstance);
             int affectedRowCount = await template.ExecuteAsync(createQuery, parameters);
 
             if (affectedRowCount != 1)
@@ -48,7 +48,7 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<IEnumerable<T>> GetAllConditionalAsync(IQueryCondition condition = null)
         {
-            (var query, var queryParameters) = SqlQueryGenerator.GenerateGetAllConditionalQuery(condition);
+            (var query, var queryParameters) = SqlQueryGenerator.GenerateSelectQuery(condition);
             return await template.QueryObjectSetAsync(
                 query,
                 RowMapper,
@@ -57,7 +57,15 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<T> GetByIdAsync(int id)
         {
-            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateGetByIdQuery(id);
+            var idCondition = new QueryCondition()
+            {
+                ColumnToCheck = nameof(DomainObjectBase.Id),
+                CompareValue = id,
+                ConditionType = QueryCondition.Type.Equals
+            };
+
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateSelectQuery(idCondition);
+
             return await template.QuerySingleObjectAsync(query, RowMapper, parameters);
         }
 
@@ -73,7 +81,7 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<bool> DeleteByIdAsync(int id)
         {
-            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteByIdQuery(id);
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteQuery(id);
 
             try
             {

@@ -20,7 +20,7 @@ namespace Hurace.Core.Tests.DbQueriesTests
                 ConditionType = QueryCondition.Type.Equals
             };
 
-            Assert.Throws<ArgumentNullException>(() => (_, _) = condition.Build());
+            Assert.Throws<ArgumentNullException>(() => condition.AppendTo(new StringBuilder(), new List<QueryParameter>()));
         }
 
         [Theory]
@@ -51,17 +51,18 @@ namespace Hurace.Core.Tests.DbQueriesTests
                 CompareValue = expectedValue
             };
 
-            (var actualConditionString, var queryParameters) = condition.Build();
+            var actualConditionStringBuilder = new StringBuilder();
+            var actualQueryParameters = new List<QueryParameter>();
 
-            string expectedQueryParameterName =
-                $"{QueryParameterListExtensions.WhereConditionParameterPrefix}" +
-                $"{QueryParameterListExtensions.ParameterSegmentationChar}{columnToCheck}_0";
+            condition.AppendTo(actualConditionStringBuilder, actualQueryParameters);
+
+            string expectedQueryParameterName = $"{columnToCheck}0";
 
             string expectedConditionString = string.Format(expectedConditionStringFormat, expectedQueryParameterName);
 
-            Assert.Equal(expectedConditionString, actualConditionString);
-            Assert.Single(queryParameters);
-            var actualQueryParam = queryParameters.First();
+            Assert.Equal(expectedConditionString, actualConditionStringBuilder.ToString());
+            Assert.Single(actualQueryParameters);
+            var actualQueryParam = actualQueryParameters.First();
             Assert.Equal(expectedQueryParameterName, actualQueryParam.ParameterName);
             Assert.Equal(expectedValue, actualQueryParam.Value);
         }
@@ -87,17 +88,18 @@ namespace Hurace.Core.Tests.DbQueriesTests
                 CompareValue = expectedValue
             };
 
-            (var actualConditionString, var queryParameters) = condition.Build();
+            var actualConditionStringBuilder = new StringBuilder();
+            var actualQueryParameters = new List<QueryParameter>();
 
-            string expectedQueryParameterName =
-                $"{QueryParameterListExtensions.WhereConditionParameterPrefix}" +
-                $"{QueryParameterListExtensions.ParameterSegmentationChar}{columnToCheck}_0";
+            condition.AppendTo(actualConditionStringBuilder, actualQueryParameters);
+
+            string expectedQueryParameterName = $"{columnToCheck}0";
 
             string expectedConditionString = string.Format(expectedConditionStringFormat, expectedQueryParameterName);
 
-            Assert.Equal(expectedConditionString, actualConditionString);
-            Assert.Single(queryParameters);
-            var actualQueryParam = queryParameters.First();
+            Assert.Equal(expectedConditionString, actualConditionStringBuilder.ToString());
+            Assert.Single(actualQueryParameters);
+            var actualQueryParam = actualQueryParameters.First();
             Assert.Equal(expectedQueryParameterName, actualQueryParam.ParameterName);
             Assert.Equal(expectedValue.ToString("s"), actualQueryParam.Value);
         }

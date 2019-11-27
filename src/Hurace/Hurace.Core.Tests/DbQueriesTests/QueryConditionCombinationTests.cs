@@ -1,6 +1,7 @@
 ﻿using Hurace.Core.Db.Queries;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace Hurace.Core.Tests.DbQueriesTests
                 }
             };
 
-            Assert.Throws<InvalidOperationException>(() => (_, _) = condition.Build());
+            Assert.Throws<InvalidOperationException>(() => condition.AppendTo(new StringBuilder(), new List<QueryParameter>()));
         }
 
         [Fact]
@@ -42,7 +43,7 @@ namespace Hurace.Core.Tests.DbQueriesTests
                 SecondCondition = null
             };
 
-            Assert.Throws<InvalidOperationException>(() => (_, _) = condition.Build());
+            Assert.Throws<InvalidOperationException>(() => condition.AppendTo(new StringBuilder(), new List<QueryParameter>()));
         }
 
         [Theory]
@@ -72,36 +73,50 @@ namespace Hurace.Core.Tests.DbQueriesTests
                 SecondCondition = secondCondition
             };
 
-            (var exptectedFirstConditionString, _) = firstCondition.Build();
-            (var expectedSecondConditionString, _) = secondCondition.Build();
+            var expectedFirstConditionStringBuilder = new StringBuilder();
+            var expectedSecondConditionStringBuilder = new StringBuilder();
+            var expectedQueryParameters = new List<QueryParameter>();
+
+            firstCondition.AppendTo(expectedFirstConditionStringBuilder, expectedQueryParameters);
+            secondCondition.AppendTo(expectedSecondConditionStringBuilder, expectedQueryParameters);
 
             var expectedConditionString = string.Format(
                 expectedConditionStringFormat,
-                exptectedFirstConditionString,
-                expectedSecondConditionString);
+                expectedFirstConditionStringBuilder.ToString(),
+                expectedSecondConditionStringBuilder.ToString());
 
-            (var actualConditionString, _) = condition.Build();
+            var actualConditionStringBuilder = new StringBuilder();
+            var actualQueryParameters = new List<QueryParameter>();
 
-            Assert.Equal(expectedConditionString, actualConditionString);
+            condition.AppendTo(actualConditionStringBuilder, actualQueryParameters);
+
+            Assert.Equal(expectedConditionString, actualConditionStringBuilder.ToString());
+            Assert.Equal(expectedQueryParameters.Count, actualQueryParameters.Count);
+
+            var idParameter = actualQueryParameters.First(qp => qp.ParameterName == "Id0");
+            var nameParameter = actualQueryParameters.First(qp => qp.ParameterName == "Name0");
+
+            Assert.Equal(15, idParameter.Value);
+            Assert.Equal("Marcel", nameParameter.Value);
         }
 
         [Theory]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And, true,
-                    "(([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1) AND [Id] != @WC_Id_0)")]
+                    "(([FirstName] = @FirstName0 AND [FirstName] = @FirstName1) AND [Id] != @Id0)")]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And, false,
-                    "([Id] != @WC_Id_0 AND ([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1))")]
+                    "([Id] != @Id0 AND ([FirstName] = @FirstName0 AND [FirstName] = @FirstName1))")]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or, true,
-                    "(([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1) AND [Id] != @WC_Id_0)")]
+                    "(([FirstName] = @FirstName0 OR [FirstName] = @FirstName1) AND [Id] != @Id0)")]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or, false,
-                    "([Id] != @WC_Id_0 AND ([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1))")]
+                    "([Id] != @Id0 AND ([FirstName] = @FirstName0 OR [FirstName] = @FirstName1))")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And, true,
-                    "(([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1) OR [Id] != @WC_Id_0)")]
+                    "(([FirstName] = @FirstName0 AND [FirstName] = @FirstName1) OR [Id] != @Id0)")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And, false,
-                    "([Id] != @WC_Id_0 OR ([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1))")]
+                    "([Id] != @Id0 OR ([FirstName] = @FirstName0 AND [FirstName] = @FirstName1))")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or, true,
-                    "(([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1) OR [Id] != @WC_Id_0)")]
+                    "(([FirstName] = @FirstName0 OR [FirstName] = @FirstName1) OR [Id] != @Id0)")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or, false,
-                    "([Id] != @WC_Id_0 OR ([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1))")]
+                    "([Id] != @Id0 OR ([FirstName] = @FirstName0 OR [FirstName] = @FirstName1))")]
         public void UnbalancedInterlacedQueryConditionCombinationTests(
             QueryConditionCombination.Type combinationTypeOnFirstLayer,
             QueryConditionCombination.Type combinationTypeForInterlacedCondition,
@@ -135,40 +150,52 @@ namespace Hurace.Core.Tests.DbQueriesTests
             var condition = new QueryConditionCombination()
             {
                 CombinationType = combinationTypeOnFirstLayer,
-                FirstCondition = interlacedCombinationOnLeft ? (QueryConditionBase)interlacedCondition : simpleCondition,
-                SecondCondition = interlacedCombinationOnLeft ? (QueryConditionBase)simpleCondition : interlacedCondition
+                FirstCondition = interlacedCombinationOnLeft ? (IQueryCondition)interlacedCondition : simpleCondition,
+                SecondCondition = interlacedCombinationOnLeft ? (IQueryCondition)simpleCondition : interlacedCondition
             };
 
-            (var actualConditionString, _) = condition.Build();
+            var actualConditionStringBuilder = new StringBuilder();
+            var actualQueryParameters = new List<QueryParameter>();
 
-            Assert.Equal(expectedConditionString, actualConditionString);
+            condition.AppendTo(actualConditionStringBuilder, actualQueryParameters);
+
+            Assert.Equal(expectedConditionString, actualConditionStringBuilder.ToString());
+            Assert.Equal(3, actualQueryParameters.Count);
+
+            var idParameter = actualQueryParameters.First(qp => qp.ParameterName == "Id0");
+            var firstNameParameter1 = actualQueryParameters.First(qp => qp.ParameterName == "FirstName0");
+            var firstNameParameter2 = actualQueryParameters.First(qp => qp.ParameterName == "FirstName1");
+
+            Assert.Equal(15, idParameter.Value);
+            Assert.Equal("Marcel", firstNameParameter1.Value);
+            Assert.Equal("Viktoria", firstNameParameter2.Value);
         }
 
         [Theory]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And, QueryConditionCombination.Type.And,
-                    "(([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1) " +
-                    "AND ([LastName] = @WC_LastName_0 AND [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 AND [FirstName] = @FirstName1) " +
+                    "AND ([LastName] = @LastName0 AND [LastName] != @LastName1))")]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or,
-                    "(([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1) " +
-                    "AND ([LastName] = @WC_LastName_0 OR [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 AND [FirstName] = @FirstName1) " +
+                    "AND ([LastName] = @LastName0 OR [LastName] != @LastName1))")]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And,
-                    "(([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1) " +
-                    "AND ([LastName] = @WC_LastName_0 AND [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 OR [FirstName] = @FirstName1) " +
+                    "AND ([LastName] = @LastName0 AND [LastName] != @LastName1))")]
         [InlineData(QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or,
-                    "(([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1) " +
-                    "AND ([LastName] = @WC_LastName_0 OR [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 OR [FirstName] = @FirstName1) " +
+                    "AND ([LastName] = @LastName0 OR [LastName] != @LastName1))")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And, QueryConditionCombination.Type.And,
-                    "(([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1) " +
-                    "OR ([LastName] = @WC_LastName_0 AND [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 AND [FirstName] = @FirstName1) " +
+                    "OR ([LastName] = @LastName0 AND [LastName] != @LastName1))")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And, QueryConditionCombination.Type.Or,
-                    "(([FirstName] = @WC_FirstName_0 AND [FirstName] = @WC_FirstName_1) " +
-                    "OR ([LastName] = @WC_LastName_0 OR [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 AND [FirstName] = @FirstName1) " +
+                    "OR ([LastName] = @LastName0 OR [LastName] != @LastName1))")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or, QueryConditionCombination.Type.And,
-                    "(([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1) " +
-                    "OR ([LastName] = @WC_LastName_0 AND [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 OR [FirstName] = @FirstName1) " +
+                    "OR ([LastName] = @LastName0 AND [LastName] != @LastName1))")]
         [InlineData(QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or, QueryConditionCombination.Type.Or,
-                    "(([FirstName] = @WC_FirstName_0 OR [FirstName] = @WC_FirstName_1) " +
-                    "OR ([LastName] = @WC_LastName_0 OR [LastName] != @WC_LastName_1))")]
+                    "(([FirstName] = @FirstName0 OR [FirstName] = @FirstName1) " +
+                    "OR ([LastName] = @LastName0 OR [LastName] != @LastName1))")]
         public void BalancedInterlacedConditionCombinationTests(
             QueryConditionCombination.Type combinationTypeOnFirstLayer,
             QueryConditionCombination.Type combinationInFirstInterlacedCondition,
@@ -212,9 +239,23 @@ namespace Hurace.Core.Tests.DbQueriesTests
                 }
             };
 
-            (var actualConditionString, _) = condition.Build();
+            var actualConditionStringBuilder = new StringBuilder();
+            var actualQueryParameters = new List<QueryParameter>();
 
-            Assert.Equal(expectedConditionString, actualConditionString);
+            condition.AppendTo(actualConditionStringBuilder, actualQueryParameters);
+
+            Assert.Equal(expectedConditionString, actualConditionStringBuilder.ToString());
+            Assert.Equal(4, actualQueryParameters.Count);
+
+            var firstNameParameter1 = actualQueryParameters.First(qp => qp.ParameterName == "FirstName0");
+            var firstNameParameter2 = actualQueryParameters.First(qp => qp.ParameterName == "FirstName1");
+            var lastNameParameter1 = actualQueryParameters.First(qp => qp.ParameterName == "LastName0");
+            var lastNameParameter2 = actualQueryParameters.First(qp => qp.ParameterName == "LastName1");
+
+            Assert.Equal("Marcel", firstNameParameter1.Value);
+            Assert.Equal("Viktoria", firstNameParameter2.Value);
+            Assert.Equal("Hirscher", lastNameParameter1.Value);
+            Assert.Equal("Mathis", lastNameParameter2.Value);
         }
     }
 }

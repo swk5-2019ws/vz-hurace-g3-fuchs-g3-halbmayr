@@ -6,6 +6,6 @@ namespace Hurace.Core.Db.Queries
 {
     public interface IQueryCondition
     {
-        (string, IEnumerable<QueryParameter>) Build();
+        void AppendTo(StringBuilder queryStringBuilder, IList<QueryParameter> queryParameters);
     }
 }

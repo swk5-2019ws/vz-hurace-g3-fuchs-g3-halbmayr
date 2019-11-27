@@ -1,4 +1,5 @@
-﻿using Hurace.Core.Db.Queries;
+﻿using Hurace.Core.Db.Extensions;
+using Hurace.Core.Db.Queries;
 using Hurace.Domain;
 using System;
 using System.Collections.Generic;
@@ -11,109 +12,127 @@ namespace Hurace.Core.Db.Utilities
 {
     public class SqlQueryGenerator<T> where T : DomainObjectBase
     {
-        private enum Context
+        public (string query, QueryParameter[] queryParameters) GenerateSelectQuery(IQueryCondition selectCondition = null)
         {
-            Create,
-            Update
-        }
+            var queryStringBuilder = new StringBuilder();
 
-        public (string, QueryParameter[]) GenerateGetAllConditionalQuery(IQueryCondition condition = null)
-        {
-            var sb = new StringBuilder();
+            queryStringBuilder.Append("SELECT ");
 
-            sb.Append("SELECT ");
+            AppendColumnNames(queryStringBuilder);
 
-            AppendPropertiesAsColumnNames(sb);
+            queryStringBuilder.Append($" FROM [Hurace].[{typeof(T).Name}]");
 
-            sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
-
-            var queryParameters = Enumerable.Empty<QueryParameter>();
-            if (condition != null)
+            var queryParameters = new List<QueryParameter>();
+            if (selectCondition != null)
             {
-                sb.Append(" WHERE ");
-                //fix sql injection problem with conditions
-                (var conditionString, var queryParametersResult) = condition.Build();
-                sb.Append(conditionString);
-                queryParameters = queryParametersResult;
+                queryStringBuilder.Append(" WHERE ");
+
+                selectCondition.AppendTo(queryStringBuilder, queryParameters);
             }
 
-            return (sb.ToString(), queryParameters.ToArray());
+            return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
-        public (string, QueryParameter[]) GenerateGetByIdQuery(int id)
-        {
-            if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
-
-            var sb = new StringBuilder();
-            var queryParameters = new List<QueryParameter>();
-
-            sb.Append("SELECT ");
-
-            AppendPropertiesAsColumnNames(sb);
-
-            sb.Append($" FROM [Hurace].[{typeof(T).Name}]");
-
-            sb.Append($" WHERE [Id] = @Id");
-
-            queryParameters.Add(
-                new QueryParameter("Id", id));
-
-            return (sb.ToString(), queryParameters.ToArray());
-        }
-
-        public Tuple<string, QueryParameter[]> GenerateCreateQuery(T newDomainObjct)
+        public (string query, QueryParameter[] queryParameters) GenerateInsertQuery(T newDomainObjct)
         {
             if (newDomainObjct == null) throw new ArgumentNullException(nameof(newDomainObjct));
 
-            var sb = new StringBuilder();
+            var queryStringBuilder = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
-            sb.Append($"INSERT INTO [Hurace].[{newDomainObjct.GetType().Name}] (");
+            queryStringBuilder.Append($"INSERT INTO [Hurace].[{newDomainObjct.GetType().Name}] (");
 
-            AppendPropertiesAsColumnNames(sb, (m) => m.Name == "Id");
+            AppendColumnNames(queryStringBuilder, (m) => m.Name == "Id");
 
-            sb.Append($") VALUES (");
+            queryStringBuilder.Append($") VALUES (");
 
-            queryParameters = AppendPropertiesAndGetValues(sb, Context.Create, newDomainObjct);
+            AppendColumnValuesWithoutAssignment(queryStringBuilder, queryParameters, newDomainObjct);
 
-            sb.Append(")");
+            queryStringBuilder.Append(")");
 
-            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
+            return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
-        public Tuple<string, QueryParameter[]> GenerateUpdateQuery(T updatedDomainObject)
+        public (string query, QueryParameter[] queryParameters) GenerateUpdateQuery(
+            T updatedDomainObject)
         {
             if (updatedDomainObject == null) throw new ArgumentNullException(nameof(updatedDomainObject));
             if (updatedDomainObject.Id < 0) throw new ArgumentOutOfRangeException(nameof(updatedDomainObject));
 
-            var sb = new StringBuilder();
+            var queryStringBuilder = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
-            sb.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
+            queryStringBuilder.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
 
-            queryParameters = AppendPropertiesAndGetValues(sb, Context.Update, updatedDomainObject);
+            AppendColumnValuesWithAssignment(queryStringBuilder, queryParameters, updatedDomainObject);
 
-            sb.Append($" WHERE [Id] = @Id");
+            queryStringBuilder.Append(" WHERE ");
 
-            queryParameters.Add(
-                        new QueryParameter("Id", updatedDomainObject.Id));
-            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
+            var idParameter = queryParameters.AddQueryParameter("Id", updatedDomainObject.Id);
+            queryStringBuilder.Append($"[Id] = @{idParameter.ParameterName}");
+
+            return (queryStringBuilder.ToString(), queryParameters.ToArray());
+        }
+
+        public (string query, QueryParameter[] queryParameters) GenerateUpdateQuery(
+            object objectContainingChanges,
+            IQueryCondition updateCondition)
+        {
+            if (updateCondition is null)
+                throw new ArgumentNullException(nameof(updateCondition));
+            if (objectContainingChanges is null)
+                throw new ArgumentNullException(nameof(objectContainingChanges));
+            if (objectContainingChanges.GetType() == typeof(T))
+                throw new InvalidOperationException(
+                    "You are not allowed to pass the domain object itself" +
+                    " -> pass a anonymous object containing the changes to apply");
+
+            // validate if objectContainingChanges does not pass unrecognized properties
+            foreach (var currentProperty in objectContainingChanges.GetType().GetProperties())
+            {
+                if (!typeof(T).GetProperties().Any(p => p.Name == currentProperty.Name))
+                    throw new InvalidOperationException($"Property {currentProperty.Name} does not exist for type {typeof(T).Name}");
+            }
+
+            var queryStringBuilder = new StringBuilder();
+            var queryParameters = new List<QueryParameter>();
+
+            queryStringBuilder.Append($"UPDATE [Hurace].[{typeof(T).Name}] SET");
+
+            AppendColumnValuesWithAssignment(queryStringBuilder, queryParameters, objectContainingChanges);
+
+            queryStringBuilder.Append(" WHERE ");
+
+            updateCondition.AppendTo(queryStringBuilder, queryParameters);
+
+            return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
 
-        public Tuple<string, QueryParameter[]> GenerateDeleteByIdQuery(int id)
+        public (string query, QueryParameter[] queryParameters) GenerateDeleteQuery(int id)
         {
-            if (id < 0) throw new ArgumentOutOfRangeException(nameof(id));
+            return this.GenerateDeleteQuery(
+                new QueryCondition()
+                {
+                    ColumnToCheck = "Id",
+                    CompareValue = id,
+                    ConditionType = QueryCondition.Type.Equals
+                });
+        }
 
-            var sb = new StringBuilder();
+        public (string query, QueryParameter[] queryParameters) GenerateDeleteQuery(IQueryCondition deleteCondition)
+        {
+            if (deleteCondition is null)
+                throw new ArgumentNullException(nameof(deleteCondition));
+
+            var queryStringBuilder = new StringBuilder();
             var queryParameters = new List<QueryParameter>();
 
-            sb.Append($"DELETE FROM [Hurace].[{typeof(T).Name}] WHERE Id = @Id");
+            queryStringBuilder.Append($"DELETE FROM [Hurace].[{typeof(T).Name}] WHERE ");
 
-            queryParameters.Add(
-                        new QueryParameter("Id", id));
+            deleteCondition.AppendTo(queryStringBuilder, queryParameters);
 
-            return Tuple.Create(sb.ToString(), queryParameters.ToArray());
+            return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }
 
         public string GenerateGetLastIdentityQuery()
@@ -121,7 +140,9 @@ namespace Hurace.Core.Db.Utilities
             return $"SELECT IDENT_CURRENT('[Hurace].[{typeof(T).Name}]')";
         }
 
-        private void AppendPropertiesAsColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
+        #region Helpers
+
+        private void AppendColumnNames(StringBuilder sb, Predicate<PropertyInfo> propertyFilter = null)
         {
             bool firstProperty = true;
             foreach (var currentProperty in typeof(T).GetProperties())
@@ -134,32 +155,50 @@ namespace Hurace.Core.Db.Utilities
             }
         }
 
-        private List<QueryParameter> AppendPropertiesAndGetValues(
-            StringBuilder sb,
-            Context context,
-            T domainObject,
-            Predicate<PropertyInfo> propertyFilter = null)
+        private void AppendColumnValuesWithoutAssignment(
+           StringBuilder queryStringBuilder,
+           IList<QueryParameter> queryParameters,
+           object domainObject)
         {
-            List<QueryParameter> queryParameters = new List<QueryParameter>();
             bool firstProperty = true;
 
             foreach (var currentProperty in typeof(T).GetProperties())
             {
-                if (currentProperty.Name != "Id" && (propertyFilter == null || !propertyFilter(currentProperty)))
+                if (currentProperty.Name != "Id")
                 {
-                    if (context == Context.Create)
-                        sb.Append($"{(firstProperty ? "" : ", ")}@{currentProperty.Name}");
-                    else
-                        sb.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}] = @{currentProperty.Name}");
+                    var queryParameter = queryParameters.AddQueryParameter(
+                        currentProperty.Name,
+                        currentProperty.GetValue(domainObject));
 
-                    queryParameters.Add(
-                            new QueryParameter(currentProperty.Name, currentProperty.GetValue(domainObject)));
+                    queryStringBuilder.Append($"{(firstProperty ? "" : ", ")}@{queryParameter.ParameterName}");
 
                     firstProperty = false;
                 }
             }
-
-            return queryParameters;
         }
+
+        private void AppendColumnValuesWithAssignment(
+            StringBuilder queryStringBuilder,
+            IList<QueryParameter> queryParameters,
+            object valueContainer)
+        {
+            bool firstProperty = true;
+
+            foreach (var currentProperty in valueContainer.GetType().GetProperties())
+            {
+                if (currentProperty.Name != "Id")
+                {
+                    var queryParameter = queryParameters.AddQueryParameter(
+                        currentProperty.Name,
+                        currentProperty.GetValue(valueContainer));
+
+                    queryStringBuilder.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}] = @{queryParameter.ParameterName}");
+
+                    firstProperty = false;
+                }
+            }
+        }
+
+        #endregion
     }
 }

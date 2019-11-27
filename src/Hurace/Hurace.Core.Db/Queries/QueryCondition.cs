@@ -7,7 +7,7 @@ using System.Text;
 #pragma warning disable IDE0046 // Convert to conditional expression
 namespace Hurace.Core.Db.Queries
 {
-    public sealed class QueryCondition : QueryConditionBase
+    public sealed class QueryCondition : IQueryCondition
     {
         public enum Type
         {
@@ -24,51 +24,50 @@ namespace Hurace.Core.Db.Queries
         public Type ConditionType { get; set; }
         public object CompareValue { get; set; }
 
-        internal override void AppendTo(StringBuilder conditionStringBuilder, IList<QueryParameter> queryParameters)
+        public void AppendTo(StringBuilder queryStringBuilder, IList<QueryParameter> queryParameters)
         {
-            if (conditionStringBuilder is null)
-                throw new ArgumentNullException(nameof(conditionStringBuilder));
+            if (queryStringBuilder is null)
+                throw new ArgumentNullException(nameof(queryStringBuilder));
             else if (queryParameters is null)
                 throw new ArgumentNullException(nameof(queryParameters));
 
-            conditionStringBuilder.Append($"[{ColumnToCheck}] ");
+            queryStringBuilder.Append($"[{ColumnToCheck}] ");
 
             switch (ConditionType)
             {
                 case Type.Equals:
-                    conditionStringBuilder.Append("=");
+                    queryStringBuilder.Append("=");
                     break;
                 case Type.NotEquals:
-                    conditionStringBuilder.Append("!=");
+                    queryStringBuilder.Append("!=");
                     break;
                 case Type.GreaterThan:
-                    conditionStringBuilder.Append(">");
+                    queryStringBuilder.Append(">");
                     break;
                 case Type.GreaterThanOrEquals:
-                    conditionStringBuilder.Append(">=");
+                    queryStringBuilder.Append(">=");
                     break;
                 case Type.Like:
-                    conditionStringBuilder.Append("LIKE");
+                    queryStringBuilder.Append("LIKE");
                     break;
                 case Type.LessThan:
-                    conditionStringBuilder.Append("<");
+                    queryStringBuilder.Append("<");
                     break;
                 case Type.LessThanOrEquals:
-                    conditionStringBuilder.Append("<=");
+                    queryStringBuilder.Append("<=");
                     break;
                 default:
                     throw new InvalidOperationException(nameof(ConditionType));
             }
 
-            conditionStringBuilder.Append(' ');
+            queryStringBuilder.Append(' ');
 
             var newQueryParameter =
                 queryParameters.AddQueryParameter(
                     ColumnToCheck,
-                    CompareValue,
-                    QueryParameterType.WhereConditionParameter);
+                    CompareValue);
 
-            conditionStringBuilder.Append($"@{newQueryParameter.ParameterName}");
+            queryStringBuilder.Append($"@{newQueryParameter.ParameterName}");
         }
     }
 }

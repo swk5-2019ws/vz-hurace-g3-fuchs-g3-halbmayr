@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hurace.Core.Db.Queries
 {
-    public sealed class QueryConditionCombination : QueryConditionBase
+    public sealed class QueryConditionCombination : IQueryCondition
     {
         public enum Type
         {
@@ -12,14 +12,14 @@ namespace Hurace.Core.Db.Queries
             Or
         }
 
-        public QueryConditionBase FirstCondition { get; set; }
-        public QueryConditionBase SecondCondition { get; set; }
+        public IQueryCondition FirstCondition { get; set; }
+        public IQueryCondition SecondCondition { get; set; }
         public Type CombinationType { get; set; }
 
-        internal override void AppendTo(StringBuilder conditionStringBuilder, IList<QueryParameter> queryParameters)
+        public void AppendTo(StringBuilder queryStringBuilder, IList<QueryParameter> queryParameters)
         {
-            if (conditionStringBuilder is null)
-                throw new ArgumentNullException(nameof(conditionStringBuilder));
+            if (queryStringBuilder is null)
+                throw new ArgumentNullException(nameof(queryStringBuilder));
             else if (queryParameters is null)
                 throw new ArgumentNullException(nameof(queryParameters));
             else if (FirstCondition == null)
@@ -27,23 +27,23 @@ namespace Hurace.Core.Db.Queries
             else if (SecondCondition == null)
                 throw new InvalidOperationException(nameof(SecondCondition));
 
-            conditionStringBuilder.Append("(");
-            FirstCondition.AppendTo(conditionStringBuilder, queryParameters);
+            queryStringBuilder.Append("(");
+            FirstCondition.AppendTo(queryStringBuilder, queryParameters);
 
             switch (CombinationType)
             {
                 case Type.And:
-                    conditionStringBuilder.Append(" AND ");
+                    queryStringBuilder.Append(" AND ");
                     break;
                 case Type.Or:
-                    conditionStringBuilder.Append(" OR ");
+                    queryStringBuilder.Append(" OR ");
                     break;
                 default:
                     throw new InvalidOperationException(nameof(CombinationType));
             }
 
-            SecondCondition.AppendTo(conditionStringBuilder, queryParameters);
-            conditionStringBuilder.Append(")");
+            SecondCondition.AppendTo(queryStringBuilder, queryParameters);
+            queryStringBuilder.Append(")");
         }
     }
 }

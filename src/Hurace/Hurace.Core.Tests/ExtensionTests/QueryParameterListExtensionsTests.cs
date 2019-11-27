@@ -11,37 +11,31 @@ namespace Hurace.Core.Tests.ExtensionTests
 {
     public class QueryParameterListExtensionsTests
     {
-        [Theory]
-        [InlineData(QueryParameterType.InsertValueParameter)]
-        [InlineData(QueryParameterType.WhereConditionParameter)]
-        public void AddQueryParameterOnNullListTest(QueryParameterType parameterType)
+        [Fact]
+        public void AddQueryParameterOnNullListTest()
         {
             IList<QueryParameter> unsetQueryParameterList = null;
             Assert.Throws<ArgumentNullException>(
-                () => unsetQueryParameterList.AddQueryParameter("", new object(), parameterType));
+                () => unsetQueryParameterList.AddQueryParameter("", new object()));
         }
 
-        [Theory]
-        [InlineData(QueryParameterType.InsertValueParameter)]
-        [InlineData(QueryParameterType.WhereConditionParameter)]
-        public void AddQueryParameterWithNullValueTest(QueryParameterType parameterType)
+        [Fact]
+        public void AddQueryParameterWithNullValueTest()
         {
             var emptyQueryParameterList = new List<QueryParameter>();
             Assert.Throws<ArgumentNullException>(
-                () => emptyQueryParameterList.AddQueryParameter("", null, parameterType));
+                () => emptyQueryParameterList.AddQueryParameter("", null));
         }
 
         [Theory]
-        [InlineData(QueryParameterType.InsertValueParameter, 15)]
-        [InlineData(QueryParameterType.WhereConditionParameter, 15)]
-        [InlineData(QueryParameterType.InsertValueParameter, "Marcel")]
-        [InlineData(QueryParameterType.WhereConditionParameter, "Marcel")]
-        public void AddSingleParameterTest(QueryParameterType parameterType, object expectedColumnValue)
+        [InlineData(15)]
+        [InlineData("Marcel")]
+        public void AddSingleParameterTest(object expectedColumnValue)
         {
             string columnName = "Testcolumn";
             var queryParameterList = new List<QueryParameter>();
 
-            var returnedParameter = queryParameterList.AddQueryParameter(columnName, expectedColumnValue, parameterType);
+            var returnedParameter = queryParameterList.AddQueryParameter(columnName, expectedColumnValue);
 
             Assert.Single(queryParameterList);
 
@@ -50,15 +44,7 @@ namespace Hurace.Core.Tests.ExtensionTests
             Assert.Equal(returnedParameter, parameter);
             Assert.Equal(expectedColumnValue, parameter.Value);
 
-            var expectedParameterNamePrefix = parameterType switch
-            {
-                QueryParameterType.InsertValueParameter => QueryParameterListExtensions.InsertValueParameterPrefix,
-                QueryParameterType.WhereConditionParameter => QueryParameterListExtensions.WhereConditionParameterPrefix,
-                _ => throw new InvalidOperationException(),
-            };
-
-            var sepChar = QueryParameterListExtensions.ParameterSegmentationChar;
-            var expectedParameterName = $"{expectedParameterNamePrefix}{sepChar}{columnName}{sepChar}0";
+            var expectedParameterName = $"{columnName}0";
 
             Assert.Equal(expectedParameterName, parameter.ParameterName);
         }
@@ -66,42 +52,21 @@ namespace Hurace.Core.Tests.ExtensionTests
         [Fact]
         public void AddMultipleParametersOfDifferentColumNameTest()
         {
-            static QueryParameterType DecideParameterType(int index)
-            {
-                return index % 2 == 0 ? QueryParameterType.InsertValueParameter : QueryParameterType.WhereConditionParameter;
-            }
-
-            static string GenerateExpectedParameterName(int index, string columnName)
-            {
-                var parameterType = DecideParameterType(index);
-
-                var expectedParameterNamePrefix = parameterType switch
-                {
-                    QueryParameterType.InsertValueParameter => QueryParameterListExtensions.InsertValueParameterPrefix,
-                    QueryParameterType.WhereConditionParameter => QueryParameterListExtensions.WhereConditionParameterPrefix,
-                    _ => throw new InvalidOperationException(),
-                };
-
-                var sepChar = QueryParameterListExtensions.ParameterSegmentationChar;
-                return $"{expectedParameterNamePrefix}{sepChar}{columnName}{sepChar}0";
-            }
-
             var queryParameters = new List<QueryParameter>();
 
             var raceProperties = typeof(Race).GetProperties();
             for (int i = 0; i < raceProperties.Length; i++)
             {
-                var currentPropertyInfo = raceProperties[i];
+                var currentProperty = raceProperties[i];
                 var parameterValue = new { Index = i };
 
                 var actualParameter = queryParameters.AddQueryParameter(
-                    currentPropertyInfo.Name,
-                    parameterValue,
-                    DecideParameterType(i));
+                    currentProperty.Name,
+                    parameterValue);
 
                 Assert.Contains(actualParameter, queryParameters);
                 Assert.Equal(
-                    GenerateExpectedParameterName(i, currentPropertyInfo.Name),
+                    $"{currentProperty.Name}0",
                     actualParameter.ParameterName);
                 Assert.Equal(parameterValue, actualParameter.Value);
             }
@@ -110,26 +75,6 @@ namespace Hurace.Core.Tests.ExtensionTests
         [Fact]
         public void AddMultipleParametersOfSameColumnNameTest()
         {
-            static QueryParameterType DecideParameterType(int index)
-            {
-                return index % 2 == 0 ? QueryParameterType.InsertValueParameter : QueryParameterType.WhereConditionParameter;
-            }
-
-            static string GenerateExpectedParameterName(int index, string columnName)
-            {
-                var parameterType = DecideParameterType(index);
-
-                var expectedParameterNamePrefix = parameterType switch
-                {
-                    QueryParameterType.InsertValueParameter => QueryParameterListExtensions.InsertValueParameterPrefix,
-                    QueryParameterType.WhereConditionParameter => QueryParameterListExtensions.WhereConditionParameterPrefix,
-                    _ => throw new InvalidOperationException(),
-                };
-
-                var sepChar = QueryParameterListExtensions.ParameterSegmentationChar;
-                return $"{expectedParameterNamePrefix}{sepChar}{columnName}{sepChar}{index / 2}";
-            }
-
             string columnName = "Id";
             var queryParameters = new List<QueryParameter>();
 
@@ -139,12 +84,11 @@ namespace Hurace.Core.Tests.ExtensionTests
 
                 var actualQueryParameter = queryParameters.AddQueryParameter(
                     columnName,
-                    parameterValue,
-                    DecideParameterType(i));
+                    parameterValue);
 
                 Assert.Contains(actualQueryParameter, queryParameters);
                 Assert.Equal(
-                    GenerateExpectedParameterName(i, columnName),
+                    $"{columnName}{i}",
                     actualQueryParameter.ParameterName);
                 Assert.Equal(parameterValue, actualQueryParameter.Value);
             }
