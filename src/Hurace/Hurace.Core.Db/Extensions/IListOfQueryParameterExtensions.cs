@@ -31,7 +31,7 @@ namespace Hurace.Core.Db.Extensions
             };
 
             string genericParameterName = $"{parameterPrefix}{ParameterSegmentationChar}{columName}";
-            
+
             int countOfSimilarParameters =
                 queryParameters.Count(
                     qp => qp.ParameterName.StartsWith(genericParameterName, StringComparison.OrdinalIgnoreCase));
