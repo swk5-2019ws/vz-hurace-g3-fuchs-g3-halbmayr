@@ -143,7 +143,6 @@ namespace Hurace.Core.Db.Utilities
             List<QueryParameter> queryParameters = new List<QueryParameter>();
             bool firstProperty = true;
 
-
             foreach (var currentProperty in typeof(T).GetProperties())
             {
                 if (currentProperty.Name != "Id" && (propertyFilter == null || !propertyFilter(currentProperty)))

@@ -9,7 +9,7 @@ using Xunit;
 #pragma warning disable CA1054 // Uri parameters should not be strings
 namespace Hurace.Core.Tests.DbUtilityTests
 {
-    public class SimpleSqlQueryGeneratorTests
+    public class SqlQueryGeneratorTests
     {
         public static IEnumerable<object[]> GetInsertSkiers
         {
