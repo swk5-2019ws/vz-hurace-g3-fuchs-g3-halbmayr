@@ -50,12 +50,12 @@ namespace Hurace.Core.Tests.ExtensionTests
 
             var expectedParameterName = parameterType switch
             {
-                QueryParameterType.InsertValueParameter => IListOfQueryParameterExtensions.InsertValueParameterPrefix,
-                QueryParameterType.WhereConditionParameter => IListOfQueryParameterExtensions.WhereConditionParameterPrefix,
+                QueryParameterType.InsertValueParameter => QueryParameterListExtensions.InsertValueParameterPrefix,
+                QueryParameterType.WhereConditionParameter => QueryParameterListExtensions.WhereConditionParameterPrefix,
                 _ => throw new InvalidOperationException(),
             };
 
-            var sepChar = IListOfQueryParameterExtensions.ParameterSegmentationChar;
+            var sepChar = QueryParameterListExtensions.ParameterSegmentationChar;
             expectedParameterName += $"{sepChar}{columnName}{sepChar}0";
 
             Assert.Equal(expectedParameterName, parameter.ParameterName);

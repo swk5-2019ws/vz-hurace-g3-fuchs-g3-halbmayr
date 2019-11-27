@@ -54,8 +54,8 @@ namespace Hurace.Core.Tests.DbQueriesTests
             (var actualConditionString, var queryParameters) = condition.Build();
 
             string expectedQueryParameterName =
-                $"{IListOfQueryParameterExtensions.WhereConditionParameterPrefix}" +
-                $"{IListOfQueryParameterExtensions.ParameterSegmentationChar}{columnToCheck}_0";
+                $"{QueryParameterListExtensions.WhereConditionParameterPrefix}" +
+                $"{QueryParameterListExtensions.ParameterSegmentationChar}{columnToCheck}_0";
 
             string expectedConditionString = string.Format(expectedConditionStringFormat, expectedQueryParameterName);
 
@@ -90,8 +90,8 @@ namespace Hurace.Core.Tests.DbQueriesTests
             (var actualConditionString, var queryParameters) = condition.Build();
 
             string expectedQueryParameterName =
-                $"{IListOfQueryParameterExtensions.WhereConditionParameterPrefix}" +
-                $"{IListOfQueryParameterExtensions.ParameterSegmentationChar}{columnToCheck}_0";
+                $"{QueryParameterListExtensions.WhereConditionParameterPrefix}" +
+                $"{QueryParameterListExtensions.ParameterSegmentationChar}{columnToCheck}_0";
 
             string expectedConditionString = string.Format(expectedConditionStringFormat, expectedQueryParameterName);
 
