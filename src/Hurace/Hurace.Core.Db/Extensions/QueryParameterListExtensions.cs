@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Hurace.Core.Db.Extensions
 {
-    public static class IListOfQueryParameterExtensions
+    public static class QueryParameterListExtensions
     {
         public const string InsertValueParameterPrefix = "IV";
         public const string WhereConditionParameterPrefix = "WC";
