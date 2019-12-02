@@ -15,8 +15,8 @@ namespace Hurace.Core.Dal
         Task<T> GetByIdAsync(int id);
 
         /// <summary>
-        /// Loads all instances of <see cref="T"/> that fulfill the optional passed condition.
-        /// If no condition is provided, all rows from a table are loaded
+        /// Loads all instances of <see cref="T"/> that fulfill the optional passed <see cref="IQueryCondition"/>.
+        /// If no <see cref="IQueryCondition"/> is provided, all rows from a table are loaded
         /// </summary>
         /// <param name="condition">the optional result-restricting condition</param>
         /// <returns>all instances of <see cref="T"/>, or all instances of <see cref="T"/>
@@ -46,8 +46,8 @@ namespace Hurace.Core.Dal
         /// </summary>
         /// <param name="updatedValues">contains columns with values to update</param>
         /// <param name="condition">describes which rows should be updated</param>
-        /// <returns>a boolean that indicates, if all updates where executed successfully</returns>
-        Task<bool> UpdateAsync(object updatedValues, IQueryCondition condition);
+        /// <returns>the number of affected rows</returns>
+        Task<int> UpdateAsync(object updatedValues, IQueryCondition condition);
 
         /// <summary>
         /// Deletes a single row of <see cref="T"/> in the db identified by a passed id.
@@ -60,8 +60,7 @@ namespace Hurace.Core.Dal
         /// Deletes all rows of <see cref="T"/> that fullfill a passed <see cref="IQueryCondition"/>.
         /// </summary>
         /// <param name="condition">identifies all rows that should be deleted.</param>
-        /// <returns>a boolean that indicates, if all rows matching the
-        /// passed <see cref="IQueryCondition"/> were deleted successfully</returns>
-        Task<bool> DeleteAsync(IQueryCondition condition);
+        /// <returns>the number of affected rows</returns>
+        Task<int> DeleteAsync(IQueryCondition condition);
     }
 }

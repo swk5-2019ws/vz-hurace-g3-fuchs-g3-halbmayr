@@ -129,11 +129,23 @@ namespace Hurace.Core.Db.Utilities
                     "You are not allowed to pass the domain object itself" +
                     " -> pass a anonymous object containing the changes to apply");
 
-            // validate if objectContainingChanges does not pass unrecognized properties
             foreach (var currentProperty in objectContainingChanges.GetType().GetProperties())
             {
-                if (!typeof(T).GetProperties().Any(p => p.Name == currentProperty.Name))
-                    throw new InvalidOperationException($"Property {currentProperty.Name} does not exist for type {typeof(T).Name}");
+                if (currentProperty.Name == "Id")
+                    throw new InvalidOperationException(
+                        "Attempted to update Id column -> forbidden operation");
+                else if (!typeof(T).GetProperties().Any(p => p.Name == currentProperty.Name))
+                    throw new InvalidOperationException(
+                        $"Property {currentProperty.Name} does not exist for type {typeof(T).Name}");
+
+                var correctType = typeof(T).GetProperties()
+                    .First(p => p.Name == currentProperty.Name)
+                    .PropertyType;
+
+                if (!(correctType == currentProperty.PropertyType))
+                    throw new InvalidOperationException(
+                        $"Property-Type mismatch of property {currentProperty.Name}; " +
+                        $"expected type {correctType.FullName}, actual type {currentProperty.PropertyType.FullName}");
             }
 
             var queryStringBuilder = new StringBuilder();
