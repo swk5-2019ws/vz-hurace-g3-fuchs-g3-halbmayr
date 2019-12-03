@@ -1,10 +1,12 @@
 ﻿using Hurace.Core.Db;
 using Hurace.Core.Db.Connection;
+using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
 using Hurace.Domain;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,66 +16,98 @@ namespace Hurace.Core.Dal.AdoPersistence
     {
         private readonly AdoTemplate template;
 
-        private SimpleSqlQueryGenerator<T> SqlQueryGenerator { get; }
+        private SqlQueryGenerator<T> SqlQueryGenerator { get; }
         private RowMapper<T> RowMapper { get; }
 
         public GenericDao(IConnectionFactory connectionFactory)
         {
+            if (connectionFactory is null)
+                throw new ArgumentNullException(nameof(connectionFactory));
+
             template = new AdoTemplate(connectionFactory);
 
             RowMapper = new RowMapper<T>();
-            SqlQueryGenerator = new SimpleSqlQueryGenerator<T>();
+            SqlQueryGenerator = new SqlQueryGenerator<T>();
         }
 
-        public async Task<T> CreateAsync(T newInstance)
+        public async Task<int> CreateAsync(T newInstance)
         {
-            (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateCreateQuery(newInstance);
+            if (newInstance is null)
+                throw new ArgumentNullException(nameof(newInstance));
+
+            (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateInsertQuery(newInstance);
             int affectedRowCount = await template.ExecuteAsync(createQuery, parameters);
 
             if (affectedRowCount != 1)
-            {
                 throw new InvalidOperationException($"The INSERT Query affected {affectedRowCount} rows -> should only affect 1");
-            }
 
             string getLastGivenIdentityQuery = SqlQueryGenerator.GenerateGetLastIdentityQuery();
-            int id = await template.QuerySingleInt32Async(getLastGivenIdentityQuery);
-
-            return await this.GetByIdAsync(id);
+            return await template.QuerySingleInt32Async(getLastGivenIdentityQuery);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllConditionalAsync(IQueryCondition condition = null)
         {
+            (var query, var queryParameters) = SqlQueryGenerator.GenerateSelectQuery(condition);
             return await template.QueryObjectSetAsync(
-                SqlQueryGenerator.GenerateGetAllQuery(),
-                RowMapper);
+                query,
+                RowMapper,
+                queryParameters);
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateGetByIdQuery(id);
+            var idCondition = new QueryCondition()
+            {
+                ColumnToCheck = nameof(DomainObjectBase.Id),
+                CompareValue = id,
+                ConditionType = QueryCondition.Type.Equals
+            };
+
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateSelectQuery(idCondition);
+
             return await template.QuerySingleObjectAsync(query, RowMapper, parameters);
         }
 
         public async Task<bool> UpdateAsync(T updatedInstance)
         {
+            if (updatedInstance is null)
+                throw new ArgumentNullException(nameof(updatedInstance));
+
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedInstance);
             int affectedRows = await template.ExecuteAsync(query, parameters);
             return affectedRows == 1;
         }
 
+        public async Task<int> UpdateAsync(object updatedValues, IQueryCondition condition)
+        {
+            if (updatedValues is null)
+                throw new ArgumentNullException(nameof(updatedValues));
+            else if (condition is null)
+                throw new ArgumentNullException(nameof(condition));
+            else if (updatedValues.GetType().GetProperties().Length == 0)
+                throw new InvalidOperationException(
+                    $"Passed {nameof(updatedValues)} anonymous object does not contain any updated values");
+
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedValues, condition);
+            return await template.ExecuteAsync(query, parameters);
+        }
+
         public async Task<bool> DeleteByIdAsync(int id)
         {
-            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteByIdQuery(id);
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteQuery(id);
 
-            try
-            {
-                int numberOfAffectedRows = await template.ExecuteAsync(query, parameters);
-                return numberOfAffectedRows == 1;
-            }
-            catch (SqlException)
-            {
-                return false;
-            }
+            int numberOfAffectedRows = await template.ExecuteAsync(query, parameters);
+            return numberOfAffectedRows == 1;
+        }
+
+        public async Task<int> DeleteAsync(IQueryCondition condition)
+        {
+            if (condition is null)
+                throw new ArgumentNullException(nameof(condition));
+
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteQuery(condition);
+
+            return await template.ExecuteAsync(query, parameters);
         }
     }
 }

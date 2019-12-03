@@ -305,8 +305,8 @@
     <Rule Id="IDE0048WithoutSuggestion" Action="Warning" />
     <Rule Id="IDE0049" Action="Warning" />
     <Rule Id="IDE0049WithoutSuggestion" Action="Warning" />
-    <Rule Id="IDE0050" Action="Warning" />
-    <Rule Id="IDE0050WithoutSuggestion" Action="Warning" />
+    <Rule Id="IDE0050" Action="Info" />
+    <Rule Id="IDE0050WithoutSuggestion" Action="Info" />
     <Rule Id="IDE0051" Action="Warning" />
     <Rule Id="IDE0052" Action="Warning" />
     <Rule Id="IDE0053" Action="Warning" />

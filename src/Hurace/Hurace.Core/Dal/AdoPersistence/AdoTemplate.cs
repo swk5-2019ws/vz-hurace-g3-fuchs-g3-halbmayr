@@ -1,6 +1,7 @@
 ﻿using Hurace.Core.Db;
 using Hurace.Core.Db.Connection;
 using Hurace.Core.Db.Extensions;
+using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
 using System;
 using System.Collections.Generic;

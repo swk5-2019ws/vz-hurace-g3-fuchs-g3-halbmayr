@@ -1,6 +1,11 @@
-﻿#pragma warning disable IDE0045 // Convert to conditional expression
-namespace Hurace.Core.Db
+﻿using System;
+
+#pragma warning disable IDE0045 // Convert to conditional expression
+namespace Hurace.Core.Db.Queries
 {
+    /// <summary>
+    /// Abstracts the concept of parameter passing to a DbCommand instance.
+    /// </summary>
     public class QueryParameter
     {
         public string ParameterName { get; set; }
@@ -12,6 +17,8 @@ namespace Hurace.Core.Db
 
             if (value.GetType() == typeof(bool))
                 this.Value = (bool)value ? "TRUE" : "FALSE";
+            else if (value is DateTime valueAsDateTime)
+                this.Value = valueAsDateTime.ToString("s");
             else
                 this.Value = value;
         }
