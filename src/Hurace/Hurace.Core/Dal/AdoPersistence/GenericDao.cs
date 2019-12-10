@@ -56,14 +56,7 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var idCondition = new QueryCondition()
-            {
-                ColumnToCheck = nameof(DomainObjectBase.Id),
-                CompareValue = id,
-                ConditionType = QueryCondition.Type.Equals
-            };
-
-            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateSelectQuery(idCondition);
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateSelectQuery(id);
 
             return await template.QuerySingleObjectAsync(query, RowMapper, parameters);
         }

@@ -16,7 +16,7 @@ using Xunit;
 #pragma warning disable CA5394 // Do not use insecure randomness
 #pragma warning disable IDE0045 // Convert to conditional expression
 #pragma warning disable IDE0046 // Convert to conditional expression
-namespace Hurace.Core.Tests
+namespace Hurace.Core.Tests.DataAccessTests
 {
     public class GenericDaoTests : IDisposable
     {
@@ -351,32 +351,19 @@ namespace Hurace.Core.Tests
 
             var comparisonRaceIds = new int[] { 10, 20, 30 };
 
-            var updatedCondition = new QueryConditionCombination()
-            {
-                CombinationType = QueryConditionCombination.Type.Or,
-                FirstCondition = new QueryCondition()
-                {
-                    ColumnToCheck = nameof(Domain.Race.Id),
-                    CompareValue = comparisonRaceIds[0],
-                    ConditionType = QueryCondition.Type.Equals
-                },
-                SecondCondition = new QueryConditionCombination()
-                {
-                    CombinationType = QueryConditionCombination.Type.Or,
-                    FirstCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = nameof(Domain.Race.Id),
-                        CompareValue = comparisonRaceIds[1],
-                        ConditionType = QueryCondition.Type.Equals
-                    },
-                    SecondCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = nameof(Domain.Race.Id),
-                        CompareValue = comparisonRaceIds[2],
-                        ConditionType = QueryCondition.Type.Equals
-                    }
-                }
-            };
+            var updateCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.Or,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[0]),
+                    () => new QueryConditionBuilder()
+                        .DeclareConditionNode(
+                            QueryConditionNodeType.Or,
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[1]),
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[2])))
+                .Build();
 
             var expectedNumberOfSensors = 10;
             var expectedDate = DateTime.Now.Date;
@@ -394,7 +381,7 @@ namespace Hurace.Core.Tests
                 Date = expectedDate
             };
 
-            var affectedRows = await raceDao.UpdateAsync(updateColumns, updatedCondition);
+            var affectedRows = await raceDao.UpdateAsync(updateColumns, updateCondition);
 
             Assert.Equal(comparisonRaceIds.Length, affectedRows);
 
@@ -433,12 +420,9 @@ namespace Hurace.Core.Tests
                 domainType,
                 "GetAllConditionalAsync");
 
-            var condition = new QueryCondition()
-            {
-                ColumnToCheck = nameof(Domain.DomainObjectBase.Id),
-                CompareValue = 50000,
-                ConditionType = QueryCondition.Type.GreaterThan
-            };
+            var condition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.GreaterThan, 50000)
+                .Build();
 
             var getAllParameterList = new object[] { condition };
 
@@ -481,7 +465,13 @@ namespace Hurace.Core.Tests
                 "UpdateAsync",
                 new Type[] { typeof(object), typeof(IQueryCondition) });
 
-            var parameterList = new object[] { null, new QueryCondition() };
+            var parameterList = new object[]
+            {
+                null,
+                new QueryConditionBuilder()
+                    .DeclareCondition("Id", QueryConditionType.Equals, 1)
+                    .Build()
+            };
 
             await Assert.ThrowsAsync<ArgumentNullException>(
                 () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList));
@@ -509,7 +499,13 @@ namespace Hurace.Core.Tests
                 "UpdateAsync",
                 new Type[] { typeof(object), typeof(IQueryCondition) });
 
-            var parameterList = new object[] { new { }, new QueryCondition() };
+            var parameterList = new object[]
+            {
+                new { },
+                new QueryConditionBuilder()
+                    .DeclareCondition("Id", QueryConditionType.Equals, 1)
+                    .Build()
+            };
 
             await Assert.ThrowsAsync<InvalidOperationException>(
                 () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList));
@@ -544,12 +540,9 @@ namespace Hurace.Core.Tests
                 "UpdateAsync",
                 new Type[] { typeof(object), typeof(IQueryCondition) });
 
-            var condition = new QueryCondition()
-            {
-                ColumnToCheck = nameof(Domain.DomainObjectBase.Id),
-                CompareValue = 0,
-                ConditionType = QueryCondition.Type.Equals
-            };
+            var condition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 0)
+                .Build();
 
             var parameterList = new object[] { updateObject, condition };
 
@@ -579,12 +572,9 @@ namespace Hurace.Core.Tests
                 "UpdateAsync",
                 new Type[] { typeof(object), typeof(IQueryCondition) });
 
-            var condition = new QueryCondition()
-            {
-                ColumnToCheck = nameof(Domain.DomainObjectBase.Id),
-                CompareValue = 0,
-                ConditionType = QueryCondition.Type.Equals
-            };
+            var condition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 0)
+                .Build();
 
             var parameterList = new object[] { new { Id = 0 }, condition };
 
@@ -710,22 +700,14 @@ namespace Hurace.Core.Tests
                 "DeleteAsync",
                 new Type[] { typeof(IQueryCondition) });
 
-            var condition = new QueryConditionCombination()
-            {
-                CombinationType = QueryConditionCombination.Type.Or,
-                FirstCondition = new QueryCondition()
-                {
-                    ColumnToCheck = nameof(Domain.DomainObjectBase.Id),
-                    CompareValue = 0,
-                    ConditionType = QueryCondition.Type.Equals
-                },
-                SecondCondition = new QueryCondition()
-                {
-                    ColumnToCheck = nameof(Domain.DomainObjectBase.Id),
-                    CompareValue = 1,
-                    ConditionType = QueryCondition.Type.Equals
-                }
-            };
+            var condition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.Or,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 0),
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 1))
+                .Build();
 
             var parameterList = new object[] { condition };
 
@@ -769,12 +751,9 @@ namespace Hurace.Core.Tests
                 domainType,
                 "GetAllConditionalAsync");
 
-            var condition = new QueryCondition()
-            {
-                ColumnToCheck = nameof(Domain.DomainObjectBase.Id),
-                CompareValue = 50000,
-                ConditionType = QueryCondition.Type.GreaterThan
-            };
+            var condition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.GreaterThan, 50000)
+                .Build();
 
             var getAllParameterList = new object[] { condition };
 
@@ -874,35 +853,33 @@ namespace Hurace.Core.Tests
 
         private static IQueryCondition GenerateQueryConditionsForRuntimeType(Type currentDomainType)
         {
-            IQueryCondition condition = null;
+            QueryConditionBuilder conditionBuilder = null;
 
             var testableDomainObject = GenerateTestableCompareObject(currentDomainType);
 
             foreach (var currentProperty in currentDomainType.GetProperties())
             {
-                var newQueryCondition = new QueryCondition()
-                {
-                    ColumnToCheck = currentProperty.Name,
-                    CompareValue = currentProperty.GetValue(testableDomainObject),
-                    ConditionType = QueryCondition.Type.Equals
-                };
+                var newQueryConditionBuilder = new QueryConditionBuilder()
+                    .DeclareCondition(
+                        currentProperty.Name,
+                        QueryConditionType.Equals,
+                        currentProperty.GetValue(testableDomainObject));
 
-                if (condition == null)
+                if (conditionBuilder == null)
                 {
-                    condition = newQueryCondition;
+                    conditionBuilder = newQueryConditionBuilder;
                 }
                 else
                 {
-                    condition = new QueryConditionCombination()
-                    {
-                        CombinationType = QueryConditionCombination.Type.And,
-                        FirstCondition = condition,
-                        SecondCondition = newQueryCondition
-                    };
+                    conditionBuilder = new QueryConditionBuilder()
+                        .DeclareConditionNode(
+                            QueryConditionNodeType.And,
+                            () => conditionBuilder,
+                            () => newQueryConditionBuilder);
                 }
             }
 
-            return condition;
+            return conditionBuilder.Build();
         }
 
         private static Domain.DomainObjectBase GenerateTestableCompareObject(Type currentDomainType)

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace Hurace.Core.Tests.ExtensionTests
+namespace Hurace.Core.Db.Tests.ExtensionTests
 {
     public class QueryParameterListExtensionsTests
     {

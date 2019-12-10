@@ -1,20 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="AppSettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="AppSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FakeItEasy" Version="5.5.0" />
@@ -26,8 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hurace.Core.Db\Hurace.Core.Db.csproj" />
-    <ProjectReference Include="..\Hurace.Core\Hurace.Core.csproj" />
-    <ProjectReference Include="..\Hurace.Domain\Hurace.Domain.csproj" />
   </ItemGroup>
 
 </Project>

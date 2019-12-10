@@ -1,4 +1,5 @@
 ﻿using FakeItEasy;
+using Hurace.Core.Db.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,15 +7,14 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace Hurace.Core.Tests.DbUtilityTests
+namespace Hurace.Core.Db.Tests.UtilityTests
 {
     public class RowMapperTests
     {
-
         [Fact]
         public void MapWithNullRow()
         {
-            var rowMapper = new Db.Utilities.RowMapper<Domain.StartPosition>();
+            var rowMapper = new RowMapper<Domain.StartPosition>();
 
             try
             {
