@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hurace.Domain\Hurace.Domain.csproj" />
+    <ProjectReference Include="..\Hurace.Entities\Hurace.Entities.csproj" />
   </ItemGroup>
 
 </Project>

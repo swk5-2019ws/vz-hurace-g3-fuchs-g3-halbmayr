@@ -2,7 +2,6 @@
 using Hurace.Core.Db.Connection;
 using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
-using Hurace.Domain;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Hurace.Core.Dal.AdoPersistence
 {
-    public class GenericDao<T> : IDataAccessObject<T> where T : DomainObjectBase, new()
+    public class GenericDao<T> : IDataAccessObject<T> where T : Entities.EntityObjectBase, new()
     {
         private readonly AdoTemplate template;
 

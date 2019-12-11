@@ -1,6 +1,6 @@
-﻿namespace Hurace.Domain
+﻿namespace Hurace.Entities
 {
-    public class TimeMeasurement : DomainObjectBase
+    public class TimeMeasurement : EntityObjectBase
     {
         public int Measurement { get; set; }
         public int SensorId { get; set; }

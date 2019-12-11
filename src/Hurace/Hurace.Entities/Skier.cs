@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace Hurace.Domain
+namespace Hurace.Entities
 {
-    public class Skier : DomainObjectBase
+    public class Skier : EntityObjectBase
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

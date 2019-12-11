@@ -14,7 +14,7 @@ namespace Hurace.Core.Db.Tests.UtilityTests
         [Fact]
         public void MapWithNullRow()
         {
-            var rowMapper = new RowMapper<Domain.StartPosition>();
+            var rowMapper = new RowMapper<Entities.StartPosition>();
 
             try
             {
@@ -36,7 +36,7 @@ namespace Hurace.Core.Db.Tests.UtilityTests
         [Fact]
         public void MapStartPosition()
         {
-            var rowMapper = new Db.Utilities.RowMapper<Domain.StartPosition>();
+            var rowMapper = new RowMapper<Entities.StartPosition>();
 
             var mockedDataRecord = A.Fake<IDataRecord>();
 
@@ -61,7 +61,7 @@ namespace Hurace.Core.Db.Tests.UtilityTests
         [Fact]
         public void MapWithDateTimeStruct()
         {
-            var rowMapper = new Db.Utilities.RowMapper<Domain.Race>();
+            var rowMapper = new RowMapper<Entities.Race>();
 
             var mockedDataRecord = A.Fake<IDataRecord>();
 

@@ -63,37 +63,37 @@ namespace Hurace.Core.Tests.DataAccessTests
         [Fact]
         public void InitializeNewDaoWithInvalidConnectionFactoryTest()
         {
-            Assert.Throws<ArgumentNullException>(() => new GenericDao<Domain.Skier>(null));
+            Assert.Throws<ArgumentNullException>(() => new GenericDao<Entities.Skier>(null));
         }
 
         [Fact]
         public void CreateWithInvalidNewObject()
         {
-            var skierDao = new GenericDao<Domain.Skier>(new DefaultConnectionFactory());
+            var skierDao = new GenericDao<Entities.Skier>(new DefaultConnectionFactory());
             Assert.ThrowsAsync<ArgumentNullException>(() => skierDao.CreateAsync(null));
         }
 
         [Fact]
         public void UpdateWithInvalidNewObject()
         {
-            var skierDao = new GenericDao<Domain.Skier>(new DefaultConnectionFactory());
+            var skierDao = new GenericDao<Entities.Skier>(new DefaultConnectionFactory());
             Assert.ThrowsAsync<ArgumentNullException>(() => skierDao.UpdateAsync(null));
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country), 52)]
-        [InlineData(typeof(Domain.Race), 37)]
-        [InlineData(typeof(Domain.RaceData), 3710)]
-        [InlineData(typeof(Domain.RaceState), 5)]
-        [InlineData(typeof(Domain.RaceType), 2)]
-        [InlineData(typeof(Domain.Season), 2)]
-        [InlineData(typeof(Domain.SeasonPlan), 62)]
-        [InlineData(typeof(Domain.Sex), 2)]
-        [InlineData(typeof(Domain.Skier), 521)]
-        [InlineData(typeof(Domain.StartList), 74)]
-        [InlineData(typeof(Domain.StartPosition), 3710)]
-        [InlineData(typeof(Domain.TimeMeasurement), 18745)]
-        [InlineData(typeof(Domain.Venue), 31)]
+        [InlineData(typeof(Entities.Country), 52)]
+        [InlineData(typeof(Entities.Race), 37)]
+        [InlineData(typeof(Entities.RaceData), 3710)]
+        [InlineData(typeof(Entities.RaceState), 5)]
+        [InlineData(typeof(Entities.RaceType), 2)]
+        [InlineData(typeof(Entities.Season), 2)]
+        [InlineData(typeof(Entities.SeasonPlan), 62)]
+        [InlineData(typeof(Entities.Sex), 2)]
+        [InlineData(typeof(Entities.Skier), 521)]
+        [InlineData(typeof(Entities.StartList), 74)]
+        [InlineData(typeof(Entities.StartPosition), 3710)]
+        [InlineData(typeof(Entities.TimeMeasurement), 18745)]
+        [InlineData(typeof(Entities.Venue), 31)]
         public async Task GetAllUnconditionalTests(Type domainType, int expectedResultCount)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -116,19 +116,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task GetAllConditionalTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -154,19 +154,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task GetByIdTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -186,19 +186,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country), 50000)]
-        [InlineData(typeof(Domain.Race), 50000)]
-        [InlineData(typeof(Domain.RaceData), 50000)]
-        [InlineData(typeof(Domain.RaceState), 50000)]
-        [InlineData(typeof(Domain.RaceType), 50000)]
-        [InlineData(typeof(Domain.Season), 50000)]
-        [InlineData(typeof(Domain.SeasonPlan), 50000)]
-        [InlineData(typeof(Domain.Sex), 50000)]
-        [InlineData(typeof(Domain.Skier), 50000)]
-        [InlineData(typeof(Domain.StartList), 50000)]
-        [InlineData(typeof(Domain.StartPosition), 50000)]
-        [InlineData(typeof(Domain.TimeMeasurement), 50000)]
-        [InlineData(typeof(Domain.Venue), 50000)]
+        [InlineData(typeof(Entities.Country), 50000)]
+        [InlineData(typeof(Entities.Race), 50000)]
+        [InlineData(typeof(Entities.RaceData), 50000)]
+        [InlineData(typeof(Entities.RaceState), 50000)]
+        [InlineData(typeof(Entities.RaceType), 50000)]
+        [InlineData(typeof(Entities.Season), 50000)]
+        [InlineData(typeof(Entities.SeasonPlan), 50000)]
+        [InlineData(typeof(Entities.Sex), 50000)]
+        [InlineData(typeof(Entities.Skier), 50000)]
+        [InlineData(typeof(Entities.StartList), 50000)]
+        [InlineData(typeof(Entities.StartPosition), 50000)]
+        [InlineData(typeof(Entities.TimeMeasurement), 50000)]
+        [InlineData(typeof(Entities.Venue), 50000)]
         public async Task GetByIdWithNonExistingId(Type domainType, int queryId)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -213,12 +213,12 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task CreateTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -258,9 +258,9 @@ namespace Hurace.Core.Tests.DataAccessTests
         public async Task CreateWithSqlInjectionTest()
         {
             var connectionFactory = new DefaultConnectionFactory();
-            var seasonDao = new GenericDao<Domain.Season>(connectionFactory);
+            var seasonDao = new GenericDao<Entities.Season>(connectionFactory);
 
-            var expectedDomainObject = new Domain.Season()
+            var expectedDomainObject = new Entities.Season()
             {
                 Name = "'DELETE FROM [Hurace].[Sex];--",
                 StartDate = DateTime.Now.AddDays(-365).Date,
@@ -274,23 +274,23 @@ namespace Hurace.Core.Tests.DataAccessTests
             Assert.Equal(expectedDomainObject.StartDate, actualDomainObject.StartDate);
             Assert.Equal(expectedDomainObject.EndDate, actualDomainObject.EndDate);
 
-            var sexDao = new GenericDao<Domain.Sex>(connectionFactory);
+            var sexDao = new GenericDao<Entities.Sex>(connectionFactory);
             Assert.Equal(2, (await sexDao.GetAllConditionalAsync()).Count());
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task UpdateExistingDomainObjectTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -318,18 +318,18 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task UpdateNotExistentDomainObjectTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -347,7 +347,7 @@ namespace Hurace.Core.Tests.DataAccessTests
         [Fact]
         public async Task UpdateMultipleDomainObjectsTests()
         {
-            var raceDao = new GenericDao<Domain.Race>(new DefaultConnectionFactory());
+            var raceDao = new GenericDao<Entities.Race>(new DefaultConnectionFactory());
 
             var comparisonRaceIds = new int[] { 10, 20, 30 };
 
@@ -355,14 +355,14 @@ namespace Hurace.Core.Tests.DataAccessTests
                 .DeclareConditionNode(
                     QueryConditionNodeType.Or,
                     () => new QueryConditionBuilder()
-                        .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[0]),
+                        .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[0]),
                     () => new QueryConditionBuilder()
                         .DeclareConditionNode(
                             QueryConditionNodeType.Or,
                             () => new QueryConditionBuilder()
-                                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[1]),
+                                .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[1]),
                             () => new QueryConditionBuilder()
-                                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[2])))
+                                .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.Equals, comparisonRaceIds[2])))
                 .Build();
 
             var expectedNumberOfSensors = 10;
@@ -397,17 +397,17 @@ namespace Hurace.Core.Tests.DataAccessTests
         {
             get
             {
-                yield return new object[] { typeof(Domain.Country), new { Name = "Test" } };
-                yield return new object[] { typeof(Domain.Race), new { NumberOfSensors = 10 } };
-                yield return new object[] { typeof(Domain.RaceData), new { StartListId = 10 } };
-                yield return new object[] { typeof(Domain.RaceState), new { Label = "Test" } };
-                yield return new object[] { typeof(Domain.RaceType), new { Label = "Test" } };
-                yield return new object[] { typeof(Domain.Season), new { Name = "Test" } };
-                yield return new object[] { typeof(Domain.Sex), new { Label = "Test" } };
-                yield return new object[] { typeof(Domain.Skier), new { FirstName = "Test" } };
-                yield return new object[] { typeof(Domain.StartPosition), new { Position = 10 } };
-                yield return new object[] { typeof(Domain.TimeMeasurement), new { Measurement = 10 } };
-                yield return new object[] { typeof(Domain.Venue), new { Name = "Test" } };
+                yield return new object[] { typeof(Entities.Country), new { Name = "Test" } };
+                yield return new object[] { typeof(Entities.Race), new { NumberOfSensors = 10 } };
+                yield return new object[] { typeof(Entities.RaceData), new { StartListId = 10 } };
+                yield return new object[] { typeof(Entities.RaceState), new { Label = "Test" } };
+                yield return new object[] { typeof(Entities.RaceType), new { Label = "Test" } };
+                yield return new object[] { typeof(Entities.Season), new { Name = "Test" } };
+                yield return new object[] { typeof(Entities.Sex), new { Label = "Test" } };
+                yield return new object[] { typeof(Entities.Skier), new { FirstName = "Test" } };
+                yield return new object[] { typeof(Entities.StartPosition), new { Position = 10 } };
+                yield return new object[] { typeof(Entities.TimeMeasurement), new { Measurement = 10 } };
+                yield return new object[] { typeof(Entities.Venue), new { Name = "Test" } };
             }
         }
 
@@ -421,7 +421,7 @@ namespace Hurace.Core.Tests.DataAccessTests
                 "GetAllConditionalAsync");
 
             var condition = new QueryConditionBuilder()
-                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.GreaterThan, 50000)
+                .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.GreaterThan, 50000)
                 .Build();
 
             var getAllParameterList = new object[] { condition };
@@ -444,19 +444,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task UpdateWithInvalidUpdatedValuesTests1(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -478,19 +478,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task UpdateWithInvalidUpdatedValuesTests2(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -515,18 +515,18 @@ namespace Hurace.Core.Tests.DataAccessTests
         {
             get
             {
-                yield return new object[] { typeof(Domain.Country), new { Name = 10 } };
-                yield return new object[] { typeof(Domain.Race), new { NumberOfSensors = "Test" } };
-                yield return new object[] { typeof(Domain.RaceData), new { StartListId = "Test" } };
-                yield return new object[] { typeof(Domain.RaceState), new { Label = 10 } };
-                yield return new object[] { typeof(Domain.RaceType), new { Label = 10 } };
-                yield return new object[] { typeof(Domain.Season), new { Name = 10 } };
-                yield return new object[] { typeof(Domain.SeasonPlan), new { VenueId = "Test" } };
-                yield return new object[] { typeof(Domain.Sex), new { Label = 10 } };
-                yield return new object[] { typeof(Domain.Skier), new { FirstName = 10 } };
-                yield return new object[] { typeof(Domain.StartPosition), new { Position = "Test" } };
-                yield return new object[] { typeof(Domain.TimeMeasurement), new { Measurement = "Test" } };
-                yield return new object[] { typeof(Domain.Venue), new { Name = 10 } };
+                yield return new object[] { typeof(Entities.Country), new { Name = 10 } };
+                yield return new object[] { typeof(Entities.Race), new { NumberOfSensors = "Test" } };
+                yield return new object[] { typeof(Entities.RaceData), new { StartListId = "Test" } };
+                yield return new object[] { typeof(Entities.RaceState), new { Label = 10 } };
+                yield return new object[] { typeof(Entities.RaceType), new { Label = 10 } };
+                yield return new object[] { typeof(Entities.Season), new { Name = 10 } };
+                yield return new object[] { typeof(Entities.SeasonPlan), new { VenueId = "Test" } };
+                yield return new object[] { typeof(Entities.Sex), new { Label = 10 } };
+                yield return new object[] { typeof(Entities.Skier), new { FirstName = 10 } };
+                yield return new object[] { typeof(Entities.StartPosition), new { Position = "Test" } };
+                yield return new object[] { typeof(Entities.TimeMeasurement), new { Measurement = "Test" } };
+                yield return new object[] { typeof(Entities.Venue), new { Name = 10 } };
             }
         }
 
@@ -541,7 +541,7 @@ namespace Hurace.Core.Tests.DataAccessTests
                 new Type[] { typeof(object), typeof(IQueryCondition) });
 
             var condition = new QueryConditionBuilder()
-                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 0)
+                .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.Equals, 0)
                 .Build();
 
             var parameterList = new object[] { updateObject, condition };
@@ -551,19 +551,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task UpdateWithIdUpdateTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -573,7 +573,7 @@ namespace Hurace.Core.Tests.DataAccessTests
                 new Type[] { typeof(object), typeof(IQueryCondition) });
 
             var condition = new QueryConditionBuilder()
-                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 0)
+                .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.Equals, 0)
                 .Build();
 
             var parameterList = new object[] { new { Id = 0 }, condition };
@@ -583,19 +583,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task UpdateWithInvalidQueryConditionTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -611,19 +611,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country), false)]
-        [InlineData(typeof(Domain.Race), true)]
-        [InlineData(typeof(Domain.RaceData), false)]
-        [InlineData(typeof(Domain.RaceState), false)]
-        [InlineData(typeof(Domain.RaceType), false)]
-        [InlineData(typeof(Domain.Season), false)]
-        [InlineData(typeof(Domain.SeasonPlan), true)]
-        [InlineData(typeof(Domain.Sex), false)]
-        [InlineData(typeof(Domain.Skier), false)]
-        [InlineData(typeof(Domain.StartList), false)]
-        [InlineData(typeof(Domain.StartPosition), true)]
-        [InlineData(typeof(Domain.TimeMeasurement), true)]
-        [InlineData(typeof(Domain.Venue), false)]
+        [InlineData(typeof(Entities.Country), false)]
+        [InlineData(typeof(Entities.Race), true)]
+        [InlineData(typeof(Entities.RaceData), false)]
+        [InlineData(typeof(Entities.RaceState), false)]
+        [InlineData(typeof(Entities.RaceType), false)]
+        [InlineData(typeof(Entities.Season), false)]
+        [InlineData(typeof(Entities.SeasonPlan), true)]
+        [InlineData(typeof(Entities.Sex), false)]
+        [InlineData(typeof(Entities.Skier), false)]
+        [InlineData(typeof(Entities.StartList), false)]
+        [InlineData(typeof(Entities.StartPosition), true)]
+        [InlineData(typeof(Entities.TimeMeasurement), true)]
+        [InlineData(typeof(Entities.Venue), false)]
         public async Task DeleteByIdExistingIdTests(Type domainType, bool expectedSuccess)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -640,7 +640,7 @@ namespace Hurace.Core.Tests.DataAccessTests
 
                 var daoGetByIdMethod = GetAdoDaoMethodInfo(domainType, "GetByIdAsync");
                 var expectedNotFoundDomainObject =
-                    (Domain.DomainObjectBase)await
+                    (Entities.EntityObjectBase)await
                         (dynamic)daoGetByIdMethod.Invoke(adoDaoInstance, paramList);
 
                 Assert.Null(expectedNotFoundDomainObject);
@@ -653,19 +653,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task DeleteByNotExistingIdTest(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -679,19 +679,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country), false)]
-        [InlineData(typeof(Domain.Race), true)]
-        [InlineData(typeof(Domain.RaceData), false)]
-        [InlineData(typeof(Domain.RaceState), false)]
-        [InlineData(typeof(Domain.RaceType), false)]
-        [InlineData(typeof(Domain.Season), false)]
-        [InlineData(typeof(Domain.SeasonPlan), true)]
-        [InlineData(typeof(Domain.Sex), false)]
-        [InlineData(typeof(Domain.Skier), false)]
-        [InlineData(typeof(Domain.StartList), false)]
-        [InlineData(typeof(Domain.StartPosition), true)]
-        [InlineData(typeof(Domain.TimeMeasurement), true)]
-        [InlineData(typeof(Domain.Venue), false)]
+        [InlineData(typeof(Entities.Country), false)]
+        [InlineData(typeof(Entities.Race), true)]
+        [InlineData(typeof(Entities.RaceData), false)]
+        [InlineData(typeof(Entities.RaceState), false)]
+        [InlineData(typeof(Entities.RaceType), false)]
+        [InlineData(typeof(Entities.Season), false)]
+        [InlineData(typeof(Entities.SeasonPlan), true)]
+        [InlineData(typeof(Entities.Sex), false)]
+        [InlineData(typeof(Entities.Skier), false)]
+        [InlineData(typeof(Entities.StartList), false)]
+        [InlineData(typeof(Entities.StartPosition), true)]
+        [InlineData(typeof(Entities.TimeMeasurement), true)]
+        [InlineData(typeof(Entities.Venue), false)]
         public async Task DeleteWithConditionTests(Type domainType, bool expectedSuccess)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -704,9 +704,9 @@ namespace Hurace.Core.Tests.DataAccessTests
                 .DeclareConditionNode(
                     QueryConditionNodeType.Or,
                     () => new QueryConditionBuilder()
-                        .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 0),
+                        .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.Equals, 0),
                     () => new QueryConditionBuilder()
-                        .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.Equals, 1))
+                        .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.Equals, 1))
                 .Build();
 
             var parameterList = new object[] { condition };
@@ -731,19 +731,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task DeleteWithConditionThatCapturesNothingTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -752,7 +752,7 @@ namespace Hurace.Core.Tests.DataAccessTests
                 "GetAllConditionalAsync");
 
             var condition = new QueryConditionBuilder()
-                .DeclareCondition(nameof(Domain.DomainObjectBase.Id), QueryConditionType.GreaterThan, 50000)
+                .DeclareCondition(nameof(Entities.EntityObjectBase.Id), QueryConditionType.GreaterThan, 50000)
                 .Build();
 
             var getAllParameterList = new object[] { condition };
@@ -775,19 +775,19 @@ namespace Hurace.Core.Tests.DataAccessTests
         }
 
         [Theory]
-        [InlineData(typeof(Domain.Country))]
-        [InlineData(typeof(Domain.Race))]
-        [InlineData(typeof(Domain.RaceData))]
-        [InlineData(typeof(Domain.RaceState))]
-        [InlineData(typeof(Domain.RaceType))]
-        [InlineData(typeof(Domain.Season))]
-        [InlineData(typeof(Domain.SeasonPlan))]
-        [InlineData(typeof(Domain.Sex))]
-        [InlineData(typeof(Domain.Skier))]
-        [InlineData(typeof(Domain.StartList))]
-        [InlineData(typeof(Domain.StartPosition))]
-        [InlineData(typeof(Domain.TimeMeasurement))]
-        [InlineData(typeof(Domain.Venue))]
+        [InlineData(typeof(Entities.Country))]
+        [InlineData(typeof(Entities.Race))]
+        [InlineData(typeof(Entities.RaceData))]
+        [InlineData(typeof(Entities.RaceState))]
+        [InlineData(typeof(Entities.RaceType))]
+        [InlineData(typeof(Entities.Season))]
+        [InlineData(typeof(Entities.SeasonPlan))]
+        [InlineData(typeof(Entities.Sex))]
+        [InlineData(typeof(Entities.Skier))]
+        [InlineData(typeof(Entities.StartList))]
+        [InlineData(typeof(Entities.StartPosition))]
+        [InlineData(typeof(Entities.TimeMeasurement))]
+        [InlineData(typeof(Entities.Venue))]
         public async Task DeleteWithInvalidConditionTests(Type domainType)
         {
             var adoDaoInstance = GetAdoDaoInstance(domainType);
@@ -882,21 +882,21 @@ namespace Hurace.Core.Tests.DataAccessTests
             return conditionBuilder.Build();
         }
 
-        private static Domain.DomainObjectBase GenerateTestableCompareObject(Type currentDomainType)
+        private static Entities.EntityObjectBase GenerateTestableCompareObject(Type currentDomainType)
         {
-            Domain.DomainObjectBase testObject;
+            Entities.EntityObjectBase testObject;
 
             switch (currentDomainType.Name)
             {
-                case nameof(Domain.Country):
-                    testObject = new Domain.Country()
+                case nameof(Entities.Country):
+                    testObject = new Entities.Country()
                     {
                         Id = 5,
                         Name = "SUI"
                     };
                     return testObject;
-                case nameof(Domain.Race):
-                    testObject = new Domain.Race()
+                case nameof(Entities.Race):
+                    testObject = new Entities.Race()
                     {
                         Id = 13,
                         RaceTypeId = 1,
@@ -910,8 +910,8 @@ namespace Hurace.Core.Tests.DataAccessTests
                         Date = new DateTime(2017, 12, 28)
                     };
                     return testObject;
-                case nameof(Domain.RaceData):
-                    testObject = new Domain.RaceData()
+                case nameof(Entities.RaceData):
+                    testObject = new Entities.RaceData()
                     {
                         Id = 311,
                         StartListId = 6,
@@ -919,22 +919,22 @@ namespace Hurace.Core.Tests.DataAccessTests
                         RaceStateId = 1
                     };
                     return testObject;
-                case nameof(Domain.RaceState):
-                    testObject = new Domain.RaceState()
+                case nameof(Entities.RaceState):
+                    testObject = new Entities.RaceState()
                     {
                         Id = 2,
                         Label = "NichtAbgeschlossen"
                     };
                     return testObject;
-                case nameof(Domain.RaceType):
-                    testObject = new Domain.RaceType()
+                case nameof(Entities.RaceType):
+                    testObject = new Entities.RaceType()
                     {
                         Id = 0,
                         Label = "Riesentorlauf"
                     };
                     return testObject;
-                case nameof(Domain.Season):
-                    testObject = new Domain.Season()
+                case nameof(Entities.Season):
+                    testObject = new Entities.Season()
                     {
                         Id = 1,
                         Name = "Jährliche Saison 2018",
@@ -942,23 +942,23 @@ namespace Hurace.Core.Tests.DataAccessTests
                         EndDate = new DateTime(2018, 12, 31)
                     };
                     return testObject;
-                case nameof(Domain.SeasonPlan):
-                    testObject = new Domain.SeasonPlan()
+                case nameof(Entities.SeasonPlan):
+                    testObject = new Entities.SeasonPlan()
                     {
                         Id = 53,
                         VenueId = 22,
                         SeasonId = 1
                     };
                     return testObject;
-                case nameof(Domain.Sex):
-                    testObject = new Domain.Sex()
+                case nameof(Entities.Sex):
+                    testObject = new Entities.Sex()
                     {
                         Id = 0,
                         Label = "Weiblich"
                     };
                     return testObject;
-                case nameof(Domain.Skier):
-                    testObject = new Domain.Skier()
+                case nameof(Entities.Skier):
+                    testObject = new Entities.Skier()
                     {
                         Id = 120,
                         FirstName = "Marcel",
@@ -970,14 +970,14 @@ namespace Hurace.Core.Tests.DataAccessTests
                         IsRemoved = false
                     };
                     return testObject;
-                case nameof(Domain.StartList):
-                    testObject = new Domain.StartList()
+                case nameof(Entities.StartList):
+                    testObject = new Entities.StartList()
                     {
                         Id = 41
                     };
                     return testObject;
-                case nameof(Domain.StartPosition):
-                    testObject = new Domain.StartPosition()
+                case nameof(Entities.StartPosition):
+                    testObject = new Entities.StartPosition()
                     {
                         Id = 53,
                         SkierId = 0,
@@ -985,8 +985,8 @@ namespace Hurace.Core.Tests.DataAccessTests
                         Position = 54
                     };
                     return testObject;
-                case nameof(Domain.TimeMeasurement):
-                    testObject = new Domain.TimeMeasurement()
+                case nameof(Entities.TimeMeasurement):
+                    testObject = new Entities.TimeMeasurement()
                     {
                         Id = 226,
                         SensorId = 1,
@@ -994,8 +994,8 @@ namespace Hurace.Core.Tests.DataAccessTests
                         RaceDataId = 45
                     };
                     return testObject;
-                case nameof(Domain.Venue):
-                    testObject = new Domain.Venue()
+                case nameof(Entities.Venue):
+                    testObject = new Entities.Venue()
                     {
                         Id = 20,
                         Name = "Kitzbuehel",

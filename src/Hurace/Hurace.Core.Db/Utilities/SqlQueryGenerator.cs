@@ -1,6 +1,6 @@
 ﻿using Hurace.Core.Db.Extensions;
 using Hurace.Core.Db.Queries;
-using Hurace.Domain;
+using Hurace.Entities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,7 +15,7 @@ namespace Hurace.Core.Db.Utilities
     /// The queries are also sanitized with <see cref="QueryParameter"/>s.
     /// </summary>
     /// <typeparam name="T">the specific domain-object type</typeparam>
-    public class SqlQueryGenerator<T> where T : DomainObjectBase
+    public class SqlQueryGenerator<T> where T : EntityObjectBase
     {
         /// <summary>
         /// Generates a SELECT query that generates a select query that only returns a single
@@ -28,7 +28,7 @@ namespace Hurace.Core.Db.Utilities
         {
             return this.GenerateSelectQuery(
                 new QueryConditionBuilder()
-                .DeclareCondition(nameof(DomainObjectBase.Id), QueryConditionType.Equals, id)
+                .DeclareCondition(nameof(EntityObjectBase.Id), QueryConditionType.Equals, id)
                 .Build());
         }
 
@@ -187,7 +187,7 @@ namespace Hurace.Core.Db.Utilities
         {
             return this.GenerateDeleteQuery(
                 new QueryConditionBuilder()
-                .DeclareCondition(nameof(DomainObjectBase.Id), QueryConditionType.Equals, id)
+                .DeclareCondition(nameof(EntityObjectBase.Id), QueryConditionType.Equals, id)
                 .Build());
         }
 
