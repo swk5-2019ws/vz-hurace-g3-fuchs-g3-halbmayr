@@ -991,7 +991,8 @@ namespace Hurace.Core.Tests.DataAccessTests
                         Id = 226,
                         SensorId = 1,
                         Measurement = 59000,
-                        RaceDataId = 45
+                        RaceDataId = 45,
+                        IsValid = true
                     };
                     return testObject;
                 case nameof(Entities.Venue):

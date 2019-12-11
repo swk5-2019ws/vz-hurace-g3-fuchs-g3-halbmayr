@@ -286,6 +286,7 @@ CREATE TABLE [Hurace].[TimeMeasurement]
  [SensorId]    int NOT NULL ,
  [Measurement] int NOT NULL ,
  [RaceDataId]  int NOT NULL ,
+ [IsValid]       bit NOT NULL ,
 
 
  CONSTRAINT [TimeMeasurement_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
