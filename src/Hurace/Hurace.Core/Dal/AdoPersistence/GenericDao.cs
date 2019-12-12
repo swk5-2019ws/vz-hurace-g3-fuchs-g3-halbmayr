@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hurace.Core.Dal.AdoPersistence
+namespace Hurace.Core.DAL.AdoPersistence
 {
     public class GenericDao<T> : IDataAccessObject<T> where T : Entities.EntityObjectBase, new()
     {

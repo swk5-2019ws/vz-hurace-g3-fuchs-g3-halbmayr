@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 #pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
-namespace Hurace.Core.Dal.AdoPersistence
+namespace Hurace.Core.DAL.AdoPersistence
 {
     internal class AdoTemplate
     {

@@ -1,4 +1,4 @@
-﻿using Hurace.Core.Dal.AdoPersistence;
+﻿using Hurace.Core.DAL.AdoPersistence;
 using Hurace.Core.Db.Connection;
 using Hurace.Core.Db.Queries;
 using Microsoft.Data.SqlClient;
@@ -14,7 +14,7 @@ using Xunit;
 #pragma warning disable CA5394 // Do not use insecure randomness
 #pragma warning disable IDE0045 // Convert to conditional expression
 #pragma warning disable IDE0046 // Convert to conditional expression
-namespace Hurace.Core.Tests.DataAccessTests
+namespace Hurace.Core.Tests.DAL
 {
     public class GenericDaoTests : IDisposable
     {
