@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Tests", "Hurace
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Db.Tests", "Hurace.Core.Db.Tests\Hurace.Core.Db.Tests.csproj", "{9B6D6074-28E3-486D-A7F5-AC6F41369295}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hurace.Entities", "Hurace.Entities\Hurace.Entities.csproj", "{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Entities", "Hurace.Entities\Hurace.Entities.csproj", "{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
