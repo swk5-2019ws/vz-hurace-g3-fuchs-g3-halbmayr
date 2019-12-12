@@ -1,9 +1,8 @@
 ﻿using Hurace.Core.Db.Extensions;
 using Hurace.Core.Db.Queries;
-using Hurace.Domain;
+using Hurace.Entities;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,8 +14,23 @@ namespace Hurace.Core.Db.Utilities
     /// The queries are also sanitized with <see cref="QueryParameter"/>s.
     /// </summary>
     /// <typeparam name="T">the specific domain-object type</typeparam>
-    public class SqlQueryGenerator<T> where T : DomainObjectBase
+    public class SqlQueryGenerator<T> where T : EntityObjectBase
     {
+        /// <summary>
+        /// Generates a SELECT query that generates a select query that only returns a single
+        /// row that matches the passed id, if such a row exists
+        /// </summary>
+        /// <param name="id">id of the requested row</param>
+        /// <returns>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/>
+        /// that contains the sanitized value of the passed id</returns>
+        public (string query, QueryParameter[] queryParameters) GenerateSelectQuery(int id)
+        {
+            return this.GenerateSelectQuery(
+                new QueryConditionBuilder()
+                .DeclareCondition(nameof(EntityObjectBase.Id), QueryConditionType.Equals, id)
+                .Build());
+        }
+
         /// <summary>
         /// Generates a SELECT query that supplies the executer with either all rows, or rows
         /// that fall into passed rules
@@ -83,8 +97,7 @@ namespace Hurace.Core.Db.Utilities
         /// <param name="newDomainObjct">the updated domain-object</param>
         /// <returns>a query-<see cref="string"/> and a <see cref="QueryParameter[]"/> that
         /// contains a single <see cref="QueryParameter"/> describing the sanitized Id</returns>
-        public (string query, QueryParameter[] queryParameters) GenerateUpdateQuery(
-            T updatedDomainObject)
+        public (string query, QueryParameter[] queryParameters) GenerateUpdateQuery(T updatedDomainObject)
         {
             if (updatedDomainObject == null) throw new ArgumentNullException(nameof(updatedDomainObject));
             if (updatedDomainObject.Id < 0) throw new ArgumentOutOfRangeException(nameof(updatedDomainObject));
@@ -172,12 +185,9 @@ namespace Hurace.Core.Db.Utilities
         public (string query, QueryParameter[] queryParameters) GenerateDeleteQuery(int id)
         {
             return this.GenerateDeleteQuery(
-                new QueryCondition()
-                {
-                    ColumnToCheck = "Id",
-                    CompareValue = id,
-                    ConditionType = QueryCondition.Type.Equals
-                });
+                new QueryConditionBuilder()
+                .DeclareCondition(nameof(EntityObjectBase.Id), QueryConditionType.Equals, id)
+                .Build());
         }
 
         /// <summary>

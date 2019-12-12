@@ -1,18 +1,13 @@
-﻿using Hurace.Core.Db;
-using Hurace.Core.Db.Connection;
+﻿using Hurace.Core.Db.Connection;
 using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
-using Hurace.Domain;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hurace.Core.Dal.AdoPersistence
 {
-    public class GenericDao<T> : IDataAccessObject<T> where T : DomainObjectBase, new()
+    public class GenericDao<T> : IDataAccessObject<T> where T : Entities.EntityObjectBase, new()
     {
         private readonly AdoTemplate template;
 
@@ -56,14 +51,7 @@ namespace Hurace.Core.Dal.AdoPersistence
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var idCondition = new QueryCondition()
-            {
-                ColumnToCheck = nameof(DomainObjectBase.Id),
-                CompareValue = id,
-                ConditionType = QueryCondition.Type.Equals
-            };
-
-            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateSelectQuery(idCondition);
+            (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateSelectQuery(id);
 
             return await template.QuerySingleObjectAsync(query, RowMapper, parameters);
         }

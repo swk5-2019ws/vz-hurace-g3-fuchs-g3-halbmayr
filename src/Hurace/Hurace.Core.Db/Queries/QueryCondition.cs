@@ -1,30 +1,15 @@
 ﻿using Hurace.Core.Db.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 #pragma warning disable IDE0046 // Convert to conditional expression
 namespace Hurace.Core.Db.Queries
 {
-    public sealed class QueryCondition : IQueryCondition
+    internal sealed class QueryCondition : IQueryCondition
     {
-        /// <summary>
-        /// Describes how a <see cref="QueryCondition"/> compares a column to a concrete value
-        /// </summary>
-        public enum Type
-        {
-            Equals,
-            NotEquals,
-            LessThan,
-            LessThanOrEquals,
-            GreaterThan,
-            GreaterThanOrEquals,
-            Like
-        }
-
         public string ColumnToCheck { get; set; }
-        public Type ConditionType { get; set; }
+        public QueryConditionType ConditionType { get; set; }
         public object CompareValue { get; set; }
 
         public void AppendTo(StringBuilder queryStringBuilder, IList<QueryParameter> queryParameters)
@@ -38,25 +23,25 @@ namespace Hurace.Core.Db.Queries
 
             switch (ConditionType)
             {
-                case Type.Equals:
+                case QueryConditionType.Equals:
                     queryStringBuilder.Append("=");
                     break;
-                case Type.NotEquals:
+                case QueryConditionType.NotEquals:
                     queryStringBuilder.Append("!=");
                     break;
-                case Type.GreaterThan:
+                case QueryConditionType.GreaterThan:
                     queryStringBuilder.Append(">");
                     break;
-                case Type.GreaterThanOrEquals:
+                case QueryConditionType.GreaterThanOrEquals:
                     queryStringBuilder.Append(">=");
                     break;
-                case Type.Like:
+                case QueryConditionType.Like:
                     queryStringBuilder.Append("LIKE");
                     break;
-                case Type.LessThan:
+                case QueryConditionType.LessThan:
                     queryStringBuilder.Append("<");
                     break;
-                case Type.LessThanOrEquals:
+                case QueryConditionType.LessThanOrEquals:
                     queryStringBuilder.Append("<=");
                     break;
                 default:

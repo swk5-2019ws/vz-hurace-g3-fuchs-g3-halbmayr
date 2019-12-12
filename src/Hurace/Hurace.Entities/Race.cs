@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace Hurace.Domain
+namespace Hurace.Entities
 {
-    public class Race : DomainObjectBase
+    public class Race : EntityObjectBase
     {
         public int RaceTypeId { get; set; }
         public int VenueId { get; set; }

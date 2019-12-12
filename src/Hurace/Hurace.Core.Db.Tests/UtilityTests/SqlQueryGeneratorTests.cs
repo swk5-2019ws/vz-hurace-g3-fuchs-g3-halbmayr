@@ -1,14 +1,12 @@
 ﻿using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
-using Hurace.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 #pragma warning disable CA1054 // Uri parameters should not be strings
-namespace Hurace.Core.Tests.DbUtilityTests
+namespace Hurace.Core.Db.Tests.UtilityTests
 {
     public class SqlQueryGeneratorTests
     {
@@ -25,7 +23,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         public void GenerateBasicSelectQueryTest()
         {
             string expectedQueryString = "SELECT [Label], [Id] FROM [Hurace].[Sex]";
-            var queryGenerator = new SqlQueryGenerator<Sex>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Sex>();
 
             (var actualQueryString, var queryParameters) = queryGenerator.GenerateSelectQuery();
 
@@ -41,38 +39,22 @@ namespace Hurace.Core.Tests.DbUtilityTests
                 "FROM [Hurace].[Skier] " +
                 "WHERE ([Id] != @{0} AND ([FirstName] = @{1} OR [FirstName] = @{2}))";
 
-            var queryGenerator = new SqlQueryGenerator<Skier>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Skier>();
 
             var idExpectedValue = 15;
             var firstName1ExpectedValue = "Marcel";
             var firstName2ExpectedValue = "Viktoria";
 
-            var conditions = new QueryConditionCombination()
-            {
-                CombinationType = QueryConditionCombination.Type.And,
-                FirstCondition = new QueryCondition()
-                {
-                    ColumnToCheck = "Id",
-                    CompareValue = idExpectedValue,
-                    ConditionType = QueryCondition.Type.NotEquals
-                },
-                SecondCondition = new QueryConditionCombination()
-                {
-                    CombinationType = QueryConditionCombination.Type.Or,
-                    FirstCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "FirstName",
-                        CompareValue = firstName1ExpectedValue,
-                        ConditionType = QueryCondition.Type.Equals
-                    },
-                    SecondCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "FirstName",
-                        CompareValue = firstName2ExpectedValue,
-                        ConditionType = QueryCondition.Type.Equals
-                    }
-                }
-            };
+            var conditions = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder().DeclareCondition("Id", QueryConditionType.NotEquals, idExpectedValue),
+                    () => new QueryConditionBuilder()
+                        .DeclareConditionNode(
+                            QueryConditionNodeType.Or,
+                            () => new QueryConditionBuilder().DeclareCondition("FirstName", QueryConditionType.Equals, firstName1ExpectedValue),
+                            () => new QueryConditionBuilder().DeclareCondition("FirstName", QueryConditionType.Equals, firstName2ExpectedValue)))
+                .Build();
 
             (var actualQuery, var queryParameters) = queryGenerator.GenerateSelectQuery(conditions);
 
@@ -104,15 +86,12 @@ namespace Hurace.Core.Tests.DbUtilityTests
         public void GenerateSelectWithIdConditionTest()
         {
             string expectedQuery = "SELECT [Label], [Id] FROM [Hurace].[Sex] WHERE [Id] = @Id0";
-            var queryGenerator = new SqlQueryGenerator<Sex>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Sex>();
 
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateSelectQuery(
-                new QueryCondition()
-                {
-                    ColumnToCheck = "Id",
-                    CompareValue = 1,
-                    ConditionType = QueryCondition.Type.Equals
-                });
+                new QueryConditionBuilder()
+                    .DeclareCondition("Id", QueryConditionType.Equals, 1)
+                    .Build());
 
             Assert.Equal(expectedQuery, generatedQuery);
             Assert.Equal(1, queryParameters[0].Value);
@@ -125,10 +104,10 @@ namespace Hurace.Core.Tests.DbUtilityTests
             string expectedParameterValue = "AUS";
             string expectedQuery = $"INSERT INTO [Hurace].[Country] ([Name]) VALUES (@{expectedParameterName})";
 
-            var queryGenerator = new SqlQueryGenerator<Country>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Country>();
             (var generatedQuery, var queryParameters) =
                 queryGenerator.GenerateInsertQuery(
-                new Country
+                new Entities.Country
                 {
                     Name = expectedParameterValue
                 });
@@ -156,9 +135,9 @@ namespace Hurace.Core.Tests.DbUtilityTests
                 "([FirstName], [LastName], [DateOfBirth], [ImageUrl], [CountryId], [SexId], [IsRemoved]) VALUES " +
                 "(@FirstName0, @LastName0, @DateOfBirth0, @ImageUrl0, @CountryId0, @SexId0, @IsRemoved0)";
 
-            var queryGenerator = new SqlQueryGenerator<Skier>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Skier>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateInsertQuery(
-                new Skier
+                new Entities.Skier
                 {
                     FirstName = fn,
                     LastName = ln,
@@ -187,7 +166,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public static void GenerateInsertQueryWithInvalidParametersTest()
         {
-            var queryGenerator = new SqlQueryGenerator<Sex>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Sex>();
             Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateInsertQuery(null));
         }
 
@@ -198,11 +177,11 @@ namespace Hurace.Core.Tests.DbUtilityTests
                 "SET [StartListId] = @StartListId0, [SkierId] = @SkierId0, [Position] = @Position0 " +
                 "WHERE [Id] = @Id0";
 
-            var queryGenerator = new SqlQueryGenerator<StartPosition>();
+            var queryGenerator = new SqlQueryGenerator<Entities.StartPosition>();
 
             (var generatedQuery, var generatedParameters) =
                 queryGenerator.GenerateUpdateQuery(
-                    new StartPosition
+                    new Entities.StartPosition
                     {
                         StartListId = 35,
                         SkierId = 18,
@@ -220,42 +199,24 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public void GenerateUpdateQueryWithConditionsTest()
         {
-            var updateCondition = new QueryConditionCombination()
-            {
-                CombinationType = QueryConditionCombination.Type.And,
-                FirstCondition = new QueryConditionCombination()
-                {
-                    CombinationType = QueryConditionCombination.Type.And,
-                    FirstCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "FirstName",
-                        CompareValue = "Marcel",
-                        ConditionType = QueryCondition.Type.NotEquals
-                    },
-                    SecondCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "DateOfBirth",
-                        CompareValue = new DateTime(2005, 1, 1),
-                        ConditionType = QueryCondition.Type.LessThan
-                    }
-                },
-                SecondCondition = new QueryConditionCombination()
-                {
-                    CombinationType = QueryConditionCombination.Type.Or,
-                    FirstCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "LastName",
-                        CompareValue = "Halbmayr",
-                        ConditionType = QueryCondition.Type.Equals
-                    },
-                    SecondCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "LastName",
-                        CompareValue = "Fuchs",
-                        ConditionType = QueryCondition.Type.Equals
-                    }
-                }
-            };
+            var updateCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder()
+                        .DeclareConditionNode(
+                            QueryConditionNodeType.And,
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition("FirstName", QueryConditionType.NotEquals, "Marcel"),
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition("DateOfBirth", QueryConditionType.LessThan, new DateTime(2005, 1, 1))),
+                    () => new QueryConditionBuilder()
+                        .DeclareConditionNode(
+                            QueryConditionNodeType.Or,
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition("LastName", QueryConditionType.Equals, "Halbmayr"),
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition("LastName", QueryConditionType.Equals, "Fuchs")))
+                .Build();
 
             var expectedUpdatedDateOfBirth = new DateTime(2001, 1, 1);
             var expectedUpdatedImageUrl = "https://robohash.org/1";
@@ -274,7 +235,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
                 "WHERE (([FirstName] != @FirstName0 AND [DateOfBirth] < @DateOfBirth1)" +
                 " AND ([LastName] = @LastName0 OR [LastName] = @LastName1))";
 
-            var queryGenerator = new SqlQueryGenerator<Skier>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Skier>();
 
             (var actualUpdateQuery, var queryParameters) = queryGenerator.GenerateUpdateQuery(updatedObject, updateCondition);
 
@@ -303,17 +264,17 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public static void GenerateUpdateQueryWithInvalidParameterTest1()
         {
-            var queryGenerator = new SqlQueryGenerator<Sex>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Sex>();
             Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(null));
         }
 
         [Fact]
         public static void GenerateUpdateQueryWithInvalidParameterTest2()
         {
-            var queryGenerator = new SqlQueryGenerator<Country>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Country>();
             Assert.Throws<ArgumentOutOfRangeException>(
                 () => queryGenerator.GenerateUpdateQuery(
-                    new Country
+                    new Entities.Country
                     {
                         Name = "AUS",
                         Id = -3
@@ -323,22 +284,15 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public static void GenerateUpdateQueryWithInvalidParameterTest3()
         {
-            var queryGenerator = new SqlQueryGenerator<Skier>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Skier>();
             Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(null, null));
         }
 
         [Fact]
         public static void GenerateUpdateQueryWithInvalidParameterTest4()
         {
-            var queryGenerator = new SqlQueryGenerator<Skier>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Skier>();
             Assert.Throws<ArgumentNullException>(() => queryGenerator.GenerateUpdateQuery(new { }, null));
-        }
-
-        [Fact]
-        public static void GenerateUpdateQueryWithInvalidParameterTest5()
-        {
-            var queryGenerator = new SqlQueryGenerator<Skier>();
-            Assert.Throws<InvalidOperationException>(() => queryGenerator.GenerateUpdateQuery(new Skier(), new QueryCondition()));
         }
 
         [Fact]
@@ -348,7 +302,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
 
             int idToDelete = 135;
 
-            var queryGenerator = new SqlQueryGenerator<StartPosition>();
+            var queryGenerator = new SqlQueryGenerator<Entities.StartPosition>();
             (var generatedQuery, var queryParameters) = queryGenerator.GenerateDeleteQuery(idToDelete);
 
             Assert.Equal(expectedQuery, generatedQuery);
@@ -360,37 +314,23 @@ namespace Hurace.Core.Tests.DbUtilityTests
         [Fact]
         public void GenerateDeleteWithConditionsParameterTest()
         {
-            var condition = new QueryConditionCombination()
-            {
-                CombinationType = QueryConditionCombination.Type.And,
-                FirstCondition = new QueryCondition()
-                {
-                    ColumnToCheck = "FirstName",
-                    CompareValue = "Stevenie",
-                    ConditionType = QueryCondition.Type.NotEquals
-                },
-                SecondCondition = new QueryConditionCombination()
-                {
-                    CombinationType = QueryConditionCombination.Type.Or,
-                    FirstCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "LastName",
-                        CompareValue = "Zeitlhofinger",
-                        ConditionType = QueryCondition.Type.NotEquals
-                    },
-                    SecondCondition = new QueryCondition()
-                    {
-                        ColumnToCheck = "LastName",
-                        CompareValue = "Halbmayr",
-                        ConditionType = QueryCondition.Type.Like
-                    }
-                }
-            };
+            var condition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder().DeclareCondition("FirstName", QueryConditionType.NotEquals, "Stevenie"),
+                    () => new QueryConditionBuilder()
+                        .DeclareConditionNode(
+                            QueryConditionNodeType.Or,
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition("LastName", QueryConditionType.NotEquals, "Zeitlhofinger"),
+                            () => new QueryConditionBuilder()
+                                .DeclareCondition("LastName", QueryConditionType.Like, "Halbmayr")))
+                .Build();
 
             string expectedQuery = "DELETE FROM [Hurace].[Skier] " +
                 "WHERE ([FirstName] != @FirstName0 AND ([LastName] != @LastName0 OR [LastName] LIKE @LastName1))";
 
-            var queryGenerator = new SqlQueryGenerator<Skier>();
+            var queryGenerator = new SqlQueryGenerator<Entities.Skier>();
 
             (var actualQuery, var actualQueryParameters) = queryGenerator.GenerateDeleteQuery(condition);
 
@@ -410,7 +350,7 @@ namespace Hurace.Core.Tests.DbUtilityTests
         public void GenerateGetLastIndentyQueryTest()
         {
             string expected = "SELECT IDENT_CURRENT('[Hurace].[Skier]')";
-            string actual = new SqlQueryGenerator<Skier>().GenerateGetLastIdentityQuery();
+            string actual = new SqlQueryGenerator<Entities.Skier>().GenerateGetLastIdentityQuery();
 
             Assert.Equal(expected, actual);
         }

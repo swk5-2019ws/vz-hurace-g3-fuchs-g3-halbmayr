@@ -4,21 +4,11 @@ using System.Text;
 
 namespace Hurace.Core.Db.Queries
 {
-    public sealed class QueryConditionCombination : IQueryCondition
+    internal sealed class QueryConditionNode : IQueryCondition
     {
-        /// <summary>
-        /// Describes how two <see cref="IQueryCondition"/>s held by this instance are logically
-        /// evaluated together.
-        /// </summary>
-        public enum Type
-        {
-            And,
-            Or
-        }
-
         public IQueryCondition FirstCondition { get; set; }
         public IQueryCondition SecondCondition { get; set; }
-        public Type CombinationType { get; set; }
+        public QueryConditionNodeType NodeType { get; set; }
 
         public void AppendTo(StringBuilder queryStringBuilder, IList<QueryParameter> queryParameters)
         {
@@ -34,16 +24,16 @@ namespace Hurace.Core.Db.Queries
             queryStringBuilder.Append("(");
             FirstCondition.AppendTo(queryStringBuilder, queryParameters);
 
-            switch (CombinationType)
+            switch (NodeType)
             {
-                case Type.And:
+                case QueryConditionNodeType.And:
                     queryStringBuilder.Append(" AND ");
                     break;
-                case Type.Or:
+                case QueryConditionNodeType.Or:
                     queryStringBuilder.Append(" OR ");
                     break;
                 default:
-                    throw new InvalidOperationException(nameof(CombinationType));
+                    throw new InvalidOperationException(nameof(NodeType));
             }
 
             SecondCondition.AppendTo(queryStringBuilder, queryParameters);

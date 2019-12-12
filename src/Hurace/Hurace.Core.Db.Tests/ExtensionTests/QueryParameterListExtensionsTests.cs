@@ -1,13 +1,11 @@
 ﻿using Hurace.Core.Db.Extensions;
 using Hurace.Core.Db.Queries;
-using Hurace.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
-namespace Hurace.Core.Tests.ExtensionTests
+namespace Hurace.Core.Db.Tests.ExtensionTests
 {
     public class QueryParameterListExtensionsTests
     {
@@ -54,7 +52,7 @@ namespace Hurace.Core.Tests.ExtensionTests
         {
             var queryParameters = new List<QueryParameter>();
 
-            var raceProperties = typeof(Race).GetProperties();
+            var raceProperties = typeof(Entities.Race).GetProperties();
             for (int i = 0; i < raceProperties.Length; i++)
             {
                 var currentProperty = raceProperties[i];
