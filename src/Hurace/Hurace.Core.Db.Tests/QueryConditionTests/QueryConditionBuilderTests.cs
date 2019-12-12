@@ -1,5 +1,4 @@
-﻿using Hurace.Core.Db.Extensions;
-using Hurace.Core.Db.Queries;
+﻿using Hurace.Core.Db.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,7 +1,6 @@
 ﻿using Hurace.Core.Db.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 #pragma warning disable IDE0046 // Convert to conditional expression

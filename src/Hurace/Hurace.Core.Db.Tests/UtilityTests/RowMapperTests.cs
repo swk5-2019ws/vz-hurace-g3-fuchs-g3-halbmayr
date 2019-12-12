@@ -1,10 +1,8 @@
 ﻿using FakeItEasy;
 using Hurace.Core.Db.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Hurace.Core.Db.Tests.UtilityTests

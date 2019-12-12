@@ -1,12 +1,8 @@
-﻿using Hurace.Core.Db;
-using Hurace.Core.Db.Connection;
+﻿using Hurace.Core.Db.Connection;
 using Hurace.Core.Db.Queries;
 using Hurace.Core.Db.Utilities;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hurace.Core.Dal.AdoPersistence

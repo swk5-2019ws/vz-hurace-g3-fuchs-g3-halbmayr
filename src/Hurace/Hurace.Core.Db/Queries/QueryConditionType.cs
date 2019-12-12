@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Hurace.Core.Db.Queries
+﻿namespace Hurace.Core.Db.Queries
 {
     /// <summary>
     /// Describes how a <see cref="QueryCondition"/> compares a column to a concrete value

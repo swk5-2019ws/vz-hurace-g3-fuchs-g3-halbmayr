@@ -3,7 +3,6 @@ using Hurace.Core.Db.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 #pragma warning disable CA1054 // Uri parameters should not be strings
