@@ -57,6 +57,7 @@ namespace Hurace.Core.BL
             this.venueDao = venueDao;
         }
 
+        public bool StartPositionListQueryable => startPositionDao != null && raceDao != null;
         public Func<int, Task<IEnumerable<Domain.StartPosition>>> StartPositionListGenerator =>
                 async (startListId) =>
                 {
@@ -99,9 +100,9 @@ namespace Hurace.Core.BL
                             .FirstOrDefault();
 
                         startPositions.Add(new Domain.StartPosition(
-                            raceLoader: async () => await this.RaceGenerator(raceEntity))
+                            startPositionEntity.Id,
+                            raceLoader: async () => await this.RaceGenerator(raceEntity.Id))
                         {
-                            Id = startPositionEntity.Id,
                             Position = startPositionEntity.Position
                         });
                     }
@@ -109,8 +110,9 @@ namespace Hurace.Core.BL
                     return startPositions;
                 };
 
-        public Func<Entities.Race, Task<Domain.Race>> RaceGenerator =>
-            async (raceEntity) =>
+        public bool RaceQueryable => raceDao != null && raceTypeDao != null;
+        public Func<int, Task<Domain.Race>> RaceGenerator =>
+            async (raceId) =>
             {
                 if (raceTypeDao is null)
                     throw new InvalidOperationException(
@@ -118,17 +120,55 @@ namespace Hurace.Core.BL
                             typeof(IDataAccessObject<Entities.RaceType>),
                             typeof(Domain.Race)));
 
+                var raceEntity = await raceDao.GetByIdAsync(raceId);
                 var raceTypes = await raceTypeDao.GetAllConditionalAsync();
 
                 return new Domain.Race(
+                    raceEntity.Id,
+                    raceEntity.Date,
+                    raceEntity.Description,
+                    raceEntity.NumberOfSensors,
+                    raceTypes.FirstOrDefault(rs => rs.Id == raceEntity.RaceTypeId).Label,
                     firstStartListLoader: async () => await StartPositionListGenerator(raceEntity.FirstStartListId),
-                    secondStartListLoader: async () => await StartPositionListGenerator(raceEntity.SecondStartListId))
+                    secondStartListLoader: async () => await StartPositionListGenerator(raceEntity.SecondStartListId),
+                    venueLoader: async () => await VenueGenerator(raceEntity.VenueId));
+            };
+
+        public bool SeasonQueryable => seasonDao != null && seasonPlanDao != null;
+        public Func<int, Task<Domain.Season>> SeasonGenerator =>
+            async (seasonId) =>
+            {
+                throw new NotImplementedException();
+            };
+
+        public bool VenueQueryable => venueDao != null && seasonPlanDao != null;
+        public Func<int, Task<Domain.Venue>> VenueGenerator =>
+            async (venueId) =>
+            {
+                if (venueDao is null)
+                    throw new InvalidOperationException(
+                        daoInitializedExceptionFormatter(
+                            typeof(IDataAccessObject<Entities.Venue>),
+                            typeof(Domain.Venue)));
+                if (seasonPlanDao is null)
+                    throw new InvalidOperationException(
+                        daoInitializedExceptionFormatter(
+                            typeof(IDataAccessObject<Entities.SeasonPlan>),
+                            typeof(Domain.Venue)));
+
+                var venueEntity = await venueDao.GetByIdAsync(venueId);
+
+                var seasonPlanCondition = new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.SeasonPlan.VenueId), QueryConditionType.Equals, venueId)
+                    .Build();
+                var seasonPlanTasks = (await seasonPlanDao.GetAllConditionalAsync(seasonPlanCondition))
+                    .Select(sp => SeasonGenerator(sp.Id));
+
+                return new Domain.Venue(
+                    venueEntity.Id,
+                    seasonLoader: async () => await Task.WhenAll(seasonPlanTasks))
                 {
-                    Date = raceEntity.Date,
-                    Description = raceEntity.Description,
-                    Id = raceEntity.Id,
-                    NumberOfSensors = raceEntity.NumberOfSensors,
-                    RaceType = raceTypes.FirstOrDefault(rs => rs.Id == raceEntity.RaceTypeId).Label
+                    Name = venueEntity.Name
                 };
             };
     }
