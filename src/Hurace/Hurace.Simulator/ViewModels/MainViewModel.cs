@@ -45,12 +45,12 @@ namespace Hurace.Simulator.ViewModels
         #endregion
         #region Command Methods
 
-        public bool CanStartSensorSimulation(object parameter)
+        public bool CanStartSensorSimulation(object parameter = null)
         {
             return this.cancellationTokenSource == null;
         }
 
-        public Task StartSensorSimulation(object parameter)
+        public Task StartSensorSimulation(object parameter = null)
         {
             if (this.cancellationTokenSource == null)
             {
@@ -65,12 +65,12 @@ namespace Hurace.Simulator.ViewModels
             }
         }
 
-        public bool CanStopSensorSimulation(object parameter)
+        public bool CanStopSensorSimulation(object parameter = null)
         {
             return this.cancellationTokenSource != null;
         }
 
-        public Task StopSensorSimulation(object parameter)
+        public Task StopSensorSimulation(object parameter = null)
         {
             if (this.cancellationTokenSource != null)
             {
@@ -97,8 +97,8 @@ namespace Hurace.Simulator.ViewModels
             var token = (CancellationToken)param;
             while (!token.IsCancellationRequested)
             {
-                Thread.Sleep(2000);
                 RaceClock.Instance.RaiseRaceClockEvent(0, DateTime.Now);
+                Thread.Sleep(2000);
             }
 
             this.sensorSimulationExecutionHandle.Set();
