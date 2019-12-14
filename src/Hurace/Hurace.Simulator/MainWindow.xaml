@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Simulator"
         Height="180" MinHeight="180" MaxHeight="180"
-        Width="200" MinWidth="200" MaxWidth="250">
+        Width="220" MinWidth="220" MaxWidth="250">
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="VerticalAlignment" Value="Center"/>

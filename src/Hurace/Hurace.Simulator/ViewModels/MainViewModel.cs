@@ -10,8 +10,9 @@ namespace Hurace.Simulator.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private CancellationTokenSource cancellationTokenSource;
         private int sensorIdMaxValue;
+
+        private CancellationTokenSource cancellationTokenSource;
         private readonly EventWaitHandle sensorSimulationExecutionHandle;
 
         public MainViewModel()
@@ -80,7 +81,6 @@ namespace Hurace.Simulator.ViewModels
                         this.sensorSimulationExecutionHandle.WaitOne();
 
                         this.cancellationTokenSource = null;
-                        CommandManager.InvalidateRequerySuggested();
                     });
             }
             else
