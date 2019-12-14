@@ -29,7 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Db.Tests", "Hur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Entities", "Hurace.Entities\Hurace.Entities.csproj", "{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hurace.RaceControl", "Hurace.RaceControl\Hurace.RaceControl.csproj", "{E0791745-2D05-4432-97CF-EE751147C13F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.RaceControl", "Hurace.RaceControl\Hurace.RaceControl.csproj", "{E0791745-2D05-4432-97CF-EE751147C13F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Api", "Hurace.Api\Hurace.Api.csproj", "{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Simulator", "Hurace.Simulator\Hurace.Simulator.csproj", "{81D2DA0E-1131-49E1-B5C5-550E90555892}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Timer", "Hurace.Timer\Hurace.Timer.csproj", "{0B2D0E38-A8E0-46D8-980A-8F80F338C192}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +71,18 @@ Global
 		{E0791745-2D05-4432-97CF-EE751147C13F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0791745-2D05-4432-97CF-EE751147C13F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0791745-2D05-4432-97CF-EE751147C13F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81D2DA0E-1131-49E1-B5C5-550E90555892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81D2DA0E-1131-49E1-B5C5-550E90555892}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81D2DA0E-1131-49E1-B5C5-550E90555892}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81D2DA0E-1131-49E1-B5C5-550E90555892}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

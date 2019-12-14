@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         xmlns:controls="clr-namespace:Hurace.RaceControl.Control"
         xmlns:viewModels="clr-namespace:Hurace.RaceControl.ViewModels"
-        Title="MainWindow" Height="450" MinHeight="400" Width="800" MinWidth="650">
+        Title="Race Control" Height="450" MinHeight="400" Width="800" MinWidth="650">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="230" MaxWidth="250"/>

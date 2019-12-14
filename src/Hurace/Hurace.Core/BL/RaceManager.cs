@@ -41,7 +41,28 @@ namespace Hurace.Core.BL
         #endregion
         #region Methods
 
-        public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync()
+        public async Task<IEnumerable<Domain.Country>> GetAllCountries()
+        {
+            return (await countryDao.GetAllConditionalAsync())
+                .Select(countryEntitiy => new Domain.Country
+                {
+                    Id = countryEntitiy.Id,
+                    Name = countryEntitiy.Name
+                });
+        }
+
+        public async Task<Domain.Country> GetCountryById(int id)
+        {
+            var countryEntity = await countryDao.GetByIdAsync(id);
+
+            return new Domain.Country
+            {
+                Id = countryEntity.Id,
+                Name = countryEntity.Name
+            };
+        }
+
+        public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync(bool loadAssociatedData = false)
         {
             var raceEntities = await raceDao.GetAllConditionalAsync();
 
@@ -53,8 +74,12 @@ namespace Hurace.Core.BL
                         Description = raceEntity.Description,
                         Id = raceEntity.Id,
                         NumberOfSensors = raceEntity.NumberOfSensors,
-                        RaceType = await this.GetRaceTypeById(raceEntity.RaceTypeId),
-                        Venue = await this.GetVenueById(raceEntity.VenueId)
+                        RaceType = loadAssociatedData
+                            ? await this.GetRaceTypeById(raceEntity.RaceTypeId)
+                            : null,
+                        Venue = loadAssociatedData
+                            ? await this.GetVenueById(raceEntity.VenueId)
+                            : null
                     }));
         }
 
@@ -76,38 +101,6 @@ namespace Hurace.Core.BL
             {
                 Id = raceTypeEntity.Id,
                 Label = raceTypeEntity.Label
-            };
-        }
-
-        public async Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync()
-        {
-            var venueEntities = await venueDao.GetAllConditionalAsync();
-            var seasonPlanEntities = await seasonPlanDao.GetAllConditionalAsync();
-            var countryEntities = await countryDao.GetAllConditionalAsync();
-
-            return await Task.WhenAll(
-                venueEntities.Select(
-                    async venueEntity => new Domain.Venue
-                    {
-                        Id = venueEntity.Id,
-                        Name = venueEntity.Name,
-                        Country = (await GetAllCountries()).First(c => c.Id == venueEntity.CountryId),
-                        Seasons = (await GetAllSeasons())
-                            .Where(s => seasonPlanEntities.Any(sp => sp.SeasonId == s.Id &&
-                                                               sp.VenueId == venueEntity.Id))
-                    }));
-        }
-
-        public async Task<Domain.Venue> GetVenueById(int id)
-        {
-            var venueEntity = await venueDao.GetByIdAsync(id);
-
-            return new Domain.Venue
-            {
-                Id = venueEntity.Id,
-                Name = venueEntity.Name,
-                Country = await GetCountryById(venueEntity.CountryId),
-                Seasons = await GetAllSeasonByVenueId(venueEntity.Id)
             };
         }
 
@@ -145,7 +138,7 @@ namespace Hurace.Core.BL
                 .First();
         }
 
-        public async Task<IEnumerable<Domain.Season>> GetAllSeasonByVenueId(int venueId)
+        public async Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueId(int venueId)
         {
             var seasonPlanCondition = new QueryConditionBuilder()
                    .DeclareCondition(nameof(Entities.SeasonPlan.VenueId), QueryConditionType.Equals, venueId)
@@ -163,24 +156,43 @@ namespace Hurace.Core.BL
                 });
         }
 
-        public async Task<IEnumerable<Domain.Country>> GetAllCountries()
+        public async Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync(bool loadAssociatedData = false)
         {
-            return (await countryDao.GetAllConditionalAsync())
-                .Select(countryEntitiy => new Domain.Country
-                {
-                    Id = countryEntitiy.Id,
-                    Name = countryEntitiy.Name
-                });
+            var venueEntities = await venueDao.GetAllConditionalAsync();
+            var seasonPlanEntities = await seasonPlanDao.GetAllConditionalAsync();
+            var countryEntities = await countryDao.GetAllConditionalAsync();
+
+            return await Task.WhenAll(
+                venueEntities.Select(
+                    async venueEntity => new Domain.Venue
+                    {
+                        Id = venueEntity.Id,
+                        Name = venueEntity.Name,
+                        Country = loadAssociatedData
+                            ? (await GetAllCountries()).First(c => c.Id == venueEntity.CountryId)
+                            : null,
+                        Seasons = !loadAssociatedData
+                            ? null
+                            : (await GetAllSeasons())
+                                .Where(s => seasonPlanEntities.Any(sp => sp.SeasonId == s.Id &&
+                                                                   sp.VenueId == venueEntity.Id))
+                    }));
         }
 
-        public async Task<Domain.Country> GetCountryById(int id)
+        public async Task<Domain.Venue> GetVenueById(int id, bool loadAssociatedData = false)
         {
-            var countryEntity = await countryDao.GetByIdAsync(id);
+            var venueEntity = await venueDao.GetByIdAsync(id);
 
-            return new Domain.Country
+            return new Domain.Venue
             {
-                Id = countryEntity.Id,
-                Name = countryEntity.Name
+                Id = venueEntity.Id,
+                Name = venueEntity.Name,
+                Country = loadAssociatedData
+                    ? await GetCountryById(venueEntity.CountryId)
+                    : null,
+                Seasons = loadAssociatedData
+                    ? await GetAllSeasonsByVenueId(venueEntity.Id)
+                    : null
             };
         }
 
