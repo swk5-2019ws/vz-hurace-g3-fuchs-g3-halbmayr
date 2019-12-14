@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Db.Tests", "Hur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Entities", "Hurace.Entities\Hurace.Entities.csproj", "{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hurace.RaceControl", "Hurace.RaceControl\Hurace.RaceControl.csproj", "{E0791745-2D05-4432-97CF-EE751147C13F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

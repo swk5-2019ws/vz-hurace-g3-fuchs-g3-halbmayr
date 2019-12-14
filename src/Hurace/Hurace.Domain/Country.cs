@@ -1,11 +1,9 @@
-﻿namespace Hurace.Domain
+﻿using System.Collections.Generic;
+
+namespace Hurace.Domain
 {
     public class Country : DomainObjectBase
     {
-        public Country(int countryId)
-            : base(countryId)
-        {
-            PropertiesChanged = false;
-        }
+        public string Name { get; set; }
     }
 }

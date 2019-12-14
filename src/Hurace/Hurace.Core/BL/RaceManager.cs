@@ -8,93 +8,182 @@ using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
 {
-    public class RaceManager
+    public class RaceManager : IRaceManager
     {
-        private readonly DomainObjectMapper domainObjectMapper;
+        #region Fields
+
+        private readonly IDataAccessObject<Entities.Country> countryDao;
         private readonly IDataAccessObject<Entities.Race> raceDao;
         private readonly IDataAccessObject<Entities.RaceType> raceTypeDao;
+        private readonly IDataAccessObject<Entities.Venue> venueDao;
+        private readonly IDataAccessObject<Entities.SeasonPlan> seasonPlanDao;
+        private readonly IDataAccessObject<Entities.Season> seasonDao;
+
+        #endregion
+        #region Constructors
 
         public RaceManager(
-            DomainObjectMapper domainObjectMapper,
+            IDataAccessObject<Entities.Country> countryDao,
             IDataAccessObject<Entities.Race> raceDao,
-            IDataAccessObject<Entities.RaceType> raceTypeDao)
+            IDataAccessObject<Entities.RaceType> raceTypeDao,
+            IDataAccessObject<Entities.Season> seasonDao,
+            IDataAccessObject<Entities.SeasonPlan> seasonPlanDao,
+            IDataAccessObject<Entities.Venue> venueDao)
         {
-            this.domainObjectMapper = domainObjectMapper ?? throw new ArgumentNullException(nameof(domainObjectMapper));
+            this.countryDao = countryDao ?? throw new ArgumentNullException(nameof(countryDao));
             this.raceDao = raceDao ?? throw new ArgumentNullException(nameof(raceDao));
             this.raceTypeDao = raceTypeDao ?? throw new ArgumentNullException(nameof(raceTypeDao));
+            this.venueDao = venueDao ?? throw new ArgumentNullException(nameof(venueDao));
+            this.seasonPlanDao = seasonPlanDao ?? throw new ArgumentNullException(nameof(seasonPlanDao));
+            this.seasonDao = seasonDao ?? throw new ArgumentNullException(nameof(seasonDao));
         }
+
+        #endregion
+        #region Methods
 
         public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync()
         {
-            var entityRaces = await raceDao.GetAllConditionalAsync();
+            var raceEntities = await raceDao.GetAllConditionalAsync();
 
             return await Task.WhenAll(
-                entityRaces.Select(raceEntity => domainObjectMapper.RaceGenerator(raceEntity.Id)));
+                raceEntities.Select(
+                    async raceEntity => new Domain.Race
+                    {
+                        Date = raceEntity.Date,
+                        Description = raceEntity.Description,
+                        Id = raceEntity.Id,
+                        NumberOfSensors = raceEntity.NumberOfSensors,
+                        RaceType = await this.GetRaceTypeById(raceEntity.RaceTypeId),
+                        Venue = await this.GetVenueById(raceEntity.VenueId)
+                    }));
         }
 
-        public async Task<bool> UpdateRaceAsync(Domain.Race race)
+        public async Task<IEnumerable<Domain.RaceType>> GetAllRaceTypesAsync()
         {
-            if (race is null)
-                throw new ArgumentNullException(nameof(race));
-
-            bool updateSuccess = true;
-
-            if (domainObjectMapper.VenueQueryable && domainObjectMapper.SeasonQueryable)
-            {
-                foreach (var season in await (await race.Venue).Seasons)
+            return (await raceTypeDao.GetAllConditionalAsync())
+                .Select(raceTypeEntity => new Domain.RaceType
                 {
-                    if (season.PropertiesChanged)
-                    {
-                        //todo update season if properties changed
-                        throw new NotImplementedException();
-                    }
-                }
-            }
-
-            if (domainObjectMapper.VenueQueryable && (await race.Venue).PropertiesChanged)
-            {
-                //update venue if properties changed
-                throw new NotImplementedException();
-            }
-
-            if (domainObjectMapper.StartPositionListQueryable)
-            {
-                var startPositions = new List<Domain.StartPosition>();
-                startPositions.AddRange(await race.FirstStartList);
-                startPositions.AddRange(await race.SecondStartList);
-
-                foreach (var startPosition in startPositions)
-                {
-                    if (startPosition.PropertiesChanged)
-                    {
-                        //update first and second startlist if properties changed
-                        throw new NotImplementedException();
-                    }
-                }
-            }
-
-            if (race.PropertiesChanged)
-            {
-                var raceTypeCondition = new QueryConditionBuilder()
-                    .DeclareCondition(nameof(Entities.RaceType.Label), QueryConditionType.Equals, race.RaceType)
-                    .Build();
-
-                var alteredRaceTypeId = (await raceTypeDao.GetAllConditionalAsync(raceTypeCondition))
-                    .First()
-                    .Id;
-
-                var updatedRaceEntity = new Entities.Race()
-                {
-                    Date = race.Date,
-                    Description = race.Description,
-                    NumberOfSensors = race.NumberOfSensors,
-                    RaceTypeId = alteredRaceTypeId
-                };
-
-                updateSuccess = updateSuccess && await raceDao.UpdateAsync(updatedRaceEntity);
-            }
-
-            return updateSuccess;
+                    Id = raceTypeEntity.Id,
+                    Label = raceTypeEntity.Label
+                }); ;
         }
+
+        public async Task<Domain.RaceType> GetRaceTypeById(int id)
+        {
+            var raceTypeEntity = await raceTypeDao.GetByIdAsync(id);
+
+            return new Domain.RaceType
+            {
+                Id = raceTypeEntity.Id,
+                Label = raceTypeEntity.Label
+            };
+        }
+
+        public async Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync()
+        {
+            var venueEntities = await venueDao.GetAllConditionalAsync();
+            var seasonPlanEntities = await seasonPlanDao.GetAllConditionalAsync();
+            var countryEntities = await countryDao.GetAllConditionalAsync();
+
+            return await Task.WhenAll(
+                venueEntities.Select(
+                    async venueEntity => new Domain.Venue
+                    {
+                        Id = venueEntity.Id,
+                        Name = venueEntity.Name,
+                        Country = (await GetAllCountries()).First(c => c.Id == venueEntity.CountryId),
+                        Seasons = (await GetAllSeasons())
+                            .Where(s => seasonPlanEntities.Any(sp => sp.SeasonId == s.Id &&
+                                                               sp.VenueId == venueEntity.Id))
+                    }));
+        }
+
+        public async Task<Domain.Venue> GetVenueById(int id)
+        {
+            var venueEntity = await venueDao.GetByIdAsync(id);
+
+            return new Domain.Venue
+            {
+                Id = venueEntity.Id,
+                Name = venueEntity.Name,
+                Country = await GetCountryById(venueEntity.CountryId),
+                Seasons = await GetAllSeasonByVenueId(venueEntity.Id)
+            };
+        }
+
+        public async Task<IEnumerable<Domain.Season>> GetAllSeasons()
+        {
+            return (await seasonDao.GetAllConditionalAsync())
+                .Select(seasonEntity => new Domain.Season
+                {
+                    Id = seasonEntity.Id,
+                    Name = seasonEntity.Name,
+                    StartDate = seasonEntity.StartDate,
+                    EndDate = seasonEntity.EndDate
+                });
+        }
+
+        public async Task<Domain.Season> GetSeasonByDate(DateTime date)
+        {
+            var seasonCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.Season.StartDate), QueryConditionType.LessThanOrEquals, date),
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.Season.EndDate), QueryConditionType.GreaterThanOrEquals, date))
+                .Build();
+
+            return (await seasonDao.GetAllConditionalAsync(seasonCondition))
+                .Select(seasonEntity => new Domain.Season
+                {
+                    Id = seasonEntity.Id,
+                    Name = seasonEntity.Name,
+                    StartDate = seasonEntity.StartDate,
+                    EndDate = seasonEntity.EndDate
+                })
+                .First();
+        }
+
+        public async Task<IEnumerable<Domain.Season>> GetAllSeasonByVenueId(int venueId)
+        {
+            var seasonPlanCondition = new QueryConditionBuilder()
+                   .DeclareCondition(nameof(Entities.SeasonPlan.VenueId), QueryConditionType.Equals, venueId)
+                   .Build();
+            var seasonPlanEntities = await seasonPlanDao.GetAllConditionalAsync(seasonPlanCondition);
+
+            return (await Task.WhenAll(
+                    seasonPlanEntities.Select(async sp => await seasonDao.GetByIdAsync(sp.SeasonId))))
+                .Select(seasonEntity => new Domain.Season
+                {
+                    Id = seasonEntity.Id,
+                    Name = seasonEntity.Name,
+                    StartDate = seasonEntity.StartDate,
+                    EndDate = seasonEntity.EndDate
+                });
+        }
+
+        public async Task<IEnumerable<Domain.Country>> GetAllCountries()
+        {
+            return (await countryDao.GetAllConditionalAsync())
+                .Select(countryEntitiy => new Domain.Country
+                {
+                    Id = countryEntitiy.Id,
+                    Name = countryEntitiy.Name
+                });
+        }
+
+        public async Task<Domain.Country> GetCountryById(int id)
+        {
+            var countryEntity = await countryDao.GetByIdAsync(id);
+
+            return new Domain.Country
+            {
+                Id = countryEntity.Id,
+                Name = countryEntity.Name
+            };
+        }
+
+        #endregion
     }
 }
