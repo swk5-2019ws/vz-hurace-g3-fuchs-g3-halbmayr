@@ -18,6 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MaterialDesignColors" Version="1.2.1" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Hurace.Core.Db\Hurace.Core.Db.csproj" />
     <ProjectReference Include="..\Hurace.Core\Hurace.Core.csproj" />
     <ProjectReference Include="..\Hurace.Domain\Hurace.Domain.csproj" />
