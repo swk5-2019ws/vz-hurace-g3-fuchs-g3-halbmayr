@@ -4,9 +4,64 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Hurace.RaceControl.Control"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        
-    </Grid>
+             mc:Ignorable="d"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{materialDesign:MaterialDesignFont}"
+             d:DesignHeight="550" d:DesignWidth="500">
+    
+    <StackPanel Orientation="Vertical"
+                Margin="5,10,5,5">
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1">
+            <Grid Margin="15,15,15,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <DockPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                               Text="Hinterstoder"
+                               DockPanel.Dock="Top"/>
+
+                    <TextBlock Text="Jährliche Saison 2020"
+                                DockPanel.Dock="Left"/>
+                    
+                    <TextBlock Text="21.11.2019"
+                               TextAlignment="Center"
+                               DockPanel.Dock="Right"/>
+                </DockPanel>
+
+                <Button Grid.Column="1"
+                        Margin="2,0"
+                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                        ToolTip="Starte das Rennen">
+                    <materialDesign:PackIcon Kind="PlayCircleOutline"/>
+                </Button>
+
+                <Button Grid.Column="2"
+                        Margin="2,0"
+                        Style="{StaticResource MaterialDesignRaisedLightButton}"
+                        ToolTip="Starte die Simulation">
+                    <materialDesign:PackIcon Kind="PlaySpeed"/>
+                </Button>
+
+                <Button Grid.Column="3"
+                        Margin="2,0"
+                        ToolTip="Bearbeiten">
+                    <materialDesign:PackIcon Kind="Pencil"/>
+                </Button>
+
+            </Grid>
+        </materialDesign:Card>
+
+        <Grid>
+            <Button Margin="10,10,10,10"></Button>
+        </Grid>
+    </StackPanel>
 </UserControl>

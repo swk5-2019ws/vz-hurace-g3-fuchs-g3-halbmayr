@@ -27,7 +27,7 @@
                      BorderThickness="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:RaceListItemViewModel}">
-                        <controls:RaceListItem/>
+                        <controls:RaceListItemControl/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.ItemsPanel>
@@ -49,7 +49,7 @@
                       Background="DarkGray"/>
 
         <Grid Grid.Column="1">
-
+            <controls:RaceDetailControl/>
         </Grid>
     </Grid>
 </Window>

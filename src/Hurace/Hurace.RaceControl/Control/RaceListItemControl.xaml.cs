@@ -5,9 +5,9 @@ namespace Hurace.RaceControl.Control
     /// <summary>
     /// Interaction logic for RaceListItem.xaml
     /// </summary>
-    public partial class RaceListItem : UserControl
+    public partial class RaceListItemControl : UserControl
     {
-        public RaceListItem()
+        public RaceListItemControl()
         {
             InitializeComponent();
         }
