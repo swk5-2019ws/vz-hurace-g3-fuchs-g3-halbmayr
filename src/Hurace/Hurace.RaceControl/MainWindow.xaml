@@ -14,7 +14,7 @@
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Height="550" MinHeight="450"
-        Width="900" MinWidth="900" MaxWidth="1000">
+        Width="900" MinWidth="900">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260" MinWidth="180" MaxWidth="260"/>
@@ -22,26 +22,26 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="35"/>
-            </Grid.RowDefinitions>
-
             <ListBox ItemsSource="{Binding RaceListItemViewModels}"
                      SelectedItem="{Binding SelectedRace}"
-                     Grid.Row="0"
                      BorderThickness="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:RaceListItemViewModel}">
                         <controls:RaceListItem/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Margin="0,0,0,50"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
             </ListBox>
 
-            <Button Grid.Row="1"
-                    Content="{materialDesign:PackIcon Plus}"/>
+            <Button Content="{materialDesign:PackIcon Plus}"
+                    Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+                    Margin="0,0,27,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
         </Grid>
-        
+
         <GridSplitter Width="2"
                       Grid.Column="0"
                       HorizontalAlignment="Right"
@@ -49,7 +49,7 @@
                       Background="DarkGray"/>
 
         <Grid Grid.Column="1">
-            
+
         </Grid>
     </Grid>
 </Window>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
 {
-    public class RaceManager : IRaceManager
+    public class RaceInformationManager : IRaceInformationManager
     {
         #region Fields
 
@@ -21,7 +21,7 @@ namespace Hurace.Core.BL
         #endregion
         #region Constructors
 
-        public RaceManager(
+        public RaceInformationManager(
             IDataAccessObject<Entities.Country> countryDao,
             IDataAccessObject<Entities.Race> raceDao,
             IDataAccessObject<Entities.RaceType> raceTypeDao,

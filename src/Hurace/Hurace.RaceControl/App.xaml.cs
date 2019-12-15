@@ -2,6 +2,8 @@
 using Hurace.Core.DAL;
 using Hurace.Core.DAL.AdoPersistence;
 using Hurace.Core.Db.Connection;
+using Hurace.Simulator;
+using Hurace.Timer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -9,9 +11,8 @@ using System.Windows;
 
 namespace Hurace.RaceControl
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+    internal delegate IRaceClock RaceClockResolver(bool useDevelopmentImplementation);
+
     public partial class App : Application
     {
         public IServiceProvider ServiceProvider { get; set; }
@@ -47,7 +48,18 @@ namespace Hurace.RaceControl
             services.AddScoped<IDataAccessObject<Entities.TimeMeasurement>, GenericDao<Entities.TimeMeasurement>>();
             services.AddScoped<IDataAccessObject<Entities.Venue>, GenericDao<Entities.Venue>>();
 
-            services.AddScoped<IRaceManager, RaceManager>();
+            services.AddSingleton<RaceClockSimulation>();
+            //services.AddSingleton<(real implementation)>();
+            services.AddTransient<RaceClockResolver>(
+                serviceProvider =>
+                    useDevelopmentImplementation =>
+                    {
+                        return useDevelopmentImplementation
+                            ? serviceProvider.GetService<RaceClockSimulation>()
+                            : /*serviceProvider.GetService<(real implementation)>()*/ null;
+                    });
+
+            services.AddScoped<IRaceInformationManager, RaceInformationManager>();
 
             services.AddTransient<MainWindow>();
         }

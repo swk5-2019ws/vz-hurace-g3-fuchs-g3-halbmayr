@@ -65,7 +65,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => raceTypeDaoFake.GetAllConditionalAsync(A<IQueryCondition>._))
                 .ReturnsLazily(() => raceTypeEntities);
 
-            var raceManager = new RaceManager(null, raceDaoFake, raceTypeDaoFake, null, null, null);
+            var raceManager = new RaceInformationManager(null, raceDaoFake, raceTypeDaoFake, null, null, null);
             var raceDomainObjects = await raceManager.GetAllRacesAsync();
 
             foreach (var raceDO in raceDomainObjects)

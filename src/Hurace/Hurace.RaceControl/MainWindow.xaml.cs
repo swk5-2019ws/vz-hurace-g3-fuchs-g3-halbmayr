@@ -10,7 +10,7 @@ namespace Hurace.RaceControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(IRaceManager raceManager)
+        public MainWindow(IRaceInformationManager raceManager)
         {
             InitializeComponent();
 

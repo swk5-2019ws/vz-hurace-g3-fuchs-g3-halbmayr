@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Hurace.Core.Db\Hurace.Core.Db.csproj" />
     <ProjectReference Include="..\Hurace.Domain\Hurace.Domain.csproj" />
+    <ProjectReference Include="..\Hurace.Timer\Hurace.Timer.csproj" />
   </ItemGroup>
 
 </Project>

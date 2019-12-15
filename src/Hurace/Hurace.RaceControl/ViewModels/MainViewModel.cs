@@ -8,10 +8,10 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly IRaceManager raceManager;
+        private readonly IRaceInformationManager raceManager;
         private RaceListItemViewModel selectedRace;
 
-        public MainViewModel(IRaceManager raceManager)
+        public MainViewModel(IRaceInformationManager raceManager)
         {
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
 

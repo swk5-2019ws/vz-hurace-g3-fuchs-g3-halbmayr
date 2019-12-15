@@ -27,6 +27,7 @@
     <ProjectReference Include="..\Hurace.Core.Db\Hurace.Core.Db.csproj" />
     <ProjectReference Include="..\Hurace.Core\Hurace.Core.csproj" />
     <ProjectReference Include="..\Hurace.Domain\Hurace.Domain.csproj" />
+    <ProjectReference Include="..\Hurace.Simulator\Hurace.Simulator.csproj" />
   </ItemGroup>
 
 </Project>
