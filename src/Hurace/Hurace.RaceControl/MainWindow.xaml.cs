@@ -10,20 +10,9 @@ namespace Hurace.RaceControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(IRaceManager raceManager)
         {
             InitializeComponent();
-
-            var connectionFactory = new DefaultConnectionFactory();
-
-            var countryDao = new GenericDao<Entities.Country>(connectionFactory);
-            var raceDao = new GenericDao<Entities.Race>(connectionFactory);
-            var raceTypeDao = new GenericDao<Entities.RaceType>(connectionFactory);
-            var seasonDao = new GenericDao<Entities.Season>(connectionFactory);
-            var seasonPlanDao = new GenericDao<Entities.SeasonPlan>(connectionFactory);
-            var venueDao = new GenericDao<Entities.Venue>(connectionFactory);
-
-            var raceManager = new RaceManager(countryDao, raceDao, raceTypeDao, seasonDao, seasonPlanDao, venueDao);
 
             var mainViewModel = new ViewModels.MainViewModel(raceManager);
 
