@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Hurace.Domain
+﻿namespace Hurace.Domain
 {
     public sealed class StartPosition : DomainObjectBase
     {

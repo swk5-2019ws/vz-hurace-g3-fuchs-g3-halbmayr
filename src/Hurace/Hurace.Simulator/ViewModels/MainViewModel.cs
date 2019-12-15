@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 namespace Hurace.Simulator.ViewModels
@@ -97,7 +94,7 @@ namespace Hurace.Simulator.ViewModels
             var token = (CancellationToken)param;
             while (!token.IsCancellationRequested)
             {
-                RaceClock.Instance.RaiseRaceClockEvent(0, DateTime.Now);
+                RaceClockSimulation.Instance.RaiseRaceClockEvent(0, DateTime.Now);
                 Thread.Sleep(2000);
             }
 

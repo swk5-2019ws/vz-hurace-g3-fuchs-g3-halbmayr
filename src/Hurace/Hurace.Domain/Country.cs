@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Hurace.Domain
+﻿namespace Hurace.Domain
 {
     public class Country : DomainObjectBase
     {

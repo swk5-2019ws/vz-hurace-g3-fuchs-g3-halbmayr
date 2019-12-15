@@ -19,9 +19,10 @@
                 <RowDefinition Height="35"/>
             </Grid.RowDefinitions>
 
-            <ListBox Grid.Row="0"
-                     BorderThickness="0"
-                     ItemsSource="{Binding RaceListItemViewModels}">
+            <ListBox ItemsSource="{Binding RaceListItemViewModels}"
+                     SelectedItem="{Binding SelectedRace}"
+                     Grid.Row="0"
+                     BorderThickness="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:RaceListItemViewModel}">
                         <controls:RaceListItem/>

@@ -13,7 +13,7 @@ namespace Hurace.Simulator.Tests
         {
             var timerEventList = new List<(int sensorId, DateTime time)>();
 
-            Simulator.RaceClock.Instance.TimingTriggered +=
+            Simulator.RaceClockSimulation.Instance.TimingTriggered +=
                 (sensorId, time) => timerEventList.Add((sensorId, time));
 
             var viewModel = new ViewModels.MainViewModel();

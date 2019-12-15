@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hurace.Simulator
 {
-    public class RaceClock : Timer.IRaceClock
+    public class RaceClockSimulation : Timer.IRaceClock
     {
-        private static RaceClock singleInstance;
+        private static RaceClockSimulation singleInstance;
 
-        private RaceClock() { }
+        private RaceClockSimulation() { }
 
-        public static RaceClock Instance
+        public static RaceClockSimulation Instance
         {
             get
             {
                 if (singleInstance == null)
-                    singleInstance = new RaceClock();
+                    singleInstance = new RaceClockSimulation();
                 return singleInstance;
             }
         }

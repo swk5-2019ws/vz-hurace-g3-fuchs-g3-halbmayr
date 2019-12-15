@@ -1,9 +1,7 @@
 ﻿using Hurace.Core.BL;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hurace.RaceControl.ViewModels
@@ -11,6 +9,7 @@ namespace Hurace.RaceControl.ViewModels
     public class MainViewModel : BaseViewModel
     {
         private readonly IRaceManager raceManager;
+        private RaceListItemViewModel selectedRace;
 
         public MainViewModel(IRaceManager raceManager)
         {
@@ -20,6 +19,11 @@ namespace Hurace.RaceControl.ViewModels
         }
 
         public ObservableCollection<RaceListItemViewModel> RaceListItemViewModels { get; private set; }
+        public RaceListItemViewModel SelectedRace
+        {
+            get => selectedRace;
+            set => base.Set(ref this.selectedRace, value);
+        }
 
         internal async Task InitializeAsync()
         {
