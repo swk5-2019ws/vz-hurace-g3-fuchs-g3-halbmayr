@@ -6,6 +6,6 @@ namespace Hurace.Domain
     {
         public StartPosition StartPosition { get; set; }
         public RaceState RaceState { get; set; }
-        public IEnumerable<TimeMeasurement> TimeMeasurement { get; set; }
+        public IEnumerable<Associated<TimeMeasurement>> TimeMeasurement { get; set; }
     }
 }

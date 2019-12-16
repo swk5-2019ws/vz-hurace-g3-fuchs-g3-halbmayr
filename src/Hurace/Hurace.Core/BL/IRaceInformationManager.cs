@@ -9,7 +9,7 @@ namespace Hurace.Core.BL
         Task<IEnumerable<Domain.Country>> GetAllCountries();
         Task<Domain.Country> GetCountryById(int id);
 
-        Task<IEnumerable<Domain.Race>> GetAllRacesAsync(bool loadAssociatedData = false);
+        Task<IEnumerable<Domain.Race>> GetAllRacesAsync(bool loadAssociatedData = true);
 
         Task<IEnumerable<Domain.RaceType>> GetAllRaceTypesAsync();
         Task<Domain.RaceType> GetRaceTypeById(int id);
@@ -18,7 +18,7 @@ namespace Hurace.Core.BL
         Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueId(int venueId);
         Task<Domain.Season> GetSeasonByDate(DateTime date);
 
-        Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync(bool loadAssociatedData = false);
-        Task<Domain.Venue> GetVenueById(int id, bool loadAssociatedData = false);
+        Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync(bool loadAssociatedData = true);
+        Task<Domain.Venue> GetVenueById(int id, bool loadAssociatedData = true);
     }
 }

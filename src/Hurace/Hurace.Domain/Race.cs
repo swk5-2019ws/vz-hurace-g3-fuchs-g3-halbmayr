@@ -8,9 +8,9 @@ namespace Hurace.Domain
         public DateTime Date { get; set; }
         public string Description { get; set; }
         public int NumberOfSensors { get; set; }
-        public RaceType RaceType { get; set; }
-        public Venue Venue { get; set; }
-        public IEnumerable<StartPosition> FirstStartList { get; set; }
-        public IEnumerable<StartPosition> SecondStartList { get; set; }
+        public Associated<RaceType> RaceType { get; set; }
+        public Associated<Venue> Venue { get; set; }
+        public IEnumerable<Associated<StartPosition>> FirstStartList { get; set; }
+        public IEnumerable<Associated<StartPosition>> SecondStartList { get; set; }
     }
 }

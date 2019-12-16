@@ -28,7 +28,7 @@ namespace Hurace.RaceControl.ViewModels
         internal async Task InitializeAsync()
         {
             var raceListItemViewModels = await Task.WhenAll(
-                (await this.raceManager.GetAllRacesAsync(true))
+                (await this.raceManager.GetAllRacesAsync())
                     .Select(
                         async race => new RaceListItemViewModel(
                                 race,

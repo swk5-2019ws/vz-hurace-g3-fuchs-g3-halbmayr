@@ -66,19 +66,19 @@ namespace Hurace.Core.Tests.BL
                 .ReturnsLazily(() => raceTypeEntities);
 
             var raceManager = new RaceInformationManager(null, raceDaoFake, raceTypeDaoFake, null, null, null);
-            var raceDomainObjects = await raceManager.GetAllRacesAsync();
+            var raceDomainObjects = await raceManager.GetAllRacesAsync(loadAssociatedData: true);
 
             foreach (var raceDO in raceDomainObjects)
             {
                 var matchingRaceE = raceEntities.First(raceEntity => raceEntity.Id == raceDO.Id);
-                var matchingRaceTypeE = raceTypeEntities.First(raceTypeEntity => raceTypeEntity.Id == raceDO.RaceType.Id);
+                var matchingRaceTypeE = raceTypeEntities.First(raceTypeEntity => raceTypeEntity.Id == raceDO.RaceType.Reference.Id);
 
                 Assert.Equal(matchingRaceE.Date, raceDO.Date);
                 Assert.Equal(matchingRaceE.Description, raceDO.Description);
                 Assert.Equal(matchingRaceE.Id, raceDO.Id);
                 Assert.Equal(matchingRaceE.NumberOfSensors, raceDO.NumberOfSensors);
-                Assert.Equal(matchingRaceTypeE.Id, raceDO.RaceType.Id);
-                Assert.Equal(matchingRaceTypeE.Label, raceDO.RaceType.Label);
+                Assert.Equal(matchingRaceTypeE.Id, raceDO.RaceType.Reference.Id);
+                Assert.Equal(matchingRaceTypeE.Label, raceDO.RaceType.Reference.Label);
             }
 
             //todo: validate all other missing dependencies that GetAllRacesAsync returns (venues, seasons, country)
