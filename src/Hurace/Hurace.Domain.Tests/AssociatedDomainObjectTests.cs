@@ -18,7 +18,7 @@ namespace Hurace.Domain.Tests
                     Name = expectedName
                 });
 
-            Assert.Equal(expectedId, associatedCountry.ForeignKey);
+            Assert.Null(associatedCountry.ForeignKey);
             Assert.True(associatedCountry.HasReference);
             Assert.Equal(expectedId, associatedCountry.Reference.Id);
             Assert.Equal(expectedName, associatedCountry.Reference.Name);
@@ -85,11 +85,22 @@ namespace Hurace.Domain.Tests
         }
 
         [Fact]
+        public void SetNullReferenceOnExistingForeignKeyWorking()
+        {
+            int expectedForeignKey = 5;
+            var associatedCountry = new Associated<Country>(expectedForeignKey);
+            Assert.False(associatedCountry.HasReference);
+            associatedCountry.Reference = null;
+            Assert.False(associatedCountry.HasReference);
+            Assert.Equal(expectedForeignKey, associatedCountry.ForeignKey);
+        }
+
+        [Fact]
         public void SetReferenceOnExistingForeignKeyFailing()
         {
             var associatedCountry = new Associated<Country>(5);
             Assert.False(associatedCountry.HasReference);
-            Assert.Throws<InvalidOperationException>(() => associatedCountry.Reference = null);
+            Assert.Throws<InvalidOperationException>(() => associatedCountry.Reference = new Country());
         }
 
         [Fact]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Hurace.Core.BL;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace Hurace.Api.Controllers
         {
             logger.LogInformation($"this is a log info");
 
-            return Ok(await raceManager.GetAllRacesAsync());
+            return Ok(await raceManager.GetAllRacesAsync(loadAssociatedData: true));
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Hurace.Domain
         private int? foreignKey;
         private T reference;
 
+        public Associated() { }
+
         public Associated(int foreignKey)
         {
             this.foreignKey = foreignKey;
@@ -16,16 +18,13 @@ namespace Hurace.Domain
 
         public Associated(T reference)
         {
-            this.reference = reference
-                ?? throw new ArgumentNullException(nameof(reference));
+            this.reference = reference ?? throw new ArgumentNullException(nameof(reference));
             this.foreignKey = null;
         }
 
         public int? ForeignKey
         {
-            get => foreignKey.HasValue
-                    ? this.foreignKey.Value
-                    : this.reference.Id;
+            get => foreignKey;
             set
             {
                 if (reference == null)
@@ -41,7 +40,7 @@ namespace Hurace.Domain
             get => this.reference;
             set
             {
-                if (this.foreignKey.HasValue)
+                if (this.foreignKey.HasValue && value != null)
                     throw new InvalidOperationException(
                         $"foreign-key already set, setting the reference makes no sense for {typeof(T).FullName}");
                 this.reference = value;
