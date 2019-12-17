@@ -4,18 +4,9 @@ namespace Hurace.Simulator
 {
     public class RaceClockSimulation : Timer.IRaceClock
     {
-        private static RaceClockSimulation singleInstance;
-
-        private RaceClockSimulation() { }
-
-        public static RaceClockSimulation Instance
+        public RaceClockSimulation()
         {
-            get
-            {
-                if (singleInstance == null)
-                    singleInstance = new RaceClockSimulation();
-                return singleInstance;
-            }
+            //todo: start thread that simulated timer
         }
 
         public event Timer.TimingTriggeredHandler TimingTriggered;

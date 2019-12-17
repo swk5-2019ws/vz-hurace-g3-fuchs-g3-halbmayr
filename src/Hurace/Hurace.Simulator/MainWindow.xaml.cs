@@ -13,8 +13,8 @@ namespace Hurace.Simulator
             InitializeComponent();
 
             //test: remove in prod!
-            RaceClockSimulation.Instance.TimingTriggered +=
-                (sensorId, time) => Console.WriteLine($"Sensor-{sensorId} triggered around {time}");
+            //RaceClockSimulation.Instance.TimingTriggered +=
+            //    (sensorId, time) => Console.WriteLine($"Sensor-{sensorId} triggered around {time}");
 
             this.DataContext = new ViewModels.MainViewModel();
         }

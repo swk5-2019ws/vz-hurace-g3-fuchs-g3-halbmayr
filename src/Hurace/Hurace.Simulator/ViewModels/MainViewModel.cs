@@ -94,7 +94,7 @@ namespace Hurace.Simulator.ViewModels
             var token = (CancellationToken)param;
             while (!token.IsCancellationRequested)
             {
-                RaceClockSimulation.Instance.RaiseRaceClockEvent(0, DateTime.Now);
+                //RaceClockSimulation.Instance.RaiseRaceClockEvent(0, DateTime.Now);
                 Thread.Sleep(2000);
             }
 
