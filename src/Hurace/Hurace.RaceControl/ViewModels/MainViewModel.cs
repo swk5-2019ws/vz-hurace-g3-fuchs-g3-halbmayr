@@ -1,4 +1,5 @@
 ﻿using Hurace.Core.BL;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,9 +11,11 @@ namespace Hurace.RaceControl.ViewModels
     {
         private readonly IRaceInformationManager raceManager;
         private RaceListItemViewModel selectedRace;
+        private readonly IServiceProvider serviceProvider;
 
-        public MainViewModel(IRaceInformationManager raceManager)
+        public MainViewModel(IServiceProvider serviceProvider, IRaceInformationManager raceManager)
         {
+            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
 
             this.RaceListItemViewModels = new ObservableCollection<RaceListItemViewModel>();
@@ -24,15 +27,13 @@ namespace Hurace.RaceControl.ViewModels
             get => selectedRace;
             set => base.Set(ref this.selectedRace, value);
         }
+        public RaceDetailViewModel DetailedSelectedRace { get; set; }
+
 
         internal async Task InitializeAsync()
         {
-            var raceListItemViewModels = await Task.WhenAll(
-                (await this.raceManager.GetAllRacesAsync())
-                    .Select(
-                        async race => new RaceListItemViewModel(
-                                race,
-                                await this.raceManager.GetSeasonByDate(race.Date))));
+            var raceListItemViewModels = (await this.raceManager.GetAllRacesAsync())
+                    .Select(race => new RaceListItemViewModel(race));
 
             foreach (var raceListItemViewModel in raceListItemViewModels)
                 this.RaceListItemViewModels.Add(raceListItemViewModel);

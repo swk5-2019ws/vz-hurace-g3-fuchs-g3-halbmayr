@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace Hurace.RaceControl
 {
-    internal delegate IRaceClock RaceClockResolver(bool useDevelopmentImplementation);
+    public delegate IRaceClock RaceClockResolver(bool useDevelopmentImplementation);
 
     public partial class App : Application
     {

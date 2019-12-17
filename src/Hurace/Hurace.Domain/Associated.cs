@@ -6,6 +6,13 @@ namespace Hurace.Domain
 {
     public class Associated<T> where T : DomainObjectBase
     {
+        public enum LoadingType
+        {
+            None,
+            ForeignKey,
+            Reference
+        }
+
         private int? foreignKey;
         private T reference;
 

@@ -26,7 +26,10 @@ namespace Hurace.Api.Controllers
         {
             logger.LogInformation($"this is a log info");
 
-            return Ok(await raceManager.GetAllRacesAsync(loadAssociatedData: true));
+            return Ok(await raceManager.GetAllRacesAsync(
+                raceTypeLoadingType: Domain.AssociatedLoadingType.Reference,
+                venueLoadingType: Domain.AssociatedLoadingType.Reference,
+                seasonsOfVenueLoadingType: Domain.AssociatedLoadingType.None));
         }
     }
 }

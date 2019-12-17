@@ -15,8 +15,12 @@ namespace Hurace.Core.Tests.BL
         [Fact]
         public async Task GetAllRacesTest()
         {
+            var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
+            var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
+            var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
+            var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
             {
@@ -62,11 +66,24 @@ namespace Hurace.Core.Tests.BL
 
             A.CallTo(() => raceDaoFake.GetAllConditionalAsync(A<IQueryCondition>._))
                 .ReturnsLazily(() => raceEntities);
-            A.CallTo(() => raceTypeDaoFake.GetAllConditionalAsync(A<IQueryCondition>._))
-                .ReturnsLazily(() => raceTypeEntities);
 
-            var raceManager = new RaceInformationManager(null, raceDaoFake, raceTypeDaoFake, null, null, null);
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(loadAssociatedData: true);
+            A.CallTo(() => raceTypeDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(0)))
+                .ReturnsLazily((call) => Task.FromResult(raceTypeEntities.First(rte => rte.Id == 0)));
+            A.CallTo(() => raceTypeDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
+                .ReturnsLazily((call) => Task.FromResult(raceTypeEntities.First(rte => rte.Id == 1)));
+
+            var raceManager = new RaceInformationManager(
+                countryDaoFake,
+                raceDaoFake,
+                raceTypeDaoFake,
+                seasonDaoFake,
+                seasonPlanDaoFake,
+                venueDaoFake);
+
+            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+                raceTypeLoadingType: Domain.AssociatedLoadingType.Reference,
+                venueLoadingType: Domain.AssociatedLoadingType.None,
+                seasonsOfVenueLoadingType: Domain.AssociatedLoadingType.None);
 
             foreach (var raceDO in raceDomainObjects)
             {

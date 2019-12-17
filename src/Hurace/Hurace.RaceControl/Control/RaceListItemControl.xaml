@@ -4,23 +4,35 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Hurace.RaceControl.Control"
-             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             Background="{DynamicResource MaterialDesignPaper}"
+             TextElement.FontWeight="Medium"
+             TextElement.FontSize="14"
+             FontFamily="{materialDesign:MaterialDesignFont}"
+             mc:Ignorable="d"
              d:DesignHeight="50" d:DesignWidth="150">
-    <Grid>
+    
+    <Grid Margin="10,10,10,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"
-               Content="{Binding Race.Venue.Name}"/>
+        <TextBlock Grid.Row="0"
+                   Text="{Binding Race.Venue.Reference.Name}"
+                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
 
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal">
 
-            <Label Content="{Binding Season.Name}"/>
+            <TextBlock Text="{Binding Race.Season.Name}"
+                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       Margin="0,0,5,0"/>
 
-            <Label Content="{Binding Race.Date}"/>
+            <TextBlock Text="{Binding Race.Date}"
+                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       Margin="5,0,0,0"/>
 
         </StackPanel>
     </Grid>
