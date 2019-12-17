@@ -81,9 +81,9 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await raceManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.AssociatedLoadingType.Reference,
-                venueLoadingType: Domain.AssociatedLoadingType.None,
-                seasonsOfVenueLoadingType: Domain.AssociatedLoadingType.None);
+                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
+                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
 
             foreach (var raceDO in raceDomainObjects)
             {

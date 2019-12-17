@@ -237,9 +237,9 @@ namespace Hurace.Core.BL
                 Name = venueEntity.Name,
                 Country = await LoadAssociatedDomainObject(
                     countryLoadingType,
-                    () => new Domain.Associated<Domain.Country>(venueEntity.CountryId),
                     async () => new Domain.Associated<Domain.Country>(
-                        await GetCountryById(venueEntity.CountryId))),
+                        await GetCountryById(venueEntity.CountryId)),
+                    () => new Domain.Associated<Domain.Country>(venueEntity.CountryId)),
                 Seasons = await LoadAssociatedDomainObjectSet(
                     seasonsOfVenueLoadingType,
                     async () => (await GetAllSeasonsByVenueId(venueEntity.Id))
