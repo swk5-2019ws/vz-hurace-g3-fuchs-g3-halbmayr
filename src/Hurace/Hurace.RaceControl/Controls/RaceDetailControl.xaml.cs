@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Hurace.RaceControl.Control
+namespace Hurace.RaceControl.Controls
 {
     /// <summary>
     /// Interaction logic for RaceDetailControl.xaml

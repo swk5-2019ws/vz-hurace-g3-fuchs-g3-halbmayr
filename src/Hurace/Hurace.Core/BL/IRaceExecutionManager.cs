@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hurace.Timer;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,6 +14,6 @@ namespace Hurace.Core.BL
 
         event OnTimeMeasured OnTimeMeasured;
 
-        void StartTimeTracking(Domain.Race race, Domain.Skier skier);
+        void StartTimeTracking(IRaceClock raceClock, Domain.Race race, Domain.Skier skier);
     }
 }

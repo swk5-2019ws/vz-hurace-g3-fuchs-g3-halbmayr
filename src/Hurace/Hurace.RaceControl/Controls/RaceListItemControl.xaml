@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="Hurace.RaceControl.Control.RaceListItemControl"
+﻿<UserControl x:Class="Hurace.RaceControl.Controls.RaceListItemControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Hurace.RaceControl.Control"
+             xmlns:local="clr-namespace:Hurace.RaceControl.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              Background="{DynamicResource MaterialDesignPaper}"
@@ -26,7 +26,7 @@
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal">
 
-            <TextBlock Text="{Binding Race.Season.Name}"
+            <TextBlock Text="{Binding Race.Season.Reference.Name}"
                        Style="{StaticResource MaterialDesignCaptionTextBlock}"
                        Margin="0,0,5,0"/>
 

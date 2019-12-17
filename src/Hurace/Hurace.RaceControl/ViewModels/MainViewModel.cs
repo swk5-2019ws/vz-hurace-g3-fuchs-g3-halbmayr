@@ -4,13 +4,14 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Hurace.RaceControl.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
         private readonly IRaceInformationManager raceManager;
-        private RaceListItemViewModel selectedRace;
+        private RaceDetailViewModel selectedRace;
         private readonly IServiceProvider serviceProvider;
 
         public MainViewModel(IServiceProvider serviceProvider, IRaceInformationManager raceManager)
@@ -18,25 +19,31 @@ namespace Hurace.RaceControl.ViewModels
             this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
 
-            this.RaceListItemViewModels = new ObservableCollection<RaceListItemViewModel>();
+            this.RaceListItemViewModels = new ObservableCollection<RaceDetailViewModel>();
         }
 
-        public ObservableCollection<RaceListItemViewModel> RaceListItemViewModels { get; private set; }
-        public RaceListItemViewModel SelectedRace
+        public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
+        public RaceDetailViewModel SelectedRace
         {
             get => selectedRace;
             set => base.Set(ref this.selectedRace, value);
         }
-        public RaceDetailViewModel DetailedSelectedRace { get; set; }
-
 
         internal async Task InitializeAsync()
         {
-            var raceListItemViewModels = (await this.raceManager.GetAllRacesAsync())
-                    .Select(race => new RaceListItemViewModel(race));
+            var raceListDetailViewModels =
+                (await this.raceManager.GetAllRacesAsync(
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference,
+                    startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference))
+                .Select(race => (this.serviceProvider.GetRequiredService<RaceDetailViewModel>(), race));
 
-            foreach (var raceListItemViewModel in raceListItemViewModels)
-                this.RaceListItemViewModels.Add(raceListItemViewModel);
+            foreach (var (raceDetailViewModel, race) in raceListDetailViewModels)
+            {
+                raceDetailViewModel.Race = race;
+                this.RaceListItemViewModels.Add(raceDetailViewModel);
+            }
         }
     }
 }

@@ -9,17 +9,14 @@ namespace Hurace.Core.BL
     {
         private readonly IRaceClock raceClock;
 
-        public RaceExecutionManager(IRaceClock raceClock)
-        {
-            this.raceClock = raceClock ?? throw new ArgumentNullException(nameof(raceClock));
-        }
+        public RaceExecutionManager() { }
 
         public Domain.Race TrackedRace { get; set; }
         public Domain.Skier TrackedSkier { get; set; }
 
         public event OnTimeMeasured OnTimeMeasured;
 
-        public void StartTimeTracking(Domain.Race race, Domain.Skier skier)
+        public void StartTimeTracking(IRaceClock raceClock, Domain.Race race, Domain.Skier skier)
         {
             //validate if there exists a startposition 
             //validate if the start poisition is the one up next

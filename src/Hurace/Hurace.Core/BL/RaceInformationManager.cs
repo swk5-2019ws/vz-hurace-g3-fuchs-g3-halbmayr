@@ -68,7 +68,8 @@ namespace Hurace.Core.BL
         public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync(
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
-            Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None)
+            Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None,
+            Domain.Associated<Domain.StartPosition>.LoadingType startListLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None)
         {
             var raceEntities = await raceDao.GetAllConditionalAsync();
 
@@ -95,7 +96,10 @@ namespace Hurace.Core.BL
                         Season = await LoadAssociatedDomainObject(
                             seasonLoadingType,
                             async () => new Domain.Associated<Domain.Season>(await GetSeasonByDate(raceEntity.Date))),
-                        FirstStartList = null,
+                        FirstStartList = await LoadAssociatedDomainObjectSet<Domain.StartPosition>(
+                            startListLoadingType,
+                            async () => /* load all startpostion domain objects */ null,
+                            async () => /* load all ids of startposition domain objects */ null),
                         SecondStartList = null
                     }));
         }

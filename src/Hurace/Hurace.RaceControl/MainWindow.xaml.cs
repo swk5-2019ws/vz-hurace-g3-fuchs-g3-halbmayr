@@ -1,6 +1,7 @@
 ﻿using Hurace.Core.BL;
 using Hurace.Core.DAL.AdoPersistence;
 using Hurace.Core.Db.Connection;
+using System;
 using System.Windows;
 
 namespace Hurace.RaceControl
@@ -10,11 +11,9 @@ namespace Hurace.RaceControl
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(IRaceInformationManager raceManager)
+        public MainWindow(ViewModels.MainViewModel mainViewModel)
         {
             InitializeComponent();
-
-            var mainViewModel = new ViewModels.MainViewModel(raceManager);
 
             this.DataContext = mainViewModel;
             this.Loaded += async (sender, eventArgs) => await mainViewModel.InitializeAsync();

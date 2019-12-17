@@ -60,6 +60,10 @@ namespace Hurace.RaceControl
                     });
 
             services.AddScoped<IRaceInformationManager, RaceInformationManager>();
+            services.AddScoped<IRaceExecutionManager, RaceExecutionManager>();
+
+            services.AddTransient<ViewModels.RaceDetailViewModel>();
+            services.AddTransient<ViewModels.MainViewModel>();
 
             services.AddTransient<MainWindow>();
         }

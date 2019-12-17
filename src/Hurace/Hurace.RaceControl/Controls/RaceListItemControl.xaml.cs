@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Hurace.RaceControl.Control
+namespace Hurace.RaceControl.Controls
 {
     /// <summary>
     /// Interaction logic for RaceListItem.xaml

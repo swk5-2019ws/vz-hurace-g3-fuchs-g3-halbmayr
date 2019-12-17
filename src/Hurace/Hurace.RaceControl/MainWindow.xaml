@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        xmlns:controls="clr-namespace:Hurace.RaceControl.Control"
-        xmlns:viewModels="clr-namespace:Hurace.RaceControl.ViewModels"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        xmlns:controls="clr-namespace:Hurace.RaceControl.Controls"
+        xmlns:viewModels="clr-namespace:Hurace.RaceControl.ViewModels"
+        xmlns:converters="clr-namespace:Hurace.RaceControl.Converters"
         Title="Race Control" 
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -15,6 +16,10 @@
         FontFamily="{materialDesign:MaterialDesignFont}"
         Height="550" MinHeight="450"
         Width="900" MinWidth="900">
+    <Window.Resources>
+        <converters:NullToVisibilityConverter x:Key="ShowWhenSet"/>
+    </Window.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260" MinWidth="180" MaxWidth="260"/>
@@ -24,9 +29,10 @@
         <Grid Grid.Column="0">
             <ListBox ItemsSource="{Binding RaceListItemViewModels}"
                      SelectedItem="{Binding SelectedRace}"
+                     SelectionMode="Single"
                      BorderThickness="0">
                 <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type viewModels:RaceListItemViewModel}">
+                    <DataTemplate DataType="{x:Type viewModels:RaceDetailViewModel}">
                         <controls:RaceListItemControl/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -48,8 +54,8 @@
                       VerticalAlignment="Stretch"
                       Background="DarkGray"/>
 
-        <Grid Grid.Column="1">
-            <controls:RaceDetailControl/>
+        <Grid Grid.Column="1" Visibility="{Binding SelectedRace, Converter={StaticResource ShowWhenSet}}">
+            <controls:RaceDetailControl DataContext="{Binding SelectedRace}"/>
         </Grid>
     </Grid>
 </Window>
