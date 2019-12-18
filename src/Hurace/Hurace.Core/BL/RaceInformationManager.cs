@@ -131,11 +131,13 @@ namespace Hurace.Core.BL
         {
             var raceTypeEntity = await raceTypeDao.GetByIdAsync(id);
 
-            return new Domain.RaceType
-            {
-                Id = raceTypeEntity.Id,
-                Label = raceTypeEntity.Label
-            };
+            return raceTypeEntity is null
+                ? null
+                : new Domain.RaceType
+                {
+                    Id = raceTypeEntity.Id,
+                    Label = raceTypeEntity.Label
+                };
         }
 
         #endregion

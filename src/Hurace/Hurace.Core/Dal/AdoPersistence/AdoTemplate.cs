@@ -47,9 +47,9 @@ namespace Hurace.Core.DAL.AdoPersistence
             RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
         {
-            return
-                (await this.QueryObjectSetAsync(sqlQuery, rowMapper, queryParameters))
-                .SingleOrDefault();
+            var resultingSet = await this.QueryObjectSetAsync(sqlQuery, rowMapper, queryParameters);
+
+            return resultingSet.Count() == 1 ? resultingSet.First() : (default);
         }
 
         public async Task<int> QuerySingleInt32Async(

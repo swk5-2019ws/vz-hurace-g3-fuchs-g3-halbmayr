@@ -36,6 +36,7 @@ namespace Hurace.Core.BL
                     if (loadDomainObjectAsReference == null)
                         throw new InvalidOperationException(
                             $"Can't load associated domain-object {typeof(T).Name} as reference because loader is null");
+
                     return await loadDomainObjectAsReference();
                 default:
                     throw new InvalidOperationException(

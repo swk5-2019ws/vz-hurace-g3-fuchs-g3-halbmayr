@@ -25,8 +25,7 @@ namespace Hurace.Domain
 
         public Associated(T reference)
         {
-            this.reference = reference ?? throw new ArgumentNullException(nameof(reference));
-            this.foreignKey = null;
+            this.reference = reference;
         }
 
         public int? ForeignKey
@@ -53,8 +52,5 @@ namespace Hurace.Domain
                 this.reference = value;
             }
         }
-
-        [JsonIgnore]
-        public bool HasReference => !this.foreignKey.HasValue;
     }
 }
