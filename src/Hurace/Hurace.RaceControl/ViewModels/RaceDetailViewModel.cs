@@ -3,6 +3,7 @@ using Hurace.Domain;
 using Hurace.RaceControl.ViewModels.Shared;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -36,15 +37,18 @@ namespace Hurace.RaceControl.ViewModels
                 this.CanStopRaceExecution);
         }
 
+
         public bool ExecutionRunning
         {
             get => executionRunning;
             set => base.Set(ref this.executionRunning, value);
         }
+
         public Race Race { get; set; }
         public AsyncDelegateCommand StartRaceExecutionCommand { get; }
         public AsyncDelegateCommand StartSimulatedRaceExecutionCommand { get; }
         public AsyncDelegateCommand StopRaceExecutionCommand { get; set; }
+        public ObservableCollection<StartPosition> StartList { get; }
 
         public bool CanStartRaceExecution(object argument)
         {

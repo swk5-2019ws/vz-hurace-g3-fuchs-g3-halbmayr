@@ -1,9 +1,11 @@
 ﻿using Hurace.Core.BL;
+using Hurace.RaceControl.ViewModels.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Hurace.RaceControl.ViewModels
@@ -11,8 +13,10 @@ namespace Hurace.RaceControl.ViewModels
     public class MainViewModel : BaseViewModel
     {
         private readonly IRaceInformationManager raceManager;
-        private RaceDetailViewModel selectedRace;
         private readonly IServiceProvider serviceProvider;
+        private RaceDetailViewModel selectedRace;
+        private CreateRaceViewModel newRace;
+        private bool createRaceVisible = false;
 
         public MainViewModel(IServiceProvider serviceProvider, IRaceInformationManager raceManager)
         {
@@ -20,13 +24,33 @@ namespace Hurace.RaceControl.ViewModels
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
 
             this.RaceListItemViewModels = new ObservableCollection<RaceDetailViewModel>();
+            this.newRace = new CreateRaceViewModel(raceManager);
+            this.SwitchControlVisibilityCommand = new AsyncDelegateCommand(this.SetVisibility, _ => true);
         }
 
-        public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
-        public RaceDetailViewModel SelectedRace
+        private Task SetVisibility(object arg)
         {
+            this.CreateRaceVisible = true;
+            this.SelectedRace = null;
+            return Task.CompletedTask;
+        }
+        public AsyncDelegateCommand SwitchControlVisibilityCommand { get; }
+
+        public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
+
+        public bool CreateRaceVisible {
+            get => createRaceVisible;
+            set => base.Set(ref this.createRaceVisible, value);
+        }
+
+        public RaceDetailViewModel SelectedRace {
             get => selectedRace;
             set => base.Set(ref this.selectedRace, value);
+        }
+
+        public CreateRaceViewModel NewRace {
+            get => newRace;
+            set => base.Set(ref this.newRace, value);
         }
 
         internal async Task InitializeAsync()
@@ -44,6 +68,7 @@ namespace Hurace.RaceControl.ViewModels
                 raceDetailViewModel.Race = race;
                 this.RaceListItemViewModels.Add(raceDetailViewModel);
             }
+            await newRace.Initialize();
         }
     }
 }

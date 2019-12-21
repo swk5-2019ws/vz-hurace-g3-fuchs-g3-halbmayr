@@ -18,6 +18,7 @@
         Width="900" MinWidth="900">
     <Window.Resources>
         <converters:NullToVisibilityConverter x:Key="ShowWhenSet"/>
+        <converters:BoolToVisibilityConverter x:Key="VisibilityOfBool"/>
     </Window.Resources>
     
     <Grid>
@@ -45,6 +46,7 @@
 
             <Button Content="{materialDesign:PackIcon Plus}"
                     Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+                    Command="{Binding SwitchControlVisibilityCommand}"
                     Margin="0,0,27,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
         </Grid>
 
@@ -54,8 +56,14 @@
                       VerticalAlignment="Stretch"
                       Background="DarkGray"/>
 
-        <Grid Grid.Column="1" Visibility="{Binding SelectedRace, Converter={StaticResource ShowWhenSet}}">
-            <controls:RaceDetailControl DataContext="{Binding SelectedRace}"/>
+        <Grid Grid.Column="1" Visibility="{Binding CreateRaceVisible, Converter={StaticResource VisibilityOfBool}}">
+            <controls:CreateRaceControl DataContext="{Binding NewRace}"></controls:CreateRaceControl>
         </Grid>
+        
+        <Grid Grid.Column="1" Visibility="{Binding SelectedRace, Converter={StaticResource ShowWhenSet}}">
+            <controls:RaceDetailControl DataContext="{Binding SelectedRace}"></controls:RaceDetailControl>
+        </Grid>
+
+        
     </Grid>
 </Window>
