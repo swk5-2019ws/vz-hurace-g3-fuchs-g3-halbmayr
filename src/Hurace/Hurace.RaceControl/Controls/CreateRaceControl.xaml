@@ -143,7 +143,8 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal"
-                        Grid.Row="3">
+                        Grid.Row="3"
+                        MaxHeight="130">
                 <ListBox ItemsSource="{Binding Skiers}"
                      SelectedItem="{Binding SelectedSkier}"
                      SelectionMode="Single"
@@ -164,13 +165,21 @@
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>
-                <Button Command="{Binding StartRaceExecutionCommand}"
+                <StackPanel Orientation="Vertical">
+                    <Button Command="{Binding AddRacerToStartListCommand}"
                         Margin="2,0"
                         Style="{StaticResource MaterialDesignRaisedAccentButton}"
                         Foreground="White">
-                    <materialDesign:PackIcon Kind="ArrowRightBoldCircle"/>
-                </Button>
-                <ListBox ItemsSource="{Binding StartPosition}"
+                        <materialDesign:PackIcon Kind="ArrowRightBoldCircle"/>
+                    </Button>
+                    <Button Command="{Binding RemoveRacerFromStartListCommand}"
+                        Margin="2,0"
+                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                        Foreground="White">
+                        <materialDesign:PackIcon Kind="ArrowLeftBoldCircle"/>
+                    </Button>
+                </StackPanel>
+                <ListBox ItemsSource="{Binding StartPositions}"
                      SelectedItem="{Binding SelectedStartPosition}"
                      SelectionMode="Single"
                      BorderThickness="0"
@@ -181,9 +190,9 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding Position}"/>
                             <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding FirstName}"/>
+                            <TextBlock Text="{Binding Skier.Reference.FirstName}"/>
                             <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding LastName}" />
+                            <TextBlock Text="{Binding Skier.Reference.LastName}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

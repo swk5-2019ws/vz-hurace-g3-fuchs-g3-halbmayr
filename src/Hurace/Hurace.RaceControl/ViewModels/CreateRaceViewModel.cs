@@ -31,12 +31,22 @@ namespace Hurace.RaceControl.ViewModels
         private ObservableCollection<Domain.Skier> skiers;
         private Domain.Skier selectedSkier;
 
+        public AsyncDelegateCommand AddRacerToStartListCommand { get; }
+        public AsyncDelegateCommand RemoveRacerFromStartListCommand { get; }
+
         public bool HasErrors => this.errors.Any();
 
         public CreateRaceViewModel(IRaceInformationManager raceManager)
         {
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
             SelectedDate = DateTime.Now;
+
+            this.AddRacerToStartListCommand = new AsyncDelegateCommand(
+                AddRacerToStartList,
+                (object obj) => selectedSkier != null);
+            this.RemoveRacerFromStartListCommand = new AsyncDelegateCommand(
+                RemoveRacerFromStartList,
+                (object obj) => selectedStartPosition != null);
         }
 
         public async Task Initialize()
@@ -54,9 +64,43 @@ namespace Hurace.RaceControl.ViewModels
             StartPositions = new ObservableCollection<Domain.StartPosition>();
 
             Skiers = new ObservableCollection<Domain.Skier>(
-                await raceManager.GetAllSkiersAsync());
+                (await raceManager.GetAllSkiersAsync()).OrderBy(skier => skier.LastName));
+        }
 
-            //AllSkiers = new ObservableCollection<Domain.Skier>(await raceManager)
+        private Task AddRacerToStartList(object obj)
+        {
+            StartPositions.Add(new Domain.StartPosition
+            {
+                Position = StartPositions.Count + 1,
+                Skier = new Domain.Associated<Domain.Skier>
+                {
+                    Reference = SelectedSkier
+                }
+            });
+            skiers.Remove(SelectedSkier);
+
+            return Task.CompletedTask;
+        }
+
+        private Task RemoveRacerFromStartList(object obj)
+        {
+            Skiers.Add(SelectedStartPosition.Skier.Reference);
+
+            foreach (var elem in StartPositions)
+            {
+                if(SelectedStartPosition.Position < elem.Position)
+                {
+                    elem.Position--;
+                }
+            }
+
+            StartPositions.Remove(SelectedStartPosition);
+
+            ObservableCollection<Domain.StartPosition> tempList = StartPositions;
+            StartPositions = null;
+            StartPositions = tempList;
+
+            return Task.CompletedTask;
         }
 
         public ObservableCollection<Domain.RaceType> RaceTypes
