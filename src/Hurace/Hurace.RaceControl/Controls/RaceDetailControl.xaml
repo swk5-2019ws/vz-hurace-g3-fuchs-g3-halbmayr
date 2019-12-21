@@ -17,8 +17,11 @@
              d:DesignHeight="550" d:DesignWidth="500">
 
     <UserControl.Resources>
-        <converter:BoolToVisibilityConverter x:Key="VisibleIfTrueConverter"/>
-        <converter:InvertedBoolToVisibilityConverter x:Key="VisibleIfFalseConverter"/>
+        <converter:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converter:ValueConverterCollection x:Key="InvertedVisibilityConverter">
+            <converter:InvertedBoolConverter/>
+            <converter:BoolToVisibilityConverter/>
+        </converter:ValueConverterCollection>
     </UserControl.Resources>
     
     <StackPanel Orientation="Vertical"
@@ -44,7 +47,7 @@
                                    DockPanel.Dock="Top"/>
 
                         <TextBlock Text="{Binding Race.Season.Reference.Name}"
-                                    DockPanel.Dock="Left"/>
+                                   DockPanel.Dock="Left"/>
 
                         <TextBlock Text="{Binding Race.Date}"
                                    TextAlignment="Center"
@@ -57,7 +60,7 @@
                             Style="{StaticResource MaterialDesignRaisedAccentButton}"
                             Foreground="White"
                             ToolTip="Starte das Rennen"
-                            Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibleIfFalseConverter}}">
+                            Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
                         <materialDesign:PackIcon Kind="PlayCircleOutline"/>
                     </Button>
 
@@ -67,7 +70,7 @@
                             Style="{StaticResource MaterialDesignRaisedLightButton}"
                             Foreground="White"
                             ToolTip="Starte die Simulation"
-                            Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibleIfFalseConverter}}">
+                            Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
                         <materialDesign:PackIcon Kind="PlaySpeed"/>
                     </Button>
 
@@ -75,7 +78,7 @@
                             Margin="2,0"
                             Foreground="White"
                             ToolTip="Bearbeiten"
-                            Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibleIfFalseConverter}}">
+                            Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
                         <materialDesign:PackIcon Kind="Pencil"/>
                     </Button>
 
@@ -84,12 +87,12 @@
                             Margin="2,0"
                             Background="Red"
                             ToolTip="Beende Simulation"
-                            Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibleIfTrueConverter}}">
+                            Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
                         <materialDesign:PackIcon Kind="Stop"/>
                     </Button>
                 </Grid>
             </materialDesign:Card>
-            <controls:RaceExecutionOverviewControl DataContext="{Binding SelectedRace}" Grid.Row="1" Margin="5"/>
+            <controls:RaceExecutionOverviewControl DataContext="{Binding Race}" Grid.Row="1" Margin="5"/>
         </Grid>
     </StackPanel>
 </UserControl>

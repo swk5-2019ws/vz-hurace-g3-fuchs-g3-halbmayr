@@ -13,37 +13,50 @@
              FontFamily="{materialDesign:MaterialDesignFont}"
              d:DesignHeight="550" d:DesignWidth="500">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10">
-            <TextBlock HorizontalAlignment="Center" Margin="10">Create a new Race</TextBlock>
-        </materialDesign:Card>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Margin="5">
+   <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10">
+        <Grid Margin="7">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Neues Rennen erstellen"
+                     Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                     Grid.Row="0"
+                     Margin="10"/>
+
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0">Date:</Label>
-                <DatePicker Grid.Column="1" Margin="0,0,10,0" SelectedDate="{Binding SelectedDate}"></DatePicker>
-            </Grid>
-            <Grid Grid.Column="1" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Column="0">Number of sensors:</Label>
-                <StackPanel Grid.Column="1" Margin="0,0,10,0" >
-                    <ComboBox SelectedItem="{Binding SelectedNumberOfSensors}">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <DockPanel Grid.Row="0"
+                           Grid.Column="0">
+                    
+                    <TextBlock Text="Date:"
+                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                               DockPanel.Dock="Left"/>
+
+                    <DatePicker SelectedDate="{Binding SelectedDate}"
+                                DockPanel.Dock="Right"/>
+                </DockPanel>
+
+                <DockPanel Grid.Row="0"
+                           Grid.Column="2">
+
+                    <TextBlock Text="Number of sensors:"
+                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                               DockPanel.Dock="Left"/>
+
+                    <ComboBox SelectedItem="{Binding SelectedNumberOfSensors}"
+                              DockPanel.Dock="Right">
                         <ComboBox.ItemsSource>
                             <x:Array Type="{x:Type sys1:Int32}">
                                 <sys1:Int32>1</sys1:Int32>
@@ -57,40 +70,18 @@
                             </x:Array>
                         </ComboBox.ItemsSource>
                     </ComboBox>
-                </StackPanel>
-            </Grid>
-        </Grid>
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Column="0">Race Type:</Label>
-                <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                    <ComboBox ItemsSource="{Binding RaceTypes}"    
-                              SelectedItem="{Binding SelectedRaceType}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Label}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
-            </Grid>
-            <Grid Grid.Column="1" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Column="0">Venue:</Label>
-                <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                    <ComboBox ItemsSource="{Binding Venues}"    
-                              SelectedItem="{Binding SelectedVenue}">
+                </DockPanel>
+
+                <DockPanel Grid.Column="0"
+                           Grid.Row="1">
+
+                    <TextBlock Text="Venue:"
+                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                               DockPanel.Dock="Left"/>
+
+                    <ComboBox ItemsSource="{Binding Venues}"
+                              SelectedItem="{Binding SelectedVenue}"
+                              DockPanel.Dock="Right">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -101,16 +92,36 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                </StackPanel>
+                </DockPanel>
+
+                <DockPanel Grid.Column="2"
+                           Grid.Row="1">
+
+                    <TextBlock Text="Race Type:"
+                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                               DockPanel.Dock="Left"/>
+
+                    <ComboBox ItemsSource="{Binding RaceTypes}"
+                              SelectedItem="{Binding SelectedRaceType}"
+                              DockPanel.Dock="Right">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Label}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </DockPanel>
             </Grid>
+
+            <StackPanel Orientation="Vertical" Grid.Row="3">
+
+                <TextBlock Text="Description:"
+                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+
+                <TextBox Height="60"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"/>
+            </StackPanel>
         </Grid>
-        <Grid Grid.Row="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0">Description</TextBlock>
-            <TextBox Margin="10,0,10,0" Height="60" Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True"></TextBox>
-        </Grid>
-    </Grid>
+    </materialDesign:Card>
 </UserControl>

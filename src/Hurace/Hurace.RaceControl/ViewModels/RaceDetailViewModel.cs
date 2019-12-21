@@ -68,8 +68,6 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task StartSimulatedRaceExecution(object argument)
         {
-            MessageBox.Show("start real race");
-
             var simulation = this.raceClockResolver(true) as Simulator.RaceClockSimulation;
             var simulatorConfigWindow = new Windows.SimulatorConfigWindow(simulation);
             simulatorConfigWindow.ShowDialog();

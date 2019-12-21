@@ -37,12 +37,16 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task Initialize()
         {
-            Venues = new ObservableCollection<Domain.Venue>(await raceManager.GetAllVenuesAsync(
-                Domain.Associated<Domain.Country>.LoadingType.Reference));
-            RaceTypes = new ObservableCollection<Domain.RaceType>(await raceManager.GetAllRaceTypesAsync());
-            //AllSkiers = new ObservableCollection<Domain.Skier>(await raceManager)
+            Venues = new ObservableCollection<Domain.Venue>(
+                await raceManager.GetAllVenuesAsync(
+                    Domain.Associated<Domain.Country>.LoadingType.Reference));
 
+            RaceTypes = new ObservableCollection<Domain.RaceType>(
+                await raceManager.GetAllRaceTypesAsync());
+
+            //AllSkiers = new ObservableCollection<Domain.Skier>(await raceManager)
         }
+
         public ObservableCollection<Domain.RaceType> RaceTypes
         {
             get => raceTypes;

@@ -15,8 +15,9 @@ namespace Hurace.RaceControl.ViewModels
         private readonly IRaceInformationManager raceManager;
         private readonly IServiceProvider serviceProvider;
         private RaceDetailViewModel selectedRace;
-        private CreateRaceViewModel newRace;
+        private CreateRaceViewModel createRaceViewModel;
         private bool createRaceVisible = false;
+        private bool raceDetailViewVisible;
 
         public MainViewModel(IServiceProvider serviceProvider, IRaceInformationManager raceManager)
         {
@@ -24,36 +25,48 @@ namespace Hurace.RaceControl.ViewModels
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
 
             this.RaceListItemViewModels = new ObservableCollection<RaceDetailViewModel>();
-            this.newRace = new CreateRaceViewModel(raceManager);
-            this.SwitchControlVisibilityCommand = new AsyncDelegateCommand(this.SetVisibility, _ => true);
+            this.createRaceViewModel = new CreateRaceViewModel(raceManager);
+
+            this.OpenCreateRaceCommand = new AsyncDelegateCommand(
+                _ =>
+                {
+                    this.CreateRaceControlVisible = true;
+                    this.RaceDetailControlVisible = false;
+                    return Task.CompletedTask;
+                });
         }
 
-        private Task SetVisibility(object arg)
-        {
-            this.CreateRaceVisible = true;
-            this.SelectedRace = null;
-            return Task.CompletedTask;
-        }
-        public AsyncDelegateCommand SwitchControlVisibilityCommand { get; }
+        public AsyncDelegateCommand OpenCreateRaceCommand { get; set; }
 
         public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
 
-        public bool CreateRaceVisible
+        public bool CreateRaceControlVisible
         {
             get => createRaceVisible;
             set => base.Set(ref this.createRaceVisible, value);
         }
 
+        public bool RaceDetailControlVisible
+        {
+            get => raceDetailViewVisible;
+            set => base.Set(ref this.raceDetailViewVisible, value);
+        }
+
         public RaceDetailViewModel SelectedRace
         {
             get => selectedRace;
-            set => base.Set(ref this.selectedRace, value);
+            set
+            {
+                base.Set(ref this.selectedRace, value);
+                this.RaceDetailControlVisible = true;
+                this.CreateRaceControlVisible = false;
+            }
         }
 
-        public CreateRaceViewModel NewRace
+        public CreateRaceViewModel CreateRaceViewModel
         {
-            get => newRace;
-            set => base.Set(ref this.newRace, value);
+            get => createRaceViewModel;
+            set => base.Set(ref this.createRaceViewModel, value);
         }
 
         internal async Task InitializeAsync()
@@ -70,7 +83,8 @@ namespace Hurace.RaceControl.ViewModels
                 raceDetailViewModel.Race = race;
                 this.RaceListItemViewModels.Add(raceDetailViewModel);
             }
-            await newRace.Initialize();
+
+            await createRaceViewModel.Initialize();
         }
     }
 }

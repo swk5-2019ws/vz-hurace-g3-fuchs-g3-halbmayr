@@ -17,8 +17,7 @@
         Height="550" MinHeight="450"
         Width="900" MinWidth="900">
     <Window.Resources>
-        <converters:NullToVisibilityConverter x:Key="ShowWhenSet"/>
-        <converters:BoolToVisibilityConverter x:Key="VisibilityOfBool"/>
+        <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
     </Window.Resources>
     
     <Grid>
@@ -46,7 +45,7 @@
 
             <Button Content="{materialDesign:PackIcon Plus}"
                     Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
-                    Command="{Binding SwitchControlVisibilityCommand}"
+                    Command="{Binding OpenCreateRaceCommand}"
                     Margin="0,0,27,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
         </Grid>
 
@@ -56,14 +55,29 @@
                       VerticalAlignment="Stretch"
                       Background="DarkGray"/>
 
-        <Grid Grid.Column="1" Visibility="{Binding CreateRaceVisible, Converter={StaticResource VisibilityOfBool}}">
-            <controls:CreateRaceControl DataContext="{Binding NewRace}"></controls:CreateRaceControl>
-        </Grid>
-        
-        <Grid Grid.Column="1" Visibility="{Binding SelectedRace, Converter={StaticResource ShowWhenSet}}">
-            <controls:RaceDetailControl DataContext="{Binding SelectedRace}"></controls:RaceDetailControl>
-        </Grid>
+        <DockPanel Grid.Column="1"
+                   Visibility="{Binding CreateRaceControlVisible, Converter={StaticResource VisibilityConverter}}">
+            <controls:CreateRaceControl DockPanel.Dock="Top" 
+                                        DataContext="{Binding CreateRaceViewModel}"/>
+            
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+                <Button Content="Abbruch"
+                        Grid.Column="0"
+                        Margin="5,5,2.5,5"/>
+                <Button Content="Erstellen"
+                        Grid.Column="1"
+                        Margin="2.5,5,5,5"/>
+            </Grid>
+        </DockPanel>
 
-        
+        <Grid Grid.Column="1"
+              Visibility="{Binding RaceDetailControlVisible, Converter={StaticResource VisibilityConverter}}">
+            <controls:RaceDetailControl DataContext="{Binding SelectedRace}"/>
+        </Grid>
     </Grid>
 </Window>

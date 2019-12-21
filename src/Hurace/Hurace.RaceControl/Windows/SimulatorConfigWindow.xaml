@@ -41,8 +41,7 @@
 
             <TextBox Grid.Row="0"
                      Grid.Column="1"
-                     Text="{Binding MaxSensorIdValue, Mode=OneWayToSource}"
-                     />
+                     Text="{Binding MaxSensorIdValue, Mode=OneWayToSource}"/>
 
             <Label Grid.Row="1"
                    Grid.Column="0"
