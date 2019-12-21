@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
 {
@@ -11,10 +12,11 @@ namespace Hurace.Core.BL
 
         public RaceExecutionManager() { }
 
+        public event OnTimeMeasured OnTimeMeasured;
+
         public Domain.Race TrackedRace { get; set; }
         public Domain.Skier TrackedSkier { get; set; }
-
-        public event OnTimeMeasured OnTimeMeasured;
+        public IRaceClock RaceClock { get; set; }
 
         public void StartTimeTracking(IRaceClock raceClock, Domain.Race race, Domain.Skier skier)
         {
@@ -22,6 +24,11 @@ namespace Hurace.Core.BL
             //validate if the start poisition is the one up next
 
             this.raceClock.TimingTriggered += OnRaceSensorTriggered;
+        }
+
+        public Task<bool> IsRaceStartable(int raceId)
+        {
+            throw new NotImplementedException();
         }
 
         private void OnRaceSensorTriggered(int sensorId, DateTime time)

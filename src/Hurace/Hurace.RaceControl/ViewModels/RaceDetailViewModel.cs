@@ -37,7 +37,6 @@ namespace Hurace.RaceControl.ViewModels
                 this.CanStopRaceExecution);
         }
 
-
         public bool ExecutionRunning
         {
             get => executionRunning;
@@ -55,11 +54,11 @@ namespace Hurace.RaceControl.ViewModels
             return !ExecutionRunning;
         }
 
-        public Task StartRaceExecution(object argument)
+        public async Task StartRaceExecution(object argument)
         {
             MessageBox.Show("start real race");
-            this.ExecutionRunning = true;
-            return Task.CompletedTask;
+
+            await this.StartRaceLogic(this.raceClockResolver(false));
         }
 
         public bool CanStartSimulatedRaceExecution(object argument)
@@ -67,11 +66,11 @@ namespace Hurace.RaceControl.ViewModels
             return this.CanStartRaceExecution(argument);
         }
 
-        public Task StartSimulatedRaceExecution(object argument)
+        public async Task StartSimulatedRaceExecution(object argument)
         {
-            MessageBox.Show("start real simulated race");
-            this.ExecutionRunning = true;
-            return Task.CompletedTask;
+            MessageBox.Show("start real race");
+
+            await this.StartRaceLogic(this.raceClockResolver(true));
         }
 
         public bool CanStopRaceExecution(object argument)
@@ -84,6 +83,25 @@ namespace Hurace.RaceControl.ViewModels
             MessageBox.Show("stop race execution");
             this.ExecutionRunning = false;
             return Task.CompletedTask;
+        }
+
+        private async Task StartRaceLogic(Timer.IRaceClock raceClock)
+        {
+            this.ExecutionRunning = true;
+
+            this.raceExecutionManager.RaceClock = raceClock;
+
+            this.Race = await raceInformationManager.GetRaceByIdAsync(
+                this.Race.Id,
+                raceTypeLoadingType: Associated<RaceType>.LoadingType.None,
+                venueLoadingType: Associated<Venue>.LoadingType.Reference,
+                seasonLoadingType: Associated<Season>.LoadingType.Reference,
+                startListLoadingType: Associated<StartPosition>.LoadingType.Reference,
+                skierLoadingType: Associated<Skier>.LoadingType.Reference,
+                skierSexLoadingType: Associated<Sex>.LoadingType.None,
+                skierCountryLoadingType: Associated<Country>.LoadingType.Reference);
+
+            
         }
     }
 }

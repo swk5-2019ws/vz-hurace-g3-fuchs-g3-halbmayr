@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 namespace Hurace.Simulator.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public class SimulatorConfigViewModel : BaseViewModel
     {
         private int sensorIdMaxValue;
 
         private CancellationTokenSource cancellationTokenSource;
         private readonly EventWaitHandle sensorSimulationExecutionHandle;
 
-        public MainViewModel()
+        public SimulatorConfigViewModel()
         {
             this.sensorSimulationExecutionHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 

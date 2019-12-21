@@ -1410,7 +1410,7 @@ namespace Hurace.Core.Tests.BL
                 startPositionDaoFake,
                 venueDaoFake);
 
-            var race = await raceManager.GetRaceById(
+            var race = await raceManager.GetRaceByIdAsync(
                 0,
                 startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
                 skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.Reference);

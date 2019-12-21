@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Threading;
 
 namespace Hurace.Simulator
 {
     public class RaceClockSimulation : Timer.IRaceClock
     {
+
+
         public RaceClockSimulation()
         {
-            //todo: start thread that simulated timer
+            ThreadPool.QueueUserWorkItem(SimulateTimer);
         }
 
         public event Timer.TimingTriggeredHandler TimingTriggered;
@@ -14,6 +17,14 @@ namespace Hurace.Simulator
         internal void RaiseRaceClockEvent(int sensorId, DateTime time)
         {
             this.TimingTriggered?.Invoke(sensorId, time);
+        }
+
+        private void SimulateTimer(object state)
+        {
+            while (true)
+            {
+                Thread.Sleep(500);
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
 {
@@ -9,11 +10,13 @@ namespace Hurace.Core.BL
 
     public interface IRaceExecutionManager
     {
-        Domain.Race TrackedRace { get; }
-        Domain.Skier TrackedSkier { get; }
-
         event OnTimeMeasured OnTimeMeasured;
 
+        Domain.Race TrackedRace { get; }
+        Domain.Skier TrackedSkier { get; }
+        IRaceClock RaceClock { get; set; }
+
+        Task<bool> IsRaceStartable(int raceId);
         void StartTimeTracking(IRaceClock raceClock, Domain.Race race, Domain.Skier skier);
     }
 }

@@ -54,7 +54,7 @@ namespace Hurace.Core.BL
         #region Methods
         #region Country-Methods
 
-        public async Task<IEnumerable<Domain.Country>> GetAllCountries()
+        public async Task<IEnumerable<Domain.Country>> GetAllCountriesAsync()
         {
             return (await countryDao.GetAllConditionalAsync())
                 .Select(countryEntitiy => new Domain.Country
@@ -64,7 +64,7 @@ namespace Hurace.Core.BL
                 });
         }
 
-        public async Task<Domain.Country> GetCountryById(int id)
+        public async Task<Domain.Country> GetCountryByIdAsync(int id)
         {
             var countryEntity = await countryDao.GetByIdAsync(id);
 
@@ -96,22 +96,22 @@ namespace Hurace.Core.BL
                         RaceType = await LoadAssociatedDomainObject(
                             raceTypeLoadingType,
                             async () => new Domain.Associated<Domain.RaceType>(
-                                await this.GetRaceTypeById(raceEntity.RaceTypeId)),
+                                await this.GetRaceTypeByIdAsync(raceEntity.RaceTypeId)),
                             () => new Domain.Associated<Domain.RaceType>(raceEntity.RaceTypeId)),
                         Venue = await LoadAssociatedDomainObject(
                             venueLoadingType,
                             async () => new Domain.Associated<Domain.Venue>(
-                                await this.GetVenueById(
+                                await this.GetVenueByIdAsy(
                                     raceEntity.VenueId,
                                     seasonsOfVenueLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)),
                             () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId)),
                         Season = await LoadAssociatedDomainObject(
                             seasonLoadingType,
-                            async () => new Domain.Associated<Domain.Season>(await GetSeasonByDate(raceEntity.Date)))
+                            async () => new Domain.Associated<Domain.Season>(await GetSeasonByDateAsync(raceEntity.Date)))
                     }));
         }
 
-        public async Task<Domain.Race> GetRaceById(
+        public async Task<Domain.Race> GetRaceByIdAsync(
             int raceId,
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
@@ -134,15 +134,15 @@ namespace Hurace.Core.BL
                     RaceType = await LoadAssociatedDomainObject(
                             raceTypeLoadingType,
                             async () => new Domain.Associated<Domain.RaceType>(
-                                await this.GetRaceTypeById(raceEntity.RaceTypeId)),
+                                await this.GetRaceTypeByIdAsync(raceEntity.RaceTypeId)),
                             () => new Domain.Associated<Domain.RaceType>(raceEntity.RaceTypeId)),
                     Season = await LoadAssociatedDomainObject(
                             seasonLoadingType,
-                            async () => new Domain.Associated<Domain.Season>(await GetSeasonByDate(raceEntity.Date))),
+                            async () => new Domain.Associated<Domain.Season>(await GetSeasonByDateAsync(raceEntity.Date))),
                     Venue = await LoadAssociatedDomainObject(
                             venueLoadingType,
                             async () => new Domain.Associated<Domain.Venue>(
-                                await this.GetVenueById(
+                                await this.GetVenueByIdAsy(
                                     raceEntity.VenueId,
                                     seasonsOfVenueLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)),
                             () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId)),
@@ -187,7 +187,7 @@ namespace Hurace.Core.BL
                                 skierIds.Select(
                                     async skierId =>
                                         new Domain.Associated<Domain.Skier>(
-                                            await GetSkierById(
+                                            await GetSkierByIdAsync(
                                                 skierId,
                                                 skierSexLoadingType,
                                                 skierCountryLoadingType,
@@ -215,7 +215,7 @@ namespace Hurace.Core.BL
                 }); ;
         }
 
-        public async Task<Domain.RaceType> GetRaceTypeById(int id)
+        public async Task<Domain.RaceType> GetRaceTypeByIdAsync(int id)
         {
             var raceTypeEntity = await raceTypeDao.GetByIdAsync(id);
 
@@ -231,7 +231,7 @@ namespace Hurace.Core.BL
         #endregion
         #region Season-Methods
 
-        public async Task<IEnumerable<Domain.Season>> GetAllSeasons()
+        public async Task<IEnumerable<Domain.Season>> GetAllSeasonsAsync()
         {
             return (await seasonDao.GetAllConditionalAsync())
                 .Select(seasonEntity => new Domain.Season
@@ -243,7 +243,7 @@ namespace Hurace.Core.BL
                 });
         }
 
-        public async Task<Domain.Season> GetSeasonByDate(DateTime date)
+        public async Task<Domain.Season> GetSeasonByDateAsync(DateTime date)
         {
             var seasonCondition = new QueryConditionBuilder()
                 .DeclareConditionNode(
@@ -265,7 +265,7 @@ namespace Hurace.Core.BL
                 .FirstOrDefault();
         }
 
-        public async Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueId(int venueId)
+        public async Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueIdAsync(int venueId)
         {
             var seasonPlanCondition = new QueryConditionBuilder()
                    .DeclareCondition(nameof(Entities.SeasonPlan.VenueId), QueryConditionType.Equals, venueId)
@@ -299,7 +299,7 @@ namespace Hurace.Core.BL
         #endregion
         #region Skier-Methods
 
-        public async Task<Domain.Skier> GetSkierById(
+        public async Task<Domain.Skier> GetSkierByIdAsync(
             int skierId,
             Domain.Associated<Domain.Sex>.LoadingType sexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.Reference,
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
@@ -317,7 +317,7 @@ namespace Hurace.Core.BL
                 LastName = skierEntity.LastName,
                 Country = await base.LoadAssociatedDomainObject(
                     countryLoadingType,
-                    async () => new Domain.Associated<Domain.Country>(await GetCountryById(skierEntity.CountryId)),
+                    async () => new Domain.Associated<Domain.Country>(await GetCountryByIdAsync(skierEntity.CountryId)),
                     () => new Domain.Associated<Domain.Country>(skierEntity.CountryId)),
                 Sex = await base.LoadAssociatedDomainObject(
                     sexLoadingType,
@@ -349,7 +349,7 @@ namespace Hurace.Core.BL
                             Position = startPositionE.Position,
                             Skier = await LoadAssociatedDomainObject(
                                 skierLoadingType,
-                                async () => new Domain.Associated<Domain.Skier>(await this.GetSkierById(startPositionE.SkierId)),
+                                async () => new Domain.Associated<Domain.Skier>(await this.GetSkierByIdAsync(startPositionE.SkierId)),
                                 () => new Domain.Associated<Domain.Skier>(startPositionE.SkierId))
                         }));
         }
@@ -374,22 +374,22 @@ namespace Hurace.Core.BL
                         Country = await LoadAssociatedDomainObject(
                             countryLoadingType,
                             async () => new Domain.Associated<Domain.Country>(
-                                (await GetAllCountries()).First(c => c.Id == venueEntity.CountryId)),
+                                (await GetAllCountriesAsync()).First(c => c.Id == venueEntity.CountryId)),
                             () => new Domain.Associated<Domain.Country>(venueEntity.CountryId)),
                         Seasons = await LoadAssociatedDomainObjectSet(
                             seasonsOfVenueLoadingType,
-                            async () => (await GetAllSeasons())
+                            async () => (await GetAllSeasonsAsync())
                                 .Where(s => seasonPlanEntities.Any(sp => sp.SeasonId == s.Id &&
                                                                    sp.VenueId == venueEntity.Id))
                                 .Select(s => new Domain.Associated<Domain.Season>(s)),
-                            async () => (await GetAllSeasons())
+                            async () => (await GetAllSeasonsAsync())
                                 .Where(s => seasonPlanEntities.Any(sp => sp.SeasonId == s.Id &&
                                                                    sp.VenueId == venueEntity.Id))
                                 .Select(s => new Domain.Associated<Domain.Season>(s.Id)))
                     }));
         }
 
-        public async Task<Domain.Venue> GetVenueById(
+        public async Task<Domain.Venue> GetVenueByIdAsy(
             int id,
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None)
@@ -403,13 +403,13 @@ namespace Hurace.Core.BL
                 Country = await LoadAssociatedDomainObject(
                     countryLoadingType,
                     async () => new Domain.Associated<Domain.Country>(
-                        await GetCountryById(venueEntity.CountryId)),
+                        await GetCountryByIdAsync(venueEntity.CountryId)),
                     () => new Domain.Associated<Domain.Country>(venueEntity.CountryId)),
                 Seasons = await LoadAssociatedDomainObjectSet(
                     seasonsOfVenueLoadingType,
-                    async () => (await GetAllSeasonsByVenueId(venueEntity.Id))
+                    async () => (await GetAllSeasonsByVenueIdAsync(venueEntity.Id))
                         .Select(s => new Domain.Associated<Domain.Season>(s.Id)),
-                    async () => (await GetAllSeasonsByVenueId(venueEntity.Id))
+                    async () => (await GetAllSeasonsByVenueIdAsync(venueEntity.Id))
                         .Select(s => new Domain.Associated<Domain.Season>(s)))
             };
         }

@@ -16,7 +16,7 @@ namespace Hurace.Simulator
             //RaceClockSimulation.Instance.TimingTriggered +=
             //    (sensorId, time) => Console.WriteLine($"Sensor-{sensorId} triggered around {time}");
 
-            this.DataContext = new ViewModels.MainViewModel();
+            this.DataContext = new ViewModels.SimulatorConfigViewModel();
         }
     }
 }

@@ -6,14 +6,14 @@ namespace Hurace.Core.BL
 {
     public interface IRaceInformationManager
     {
-        Task<IEnumerable<Domain.Country>> GetAllCountries();
-        Task<Domain.Country> GetCountryById(int id);
+        Task<IEnumerable<Domain.Country>> GetAllCountriesAsync();
+        Task<Domain.Country> GetCountryByIdAsync(int id);
 
         Task<IEnumerable<Domain.Race>> GetAllRacesAsync(
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
-        Task<Domain.Race> GetRaceById(
+        Task<Domain.Race> GetRaceByIdAsync(
             int raceId,
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
@@ -24,13 +24,13 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Country>.LoadingType skierCountryLoadingType = Domain.Associated<Domain.Country>.LoadingType.None);
 
         Task<IEnumerable<Domain.RaceType>> GetAllRaceTypesAsync();
-        Task<Domain.RaceType> GetRaceTypeById(int id);
+        Task<Domain.RaceType> GetRaceTypeByIdAsync(int id);
 
-        Task<IEnumerable<Domain.Season>> GetAllSeasons();
-        Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueId(int venueId);
-        Task<Domain.Season> GetSeasonByDate(DateTime date);
+        Task<IEnumerable<Domain.Season>> GetAllSeasonsAsync();
+        Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueIdAsync(int venueId);
+        Task<Domain.Season> GetSeasonByDateAsync(DateTime date);
 
-        Task<Domain.Skier> GetSkierById(
+        Task<Domain.Skier> GetSkierByIdAsync(
             int skierId,
             Domain.Associated<Domain.Sex>.LoadingType sexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.Reference,
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
@@ -39,7 +39,7 @@ namespace Hurace.Core.BL
         Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync(
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
-        Task<Domain.Venue> GetVenueById(
+        Task<Domain.Venue> GetVenueByIdAsync(
             int id,
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
