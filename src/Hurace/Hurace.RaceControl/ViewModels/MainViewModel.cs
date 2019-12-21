@@ -38,17 +38,20 @@ namespace Hurace.RaceControl.ViewModels
 
         public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
 
-        public bool CreateRaceVisible {
+        public bool CreateRaceVisible
+        {
             get => createRaceVisible;
             set => base.Set(ref this.createRaceVisible, value);
         }
 
-        public RaceDetailViewModel SelectedRace {
+        public RaceDetailViewModel SelectedRace
+        {
             get => selectedRace;
             set => base.Set(ref this.selectedRace, value);
         }
 
-        public CreateRaceViewModel NewRace {
+        public CreateRaceViewModel NewRace
+        {
             get => newRace;
             set => base.Set(ref this.newRace, value);
         }
@@ -59,8 +62,7 @@ namespace Hurace.RaceControl.ViewModels
                 (await this.raceManager.GetAllRacesAsync(
                     raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
                     venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference,
-                    startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference))
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference))
                 .Select(race => (this.serviceProvider.GetRequiredService<RaceDetailViewModel>(), race));
 
             foreach (var (raceDetailViewModel, race) in raceListDetailViewModels)

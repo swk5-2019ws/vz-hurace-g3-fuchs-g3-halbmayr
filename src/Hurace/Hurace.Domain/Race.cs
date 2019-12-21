@@ -13,5 +13,6 @@ namespace Hurace.Domain
         public Associated<Season> Season { get; set; }
         public IEnumerable<Associated<StartPosition>> FirstStartList { get; set; }
         public IEnumerable<Associated<StartPosition>> SecondStartList { get; set; }
+        public IEnumerable<Associated<Skier>> Skiers { get; set; }
     }
 }

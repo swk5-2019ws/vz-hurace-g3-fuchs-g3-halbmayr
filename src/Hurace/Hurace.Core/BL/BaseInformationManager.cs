@@ -23,6 +23,10 @@ namespace Hurace.Core.BL
                         var associatedDomainObject = await LoadAssociatedDomainObject(
                             Domain.Associated<T>.LoadingType.Reference,
                             loadDomainObjectAsReference);
+
+                        if (associatedDomainObject.Reference == null)
+                            return associatedDomainObject;
+
                         var reference = associatedDomainObject.Reference;
                         associatedDomainObject.Reference = null;
                         associatedDomainObject.ForeignKey = reference.Id;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#pragma warning disable IDE0010 // Add missing cases
 namespace Hurace.Core.BL
 {
     public class RaceInformationManager : BaseInformationManager, IRaceInformationManager
@@ -16,6 +17,10 @@ namespace Hurace.Core.BL
         private readonly IDataAccessObject<Entities.RaceType> raceTypeDao;
         private readonly IDataAccessObject<Entities.Venue> venueDao;
         private readonly IDataAccessObject<Entities.SeasonPlan> seasonPlanDao;
+        private readonly IDataAccessObject<Entities.Sex> sexDao;
+        private readonly IDataAccessObject<Entities.Skier> skierDao;
+        private readonly IDataAccessObject<Entities.StartList> startListDao;
+        private readonly IDataAccessObject<Entities.StartPosition> startPositionDao;
         private readonly IDataAccessObject<Entities.Season> seasonDao;
 
         #endregion
@@ -27,6 +32,10 @@ namespace Hurace.Core.BL
             IDataAccessObject<Entities.RaceType> raceTypeDao,
             IDataAccessObject<Entities.Season> seasonDao,
             IDataAccessObject<Entities.SeasonPlan> seasonPlanDao,
+            IDataAccessObject<Entities.Sex> sexDao,
+            IDataAccessObject<Entities.Skier> skierDao,
+            IDataAccessObject<Entities.StartList> startListDao,
+            IDataAccessObject<Entities.StartPosition> startPositionDao,
             IDataAccessObject<Entities.Venue> venueDao)
         {
             this.countryDao = countryDao ?? throw new ArgumentNullException(nameof(countryDao));
@@ -34,6 +43,10 @@ namespace Hurace.Core.BL
             this.raceTypeDao = raceTypeDao ?? throw new ArgumentNullException(nameof(raceTypeDao));
             this.venueDao = venueDao ?? throw new ArgumentNullException(nameof(venueDao));
             this.seasonPlanDao = seasonPlanDao ?? throw new ArgumentNullException(nameof(seasonPlanDao));
+            this.sexDao = sexDao ?? throw new ArgumentNullException(nameof(sexDao));
+            this.skierDao = skierDao ?? throw new ArgumentNullException(nameof(skierDao));
+            this.startListDao = startListDao ?? throw new ArgumentNullException(nameof(startListDao));
+            this.startPositionDao = startPositionDao ?? throw new ArgumentNullException(nameof(startPositionDao));
             this.seasonDao = seasonDao ?? throw new ArgumentNullException(nameof(seasonDao));
         }
 
@@ -68,8 +81,7 @@ namespace Hurace.Core.BL
         public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync(
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
-            Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None,
-            Domain.Associated<Domain.StartPosition>.LoadingType startListLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None)
+            Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None)
         {
             var raceEntities = await raceDao.GetAllConditionalAsync();
 
@@ -95,12 +107,7 @@ namespace Hurace.Core.BL
                             () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId)),
                         Season = await LoadAssociatedDomainObject(
                             seasonLoadingType,
-                            async () => new Domain.Associated<Domain.Season>(await GetSeasonByDate(raceEntity.Date))),
-                        FirstStartList = await LoadAssociatedDomainObjectSet<Domain.StartPosition>(
-                            startListLoadingType,
-                            async () => /* load all startpostion domain objects */ null,
-                            async () => /* load all ids of startposition domain objects */ null),
-                        SecondStartList = null
+                            async () => new Domain.Associated<Domain.Season>(await GetSeasonByDate(raceEntity.Date)))
                     }));
         }
 
@@ -108,10 +115,91 @@ namespace Hurace.Core.BL
             int raceId,
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
-            Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None,
-            Domain.Associated<Domain.StartPosition>.LoadingType startListLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None)
+            Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None,
+            Domain.Associated<Domain.StartPosition>.LoadingType startListLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None,
+            Domain.Associated<Domain.Skier>.LoadingType skierLoadingType = Domain.Associated<Domain.Skier>.LoadingType.None,
+            Domain.Associated<Domain.Sex>.LoadingType skierSexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.None,
+            Domain.Associated<Domain.Country>.LoadingType skierCountryLoadingType = Domain.Associated<Domain.Country>.LoadingType.None)
         {
-            throw new NotImplementedException();
+            var raceEntity = await this.raceDao.GetByIdAsync(raceId);
+
+            var race = raceEntity is null
+                ? null
+                : new Domain.Race
+                {
+                    Date = raceEntity.Date,
+                    Description = raceEntity.Description,
+                    Id = raceEntity.Id,
+                    NumberOfSensors = raceEntity.NumberOfSensors,
+                    RaceType = await LoadAssociatedDomainObject(
+                            raceTypeLoadingType,
+                            async () => new Domain.Associated<Domain.RaceType>(
+                                await this.GetRaceTypeById(raceEntity.RaceTypeId)),
+                            () => new Domain.Associated<Domain.RaceType>(raceEntity.RaceTypeId)),
+                    Season = await LoadAssociatedDomainObject(
+                            seasonLoadingType,
+                            async () => new Domain.Associated<Domain.Season>(await GetSeasonByDate(raceEntity.Date))),
+                    Venue = await LoadAssociatedDomainObject(
+                            venueLoadingType,
+                            async () => new Domain.Associated<Domain.Venue>(
+                                await this.GetVenueById(
+                                    raceEntity.VenueId,
+                                    seasonsOfVenueLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)),
+                            () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId)),
+                    FirstStartList = await LoadAssociatedDomainObjectSet(
+                            startListLoadingType,
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id))),
+                    SecondStartList = await LoadAssociatedDomainObjectSet(
+                            startListLoadingType,
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id)))
+                };
+
+            if (skierLoadingType != Domain.Associated<Domain.Skier>.LoadingType.None)
+            {
+                var skierIds = new List<int>();
+                switch (startListLoadingType)
+                {
+                    case Domain.Associated<Domain.StartPosition>.LoadingType.ForeignKey:
+                        skierIds.AddRange(race.FirstStartList.Select(position => position.ForeignKey.Value));
+                        skierIds.AddRange(race.SecondStartList.Select(position => position.ForeignKey.Value));
+                        break;
+                    case Domain.Associated<Domain.StartPosition>.LoadingType.Reference:
+                        skierIds.AddRange(race.FirstStartList.Select(position => position.Reference.Id));
+                        skierIds.AddRange(race.SecondStartList.Select(position => position.Reference.Id));
+                        break;
+                }
+
+                if (skierIds.Any())
+                {
+                    switch (skierLoadingType)
+                    {
+                        case Domain.Associated<Domain.Skier>.LoadingType.ForeignKey:
+                            race.Skiers = skierIds.Select(skierId => new Domain.Associated<Domain.Skier>(skierId));
+                            break;
+                        case Domain.Associated<Domain.Skier>.LoadingType.Reference:
+                            race.Skiers = await Task.WhenAll(
+                                skierIds.Select(
+                                    async skierId =>
+                                        new Domain.Associated<Domain.Skier>(
+                                            await GetSkierById(
+                                                skierId,
+                                                skierSexLoadingType,
+                                                skierCountryLoadingType,
+                                                Domain.Associated<Domain.StartPosition>.LoadingType.None))));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            return race;
         }
 
         #endregion
@@ -174,7 +262,7 @@ namespace Hurace.Core.BL
                     StartDate = seasonEntity.StartDate,
                     EndDate = seasonEntity.EndDate
                 })
-                .First();
+                .FirstOrDefault();
         }
 
         public async Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueId(int venueId)
@@ -193,6 +281,77 @@ namespace Hurace.Core.BL
                     StartDate = seasonEntity.StartDate,
                     EndDate = seasonEntity.EndDate
                 });
+        }
+
+        #endregion
+        #region Sex-Methods
+
+        public async Task<Domain.Sex> GetSexByIdAsync(int sexId)
+        {
+            var sexEntity = await sexDao.GetByIdAsync(sexId);
+            return new Domain.Sex
+            {
+                Id = sexEntity.Id,
+                Label = sexEntity.Label
+            };
+        }
+
+        #endregion
+        #region Skier-Methods
+
+        public async Task<Domain.Skier> GetSkierById(
+            int skierId,
+            Domain.Associated<Domain.Sex>.LoadingType sexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.Reference,
+            Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
+            Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None)
+        {
+            var skierEntity = await skierDao.GetByIdAsync(skierId);
+
+            return new Domain.Skier
+            {
+                DateOfBirth = skierEntity.DateOfBirth,
+                FirstName = skierEntity.FirstName,
+                Id = skierEntity.Id,
+                ImageUrl = skierEntity.ImageUrl,
+                IsRemoved = skierEntity.IsRemoved,
+                LastName = skierEntity.LastName,
+                Country = await base.LoadAssociatedDomainObject(
+                    countryLoadingType,
+                    async () => new Domain.Associated<Domain.Country>(await GetCountryById(skierEntity.CountryId)),
+                    () => new Domain.Associated<Domain.Country>(skierEntity.CountryId)),
+                Sex = await base.LoadAssociatedDomainObject(
+                    sexLoadingType,
+                    async () => new Domain.Associated<Domain.Sex>(await GetSexByIdAsync(skierEntity.SexId)),
+                    () => new Domain.Associated<Domain.Sex>(skierEntity.SexId))
+            };
+        }
+
+        #endregion
+        #region StartPosition-Methods
+
+        public async Task<IEnumerable<Domain.StartPosition>> GetAllStartPositionsOfStartList(
+            int startListId,
+            Domain.Associated<Domain.Skier>.LoadingType skierLoadingType = Domain.Associated<Domain.Skier>.LoadingType.ForeignKey)
+        {
+            var condition = new QueryConditionBuilder()
+                .DeclareCondition(
+                    nameof(Entities.StartPosition.StartListId),
+                    QueryConditionType.Equals,
+                    startListId)
+                .Build();
+
+            return await Task.WhenAll(
+                (await startPositionDao.GetAllConditionalAsync(condition))
+                    .Select(
+                        async startPositionE => new Domain.StartPosition
+                        {
+                            Id = startPositionE.Id,
+                            Position = startPositionE.Position,
+                            Skier = await LoadAssociatedDomainObject(
+                                skierLoadingType,
+                                async () => new Domain.Associated<Domain.Skier>(await this.GetSkierById(startPositionE.SkierId)),
+                                () => new Domain.Associated<Domain.Skier>(startPositionE.SkierId))
+                        }));
         }
 
         #endregion
