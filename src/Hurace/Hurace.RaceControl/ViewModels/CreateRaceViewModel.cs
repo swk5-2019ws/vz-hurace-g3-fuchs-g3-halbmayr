@@ -33,6 +33,8 @@ namespace Hurace.RaceControl.ViewModels
 
         public AsyncDelegateCommand AddRacerToStartListCommand { get; }
         public AsyncDelegateCommand RemoveRacerFromStartListCommand { get; }
+        public AsyncDelegateCommand MoveSelectedStartPositionUpCommand { get; }
+        public AsyncDelegateCommand MoveSelectedStartPositionDownCommand { get; }
 
         public bool HasErrors => this.errors.Any();
 
@@ -47,6 +49,12 @@ namespace Hurace.RaceControl.ViewModels
             this.RemoveRacerFromStartListCommand = new AsyncDelegateCommand(
                 RemoveRacerFromStartList,
                 (object obj) => selectedStartPosition != null);
+            this.MoveSelectedStartPositionUpCommand = new AsyncDelegateCommand(
+                MoveRacerUpInStartList,
+                (object obj) => selectedStartPosition != null && selectedStartPosition.Position > 1);
+            this.MoveSelectedStartPositionDownCommand = new AsyncDelegateCommand(
+                MoveRacerDownInStartList,
+                (object obj) => selectedStartPosition != null && selectedStartPosition.Position < StartPositions.Count);
         }
 
         public async Task Initialize()
@@ -65,6 +73,36 @@ namespace Hurace.RaceControl.ViewModels
 
             Skiers = new ObservableCollection<Domain.Skier>(
                 (await raceManager.GetAllSkiersAsync()).OrderBy(skier => skier.LastName));
+        }
+
+        private Task MoveRacerUpInStartList(object obj)
+        {
+            Domain.StartPosition pos = StartPositions
+                .Where(startPosition => startPosition.Position == SelectedStartPosition.Position - 1)
+                .Single();
+
+            pos.Position++;
+            SelectedStartPosition.Position--;
+
+            StartPositions = new ObservableCollection<Domain.StartPosition>(
+                StartPositions.OrderBy(startPosition => startPosition.Position));
+
+            return Task.CompletedTask;
+        }
+
+        private Task MoveRacerDownInStartList(object obj)
+        {
+            Domain.StartPosition pos = StartPositions
+                .Where(startPosition => startPosition.Position == SelectedStartPosition.Position + 1)
+                .Single();
+
+            pos.Position--;
+            SelectedStartPosition.Position++;
+
+            StartPositions = new ObservableCollection<Domain.StartPosition>(
+                StartPositions.OrderBy(startPosition => startPosition.Position));
+
+            return Task.CompletedTask;
         }
 
         private Task AddRacerToStartList(object obj)
@@ -96,6 +134,7 @@ namespace Hurace.RaceControl.ViewModels
 
             StartPositions.Remove(SelectedStartPosition);
 
+            //TODO make non hacky version of this
             ObservableCollection<Domain.StartPosition> tempList = StartPositions;
             StartPositions = null;
             StartPositions = tempList;
