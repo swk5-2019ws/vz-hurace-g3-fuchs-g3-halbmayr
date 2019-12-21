@@ -5,12 +5,12 @@ namespace Hurace.Simulator
 {
     public class RaceClockSimulation : Timer.IRaceClock
     {
-
-
         public RaceClockSimulation()
         {
             ThreadPool.QueueUserWorkItem(SimulateTimer);
         }
+
+        public int MaxSensorIdValue { get; internal set; }
 
         public event Timer.TimingTriggeredHandler TimingTriggered;
 

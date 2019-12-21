@@ -4,6 +4,7 @@ using Hurace.RaceControl.ViewModels.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -56,9 +57,8 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task StartRaceExecution(object argument)
         {
-            MessageBox.Show("start real race");
-
-            await this.StartRaceLogic(this.raceClockResolver(false));
+            MessageBox.Show("not supported yet");
+            //await this.StartRaceLogic(this.raceClockResolver(false));
         }
 
         public bool CanStartSimulatedRaceExecution(object argument)
@@ -70,7 +70,11 @@ namespace Hurace.RaceControl.ViewModels
         {
             MessageBox.Show("start real race");
 
-            await this.StartRaceLogic(this.raceClockResolver(true));
+            var simulation = this.raceClockResolver(true) as Simulator.RaceClockSimulation;
+            var simulatorConfigWindow = new Windows.SimulatorConfigWindow(simulation);
+            simulatorConfigWindow.ShowDialog();
+
+            await this.StartRaceLogic(simulation);
         }
 
         public bool CanStopRaceExecution(object argument)
@@ -100,8 +104,6 @@ namespace Hurace.RaceControl.ViewModels
                 skierLoadingType: Associated<Skier>.LoadingType.Reference,
                 skierSexLoadingType: Associated<Sex>.LoadingType.None,
                 skierCountryLoadingType: Associated<Country>.LoadingType.Reference);
-
-            
         }
     }
 }

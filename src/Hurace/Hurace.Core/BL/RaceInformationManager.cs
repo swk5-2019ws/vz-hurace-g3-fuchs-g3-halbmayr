@@ -101,7 +101,7 @@ namespace Hurace.Core.BL
                         Venue = await LoadAssociatedDomainObject(
                             venueLoadingType,
                             async () => new Domain.Associated<Domain.Venue>(
-                                await this.GetVenueByIdAsy(
+                                await this.GetVenueByIdAsync(
                                     raceEntity.VenueId,
                                     seasonsOfVenueLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)),
                             () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId)),
@@ -142,7 +142,7 @@ namespace Hurace.Core.BL
                     Venue = await LoadAssociatedDomainObject(
                             venueLoadingType,
                             async () => new Domain.Associated<Domain.Venue>(
-                                await this.GetVenueByIdAsy(
+                                await this.GetVenueByIdAsync(
                                     raceEntity.VenueId,
                                     seasonsOfVenueLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)),
                             () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId)),
@@ -180,11 +180,12 @@ namespace Hurace.Core.BL
                     switch (skierLoadingType)
                     {
                         case Domain.Associated<Domain.Skier>.LoadingType.ForeignKey:
-                            race.Skiers = skierIds.Select(skierId => new Domain.Associated<Domain.Skier>(skierId));
+                            race.Skiers = skierIds.Distinct()
+                                .Select(skierId => new Domain.Associated<Domain.Skier>(skierId));
                             break;
                         case Domain.Associated<Domain.Skier>.LoadingType.Reference:
                             race.Skiers = await Task.WhenAll(
-                                skierIds.Select(
+                                skierIds.Distinct().Select(
                                     async skierId =>
                                         new Domain.Associated<Domain.Skier>(
                                             await GetSkierByIdAsync(
@@ -389,7 +390,7 @@ namespace Hurace.Core.BL
                     }));
         }
 
-        public async Task<Domain.Venue> GetVenueByIdAsy(
+        public async Task<Domain.Venue> GetVenueByIdAsync(
             int id,
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None)
