@@ -30,6 +30,11 @@ namespace Hurace.Core.BL
         Task<IEnumerable<Domain.Season>> GetAllSeasonsByVenueIdAsync(int venueId);
         Task<Domain.Season> GetSeasonByDateAsync(DateTime date);
 
+        Task<IEnumerable<Domain.Skier>> GetAllSkiersAsync(
+            Domain.Associated<Domain.Sex>.LoadingType sexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.Reference,
+            Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
+            Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None);
+
         Task<Domain.Skier> GetSkierByIdAsync(
             int skierId,
             Domain.Associated<Domain.Sex>.LoadingType sexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.Reference,

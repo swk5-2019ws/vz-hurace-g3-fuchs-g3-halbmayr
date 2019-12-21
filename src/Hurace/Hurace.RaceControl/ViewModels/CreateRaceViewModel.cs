@@ -23,8 +23,12 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.Venue selectedVenue;
         private int selectedNumberOfSensors;
         private DateTime selectedDate;
-        private ObservableCollection<Domain.StartPosition> selectedStartPositions;
         private ObservableCollection<Domain.Skier> allSkiers;
+        private ObservableCollection<Domain.Season> seasons;
+        private Domain.Season selectedSeason;
+        private ObservableCollection<Domain.StartPosition> startPositions;
+        private Domain.StartPosition selectedStartPosition;
+        private ObservableCollection<Domain.Skier> skiers;
         private Domain.Skier selectedSkier;
 
         public bool HasErrors => this.errors.Any();
@@ -43,6 +47,14 @@ namespace Hurace.RaceControl.ViewModels
 
             RaceTypes = new ObservableCollection<Domain.RaceType>(
                 await raceManager.GetAllRaceTypesAsync());
+
+            Seasons = new ObservableCollection<Domain.Season>(
+                await raceManager.GetAllSeasonsAsync());
+
+            StartPositions = new ObservableCollection<Domain.StartPosition>();
+
+            Skiers = new ObservableCollection<Domain.Skier>(
+                await raceManager.GetAllSkiersAsync());
 
             //AllSkiers = new ObservableCollection<Domain.Skier>(await raceManager)
         }
@@ -87,6 +99,36 @@ namespace Hurace.RaceControl.ViewModels
         {
             get => allSkiers;
             set => base.Set(ref this.allSkiers, value);
+        }
+
+        public ObservableCollection<Domain.Season> Seasons {
+            get => seasons;
+            set => base.Set(ref this.seasons, value);
+        }
+
+        public Domain.Season SelectedSeason {
+            get => selectedSeason;
+            set => base.Set(ref this.selectedSeason, value);
+        }
+
+        public ObservableCollection<Domain.StartPosition> StartPositions {
+            get => startPositions;
+            set => base.Set(ref this.startPositions, value);
+        }
+
+        public Domain.StartPosition SelectedStartPosition {
+            get => selectedStartPosition;
+            set => base.Set(ref this.selectedStartPosition, value);
+        }
+
+        public ObservableCollection<Domain.Skier> Skiers {
+            get => skiers;
+            set => base.Set(ref this.skiers, value);
+        }
+
+        public Domain.Skier SelectedSkier {
+            get => selectedSkier;
+            set => base.Set(ref this.selectedSkier, value);
         }
 
         public Domain.Race Race

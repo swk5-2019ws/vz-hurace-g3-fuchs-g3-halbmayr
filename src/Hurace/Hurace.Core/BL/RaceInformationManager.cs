@@ -300,6 +300,34 @@ namespace Hurace.Core.BL
         #endregion
         #region Skier-Methods
 
+        public async Task<IEnumerable<Domain.Skier>> GetAllSkiersAsync(
+            Domain.Associated<Domain.Sex>.LoadingType sexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.Reference,
+            Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
+            Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None)
+        {
+            var skierEntities = await skierDao.GetAllConditionalAsync();
+
+            return await Task.WhenAll(
+               skierEntities.Select(
+                   async skierEntity => new Domain.Skier
+                   {
+                       DateOfBirth = skierEntity.DateOfBirth,
+                       FirstName = skierEntity.FirstName,
+                       Id = skierEntity.Id,
+                       ImageUrl = skierEntity.ImageUrl,
+                       IsRemoved = skierEntity.IsRemoved,
+                       LastName = skierEntity.LastName,
+                       Country = await base.LoadAssociatedDomainObject(
+                    countryLoadingType,
+                    async () => new Domain.Associated<Domain.Country>(await GetCountryByIdAsync(skierEntity.CountryId)),
+                    () => new Domain.Associated<Domain.Country>(skierEntity.CountryId)),
+                       Sex = await base.LoadAssociatedDomainObject(
+                    sexLoadingType,
+                    async () => new Domain.Associated<Domain.Sex>(await GetSexByIdAsync(skierEntity.SexId)),
+                    () => new Domain.Associated<Domain.Sex>(skierEntity.SexId))
+                   }));
+        }
+
         public async Task<Domain.Skier> GetSkierByIdAsync(
             int skierId,
             Domain.Associated<Domain.Sex>.LoadingType sexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.Reference,
