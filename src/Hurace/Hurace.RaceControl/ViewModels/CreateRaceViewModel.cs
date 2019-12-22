@@ -17,6 +17,7 @@ namespace Hurace.RaceControl.ViewModels
         private readonly IRaceInformationManager raceManager;
         private readonly IDictionary<string, string> errors = new Dictionary<string, string>();
         private Domain.Race race;
+        private string description;
         private ObservableCollection<Domain.RaceType> raceTypes;
         private Domain.RaceType selectedRaceType;
         private ObservableCollection<Domain.Venue> venues;
@@ -52,6 +53,7 @@ namespace Hurace.RaceControl.ViewModels
         {
             Loading = true;
             MenListSelected = true;
+            Race = new Domain.Race();
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
             SelectedDate = DateTime.Now;
 
@@ -83,7 +85,7 @@ namespace Hurace.RaceControl.ViewModels
                 },
                 (object obj) => !menListSelected);
             this.SelectWomenListCommand = new AsyncDelegateCommand(
-                (object obj) => 
+                (object obj) =>
                 {
                     maleSkiers = Skiers;
                     maleStartPositions = StartPositions;
@@ -124,6 +126,35 @@ namespace Hurace.RaceControl.ViewModels
             MenListSelected = true;
 
             Loading = false;
+        }
+
+        public Task CreateRace(object obj)
+        {
+            var tempStartList = new List<Domain.Associated<Domain.StartPosition>>();
+            var tempSkiers = new List<Domain.Associated<Domain.Skier>>();
+
+            foreach (var pos in StartPositions)
+            {
+                tempStartList.Add(new Domain.Associated<Domain.StartPosition>(pos));
+            }
+
+            foreach (var pos in StartPositions)
+            {
+                tempSkiers.Add(pos.Skier);
+            }
+
+            Race.Date = SelectedDate;
+            Race.Description = Description;
+            Race.NumberOfSensors = SelectedNumberOfSensors;
+            Race.RaceType = new Domain.Associated<Domain.RaceType>(SelectedRaceType);
+            Race.Venue = new Domain.Associated<Domain.Venue>(SelectedVenue);
+            Race.Season = new Domain.Associated<Domain.Season>(SelectedSeason);
+            Race.FirstStartList = tempStartList;
+            Race.Skiers = tempSkiers;
+
+            raceManager.CreateOrUpdateRace(Race);
+
+            return Task.CompletedTask;
         }
 
         private Task MoveRacerUpInStartList(object obj)
@@ -194,13 +225,22 @@ namespace Hurace.RaceControl.ViewModels
         }
 
         #region Properties
-        public bool MenListSelected {
+
+        public bool MenListSelected
+        {
             get => menListSelected;
             set => base.Set(ref this.menListSelected, value);
         }
-        public bool Loading {
+        public bool Loading
+        {
             get => loading;
             set => base.Set(ref this.loading, value);
+        }
+
+        public string Description
+        {
+            get => description;
+            set => base.Set(ref this.description, value);
         }
 
         public ObservableCollection<Domain.RaceType> RaceTypes

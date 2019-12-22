@@ -27,6 +27,7 @@ namespace Hurace.Core.DAL.AdoPersistence
 
         public async Task<int> CreateAsync(T newInstance)
         {
+            
             if (newInstance is null)
                 throw new ArgumentNullException(nameof(newInstance));
 
@@ -37,6 +38,7 @@ namespace Hurace.Core.DAL.AdoPersistence
                 throw new InvalidOperationException($"The INSERT Query affected {affectedRowCount} rows -> should only affect 1");
 
             string getLastGivenIdentityQuery = SqlQueryGenerator.GenerateGetLastIdentityQuery();
+            
             return await template.QuerySingleInt32Async(getLastGivenIdentityQuery);
         }
 

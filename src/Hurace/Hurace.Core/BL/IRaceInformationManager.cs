@@ -9,6 +9,7 @@ namespace Hurace.Core.BL
         Task<IEnumerable<Domain.Country>> GetAllCountriesAsync();
         Task<Domain.Country> GetCountryByIdAsync(int id);
 
+        Task CreateOrUpdateRace(Domain.Race race);
         Task<IEnumerable<Domain.Race>> GetAllRacesAsync(
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,

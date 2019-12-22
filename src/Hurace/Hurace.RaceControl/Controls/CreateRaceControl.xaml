@@ -138,10 +138,11 @@
 
             <StackPanel Orientation="Vertical" Grid.Row="2">
 
-                <TextBlock Text="Description:"
+                <TextBlock Text="Beschreibung:"
                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
 
                 <TextBox Height="60"
+                         Text="{Binding Description}"
                          TextWrapping="Wrap"
                          AcceptsReturn="True"/>
             </StackPanel>

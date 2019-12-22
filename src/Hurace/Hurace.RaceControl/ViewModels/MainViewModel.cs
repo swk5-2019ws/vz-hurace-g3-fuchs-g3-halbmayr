@@ -34,8 +34,12 @@ namespace Hurace.RaceControl.ViewModels
                     this.RaceDetailControlVisible = false;
                     return Task.CompletedTask;
                 });
+
+            this.CreateRaceCommand = new AsyncDelegateCommand(
+                createRaceViewModel.CreateRace, null);
         }
 
+        public AsyncDelegateCommand CreateRaceCommand { get; }
         public AsyncDelegateCommand OpenCreateRaceCommand { get; set; }
 
         public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }

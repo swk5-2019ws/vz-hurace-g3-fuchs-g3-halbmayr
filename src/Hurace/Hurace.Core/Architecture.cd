@@ -1,22 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Hurace.Core.Dal.AdoPersistence.GenericDao&lt;T&gt;">
+  <Class Name="Hurace.Core.DAL.AdoPersistence.GenericDao&lt;T&gt;">
     <Position X="5" Y="4.25" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAgAAFAAAAAAEAAAAAAAAgAAAAAAIAAIAA=</HashCode>
+      <HashCode>AAAAAAAAAAAgAAFAAAAAAEAAAAAAAAgAAAAQAIAAIIA=</HashCode>
       <FileName>Dal\AdoPersistence\GenericDao.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="template" />
-      <Property Name="SqlQueryGenerator" />
       <Property Name="RowMapper" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Hurace.Core.Dal.AdoPersistence.AdoTemplate">
+  <Class Name="Hurace.Core.DAL.AdoPersistence.AdoTemplate">
     <Position X="5" Y="0.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAgQAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAABAEA=</HashCode>
+      <HashCode>AAgQAAAAACAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAEA=</HashCode>
       <FileName>Dal\AdoPersistence\AdoTemplate.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -27,14 +26,33 @@
     <Position X="10" Y="5.75" Width="1.5" />
     <TypeIdentifier />
   </Class>
-  <Class Name="Hurace.Core.Db.Utilities.SimpleSqlQueryGenerator&lt;T&gt;">
-    <Position X="9.5" Y="3" Width="2.5" />
-    <TypeIdentifier />
+  <Class Name="Hurace.Core.BL.BaseInformationManager">
+    <Position X="12.75" Y="0.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>BL\BaseInformationManager.cs</FileName>
+    </TypeIdentifier>
   </Class>
-  <Interface Name="Hurace.Core.Dal.IDataAccessObject&lt;T&gt;">
+  <Class Name="Hurace.Core.BL.RaceExecutionManager">
+    <Position X="13" Y="3" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAgAAAAJACAAAAAEAAAAAAEEAAAAAAAAA=</HashCode>
+      <FileName>BL\RaceExecutionManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hurace.Core.BL.RaceInformationManager">
+    <Position X="16.75" Y="1.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>gRAAQgAgAAIAAgAiBAAAACgAAAAAEgIIAADIECAABIA=</HashCode>
+      <FileName>BL\RaceInformationManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Hurace.Core.DAL.IDataAccessObject&lt;T&gt;">
     <Position X="0.5" Y="4.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAgAAAAAAAAAAAAAAAAAAgAAAAAAIAAIAA=</HashCode>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAgAAAAQAIAAIIA=</HashCode>
       <FileName>Dal\IDataAccessObject.cs</FileName>
     </TypeIdentifier>
   </Interface>
@@ -42,5 +60,26 @@
     <Position X="0.75" Y="1.5" Width="2" />
     <TypeIdentifier />
   </Interface>
+  <Interface Name="Hurace.Core.BL.IRaceExecutionManager">
+    <Position X="21.5" Y="6.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAgAAAABACAAAAAEAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>BL\IRaceExecutionManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Hurace.Core.BL.IRaceInformationManager">
+    <Position X="21.25" Y="2.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>ARAAQgAAAAIAAAAgBAAAACAAAAAAEAAIAABIAAAABIA=</HashCode>
+      <FileName>BL\IRaceInformationManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Delegate Name="Hurace.Core.BL.OnTimeMeasured">
+    <Position X="21.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAAAAAAAAABAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>BL\IRaceExecutionManager.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

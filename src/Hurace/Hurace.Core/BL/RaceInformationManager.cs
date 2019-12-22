@@ -78,6 +78,32 @@ namespace Hurace.Core.BL
         #endregion
         #region Race-Methods
 
+        public async Task CreateOrUpdateRace(Domain.Race race)
+        {
+            if (race == null) throw new ArgumentNullException();
+            int startListId = await startListDao.CreateAsync(new Entities.StartList());
+
+            foreach (var racer in race.FirstStartList)
+            {
+                await startPositionDao.CreateAsync(new Entities.StartPosition
+                {
+                    StartListId = startListId,
+                    SkierId = racer.Reference.Skier.Reference.Id,
+                    Position = racer.Reference.Position
+                });
+            }
+
+            await raceDao.CreateAsync(new Entities.Race
+            {
+                RaceTypeId = race.RaceType.Reference.Id,
+                VenueId = race.Venue.Reference.Id,
+                FirstStartListId = startListId,
+                NumberOfSensors = race.NumberOfSensors,
+                Description = race.Description,
+                Date = race.Date
+            });
+        }
+
         public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync(
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
