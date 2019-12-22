@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hurace.Core.DAL.AdoPersistence
 {
-    public class GenericDao<T> : IDataAccessObject<T> where T : Entities.EntityObjectBase, new()
+    public sealed class GenericDao<T> : IDataAccessObject<T> where T : Entities.EntityObjectBase, new()
     {
         private readonly AdoTemplate template;
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 #pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
 namespace Hurace.Core.DAL.AdoPersistence
 {
-    internal class AdoTemplate
+    internal sealed class AdoTemplate
     {
         private readonly IConnectionFactory connectionFactory;
 

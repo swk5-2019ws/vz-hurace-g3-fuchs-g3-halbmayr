@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Hurace.Domain
 {
-    public class Associated<T> where T : DomainObjectBase
+    public sealed class Associated<T> where T : DomainObjectBase
     {
         public enum LoadingType
         {

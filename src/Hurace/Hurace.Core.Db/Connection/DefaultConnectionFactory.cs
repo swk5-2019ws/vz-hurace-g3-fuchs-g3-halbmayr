@@ -8,7 +8,7 @@ namespace Hurace.Core.Db.Connection
     /// <summary>
     /// Implementation of <see cref="IConnectionFactory"/> used for production
     /// </summary>
-    public class DefaultConnectionFactory : IConnectionFactory
+    public sealed class DefaultConnectionFactory : IConnectionFactory
     {
         /// <summary>
         /// Get a new instance of <see cref="DefaultConnectionFactory"/>.
