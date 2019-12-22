@@ -343,11 +343,11 @@ namespace Hurace.Core.BL
                        ImageUrl = skierEntity.ImageUrl,
                        IsRemoved = skierEntity.IsRemoved,
                        LastName = skierEntity.LastName,
-                       Country = await base.LoadAssociatedDomainObject(
+                       Country = await this.LoadAssociatedDomainObject(
                     countryLoadingType,
                     async () => new Domain.Associated<Domain.Country>(await GetCountryByIdAsync(skierEntity.CountryId)),
                     () => new Domain.Associated<Domain.Country>(skierEntity.CountryId)),
-                       Sex = await base.LoadAssociatedDomainObject(
+                       Sex = await this.LoadAssociatedDomainObject(
                     sexLoadingType,
                     async () => new Domain.Associated<Domain.Sex>(await GetSexByIdAsync(skierEntity.SexId)),
                     () => new Domain.Associated<Domain.Sex>(skierEntity.SexId))
@@ -370,11 +370,11 @@ namespace Hurace.Core.BL
                 ImageUrl = skierEntity.ImageUrl,
                 IsRemoved = skierEntity.IsRemoved,
                 LastName = skierEntity.LastName,
-                Country = await base.LoadAssociatedDomainObject(
+                Country = await this.LoadAssociatedDomainObject(
                     countryLoadingType,
                     async () => new Domain.Associated<Domain.Country>(await GetCountryByIdAsync(skierEntity.CountryId)),
                     () => new Domain.Associated<Domain.Country>(skierEntity.CountryId)),
-                Sex = await base.LoadAssociatedDomainObject(
+                Sex = await this.LoadAssociatedDomainObject(
                     sexLoadingType,
                     async () => new Domain.Associated<Domain.Sex>(await GetSexByIdAsync(skierEntity.SexId)),
                     () => new Domain.Associated<Domain.Sex>(skierEntity.SexId))

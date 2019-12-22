@@ -2,38 +2,6 @@
 
 namespace Hurace.Core.Db.Queries
 {
-    class Test
-    {
-        void TestMethod()
-        {
-            var condition = new QueryConditionNode
-            {
-                FirstCondition = new QueryCondition
-                {
-                    ColumnToCheck = nameof(Domain.Country.Name),
-                    CompareValue = "Austria",
-                    ConditionType = QueryConditionType.Equals
-                },
-                NodeType = QueryConditionNodeType.And,
-                SecondCondition = new QueryCondition
-                {
-                    ColumnToCheck = nameof(Domain.Race.Date),
-                    CompareValue = DateTime.Now.Date,
-                    ConditionType = QueryConditionType.LessThan
-                }
-            };
-
-            var builtCondition = new QueryConditionBuilder()
-                .DeclareConditionNode(
-                    QueryConditionNodeType.And,
-                    () => new QueryConditionBuilder()
-                        .DeclareCondition(nameof(Domain.Country.Name), QueryConditionType.Equals, "Austria"),
-                    () => new QueryConditionBuilder()
-                        .DeclareCondition(nameof(Domain.Race.Date), QueryConditionType.LessThan, DateTime.Now.Date))
-                .Build();
-        }
-    }
-
     /// <summary>
     /// A component that simplifies condition building and detects generation errors
     /// early on.
