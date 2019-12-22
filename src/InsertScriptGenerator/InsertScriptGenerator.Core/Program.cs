@@ -76,6 +76,17 @@ namespace InsertScriptGenerator.Core
                 Label = "Startbereit"
             });
 
+            sexes.Add(new Sex()
+            {
+                Id = 0,
+                Label = "Weiblich"
+            });
+            sexes.Add(new Sex()
+            {
+                Id = 1,
+                Label = "Männlich"
+            });
+
             foreach (var currentSkier in skiersJson)
             {
                 var currentCountryLabel = currentSkier.Value<string>("country");
@@ -115,40 +126,38 @@ namespace InsertScriptGenerator.Core
 
                 if (currentRaceType != null && raceTypeIsNeeded)
                 {
-                    int nextRaceId = races.Count;
-
-                    if (!raceTypes.Any(rt => rt.Label == currentRaceType))
+                    foreach (var genderSpecificRace in sexes)
                     {
-                        raceTypes.Add(new RaceType()
+                        int nextRaceId = races.Count;
+
+                        if (!raceTypes.Any(rt => rt.Label == currentRaceType))
                         {
-                            Id = raceTypes.Count,
-                            Label = currentRaceType
+                            raceTypes.Add(new RaceType()
+                            {
+                                Id = raceTypes.Count,
+                                Label = currentRaceType
+                            });
+                        }
+
+                        int firstStartListId = startLists.Count;
+                        startLists.Add(new StartList()
+                        {
+                            Id = firstStartListId
+                        });
+
+                        races.Add(new Race()
+                        {
+                            Id = nextRaceId,
+                            Date = DateTime.Parse(currentRace.Value<string>("date")).AddYears(2),
+                            Description = raceDescriptionArr[random.Next(0, raceDescriptionArr.Length)],
+                            NumberOfSensors = random.Next(4, 7),
+                            FirstStartListId = firstStartListId,
+                            SecondStartListId = 0,
+                            RaceTypeId = raceTypes.FirstOrDefault(rt => rt.Label == currentRaceType).Id,
+                            VenueId = venues.FirstOrDefault(v => v.Name == currentVenueLabel).Id,
+                            GenderSpecificRaceId = genderSpecificRace.Id
                         });
                     }
-
-                    int firstStartListId = startLists.Count;
-                    startLists.Add(new StartList()
-                    {
-                        Id = firstStartListId
-                    });
-
-                    int secondStartListId = startLists.Count;
-                    startLists.Add(new StartList()
-                    {
-                        Id = secondStartListId
-                    });
-
-                    races.Add(new Race()
-                    {
-                        Id = nextRaceId,
-                        Date = DateTime.Parse(currentRace.Value<string>("date")),
-                        Description = raceDescriptionArr[random.Next(0, raceDescriptionArr.Length)],
-                        NumberOfSensors = random.Next(4, 7),
-                        FirstStartListId = firstStartListId,
-                        SecondStartListId = secondStartListId,
-                        RaceTypeId = raceTypes.FirstOrDefault(rt => rt.Label == currentRaceType).Id,
-                        VenueId = venues.FirstOrDefault(v => v.Name == currentVenueLabel).Id
-                    });
                 }
             }
 
@@ -161,15 +170,6 @@ namespace InsertScriptGenerator.Core
                     currentSexLabel = "Weiblich";
                 else if (currentSexLabel == "Male")
                     currentSexLabel = "Männlich";
-                
-                if (!sexes.Any(s => s.Label == currentSexLabel))
-                {
-                    sexes.Add(new Sex()
-                    {
-                        Id = sexes.Count,
-                        Label = currentSexLabel
-                    });
-                }
 
                 var currentCountryLabel = currentSkier.Value<string>("country");
 
@@ -192,16 +192,18 @@ namespace InsertScriptGenerator.Core
             }
 
             int startPositionId = 0;
-            foreach (var currentStartList in startLists)
+            foreach (var currentRace in races)
             {
                 int positionCounter = 1;
                 int participatingSkierCount = random.Next(11) + 45;
-                foreach (var participatingSkier in skiers.OrderBy(s => random.Next()).Take(participatingSkierCount))
+
+                var setOfPossibleSkiers = skiers.Where(s => s.SexId == currentRace.GenderSpecificRaceId);
+                foreach (var participatingSkier in setOfPossibleSkiers.OrderBy(s => random.Next()).Take(participatingSkierCount))
                 {
                     startPositions.Add(new StartPosition()
                     {
                         Id = startPositionId++,
-                        StartListId = currentStartList.Id,
+                        StartListId = currentRace.FirstStartListId,
                         SkierId = participatingSkier.Id,
                         Position = positionCounter++
                     });
@@ -235,52 +237,63 @@ namespace InsertScriptGenerator.Core
 
             foreach (var currentStartPosition in startPositions)
             {
-                int currentRaceId = races
-                    .FirstOrDefault(r => r.FirstStartListId == currentStartPosition.StartListId
-                                      || r.SecondStartListId == currentStartPosition.StartListId)
-                    .Id;
+                SimulateTimeMeasurement(random, races, raceStates, raceDataList, timeMeasurements, currentStartPosition);
+            }
 
-                int raceStateId;
-                double raceStateIdentifier = random.NextDouble();
-                if (0 <= raceStateIdentifier && raceStateIdentifier < 0.9)
-                {
-                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Abgeschlossen").Id;
-                }
-                else if (0.9 <= raceStateIdentifier && raceStateIdentifier < 0.95)
-                {
-                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Disqualifiziert").Id;
-                }
-                else if (0.95 <= raceStateIdentifier && raceStateIdentifier < 1.0)
-                {
-                    raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "NichtAbgeschlossen").Id;
-                }
-                else
-                {
-                    throw new Exception($"{nameof(raceStateIdentifier)} out of bounds!");
-                }
+            //generate second startlist out of performance of first one
+            var newlyCreatedStartPositions = new List<StartPosition>();
+            var newStartLists = new List<StartList>();
+            var nextStartListId = startLists.Max(sl => sl.Id) + 1;
+            foreach (var currentStartList in startLists)
+            {
+                var relevantTimeMeasurements = timeMeasurements
+                    .Where(tm => raceDataList
+                                     .Where(rd => rd.StartListId == currentStartList.Id)
+                                     .Any(rd => rd.Id == tm.RaceDataId))
+                    .ToList();
 
-                int nextRaceDataId = raceDataList.Count;
-                raceDataList.Add(new RaceData()
-                {
-                    Id = nextRaceDataId,
-                    StartListId = currentStartPosition.StartListId,
-                    SkierId = currentStartPosition.SkierId,
-                    RaceStateId = raceStateId
-                });
+                var reverseRankedSkiers = startPositions
+                    .Where(sp => sp.StartListId == currentStartList.Id)
+                    .Select(sp => skiers.First(s => s.Id == sp.SkierId))
+                    .OrderByDescending(
+                        s => relevantTimeMeasurements
+                                 .Where(
+                                     tm => tm.RaceDataId == raceDataList.First(rd => rd.SkierId == s.Id &&
+                                                                                     rd.StartListId == currentStartList.Id)
+                                                                        .Id)
+                                 .Max(tm => tm.Measurement))
+                    .ToList();
 
-                for (int sensorId = 0; sensorId < races.FirstOrDefault(r => r.Id == currentRaceId).NumberOfSensors; sensorId++)
+                newStartLists.Add(new StartList { Id = nextStartListId });
+
+                var currentRace = races.First(r => r.FirstStartListId == currentStartList.Id);
+                currentRace.SecondStartListId = nextStartListId;
+
+                Console.WriteLine(newStartLists.Count);
+
+                int startPosition = 1;
+                foreach (var skier in reverseRankedSkiers)
                 {
-                    timeMeasurements.Add(new TimeMeasurement()
+                    var newStartPosition = new StartPosition()
                     {
-                        Id = timeMeasurements.Count,
-                        RaceDataId = nextRaceDataId,
-                        SensorId = sensorId,
-                        Measurement = Enumerable.Range(0, sensorId + 1)
-                            .ToList()
-                            .Select(i => random.Next(25,36))
-                            .Sum() * 1000
-                    });
+                        Id = startPositions.Max(sp => sp.Id) + 1,
+                        Position = startPosition++,
+                        SkierId = skier.Id,
+                        StartListId = nextStartListId
+                    };
+
+                    startPositions.Add(newStartPosition);
+                    newlyCreatedStartPositions.Add(newStartPosition);
                 }
+
+                nextStartListId++;
+            }
+            startLists.AddRange(newStartLists);
+
+            //create time measurements for second run
+            foreach (var newlyCreatedStartPosition in newlyCreatedStartPositions)
+            {
+                SimulateTimeMeasurement(random, races, raceStates, raceDataList, timeMeasurements, newlyCreatedStartPosition);
             }
 
             AddToInsertScript(startLists);
@@ -303,6 +316,62 @@ namespace InsertScriptGenerator.Core
                 {
                     streamWriter.WriteLine(line);
                 }
+            }
+        }
+
+        private static void SimulateTimeMeasurement(
+            Random random,
+            List<Race> races,
+            List<RaceState> raceStates,
+            List<RaceData> raceDataList,
+            List<TimeMeasurement> timeMeasurements,
+            StartPosition currentStartPosition)
+        {
+            int currentRaceId = races
+                .FirstOrDefault(r => r.FirstStartListId == currentStartPosition.StartListId
+                                  || r.SecondStartListId == currentStartPosition.StartListId)
+                .Id;
+
+            int raceStateId;
+            double raceStateIdentifier = random.NextDouble();
+            if (0 <= raceStateIdentifier && raceStateIdentifier < 0.9)
+            {
+                raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Abgeschlossen").Id;
+            }
+            else if (0.9 <= raceStateIdentifier && raceStateIdentifier < 0.95)
+            {
+                raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "Disqualifiziert").Id;
+            }
+            else if (0.95 <= raceStateIdentifier && raceStateIdentifier < 1.0)
+            {
+                raceStateId = raceStates.FirstOrDefault(rs => rs.Label == "NichtAbgeschlossen").Id;
+            }
+            else
+            {
+                throw new Exception($"{nameof(raceStateIdentifier)} out of bounds!");
+            }
+
+            int nextRaceDataId = raceDataList.Count;
+            raceDataList.Add(new RaceData()
+            {
+                Id = nextRaceDataId,
+                StartListId = currentStartPosition.StartListId,
+                SkierId = currentStartPosition.SkierId,
+                RaceStateId = raceStateId
+            });
+
+            for (int sensorId = 0; sensorId < races.FirstOrDefault(r => r.Id == currentRaceId).NumberOfSensors; sensorId++)
+            {
+                timeMeasurements.Add(new TimeMeasurement()
+                {
+                    Id = timeMeasurements.Count,
+                    RaceDataId = nextRaceDataId,
+                    SensorId = sensorId,
+                    Measurement = Enumerable.Range(0, sensorId + 1)
+                        .ToList()
+                        .Select(i => random.Next(3500, 5500))
+                        .Sum()
+                });
             }
         }
 

@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Hurace.Core.BL.RaceExecutionManager" BaseTypeListCollapsed="true">
-    <Position X="7.5" Y="3.75" Width="1.5" />
+    <Position X="6.25" Y="3.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAAgAAAAAAAAgAAAAJACAAAAAEAAAAAAEEAAAAAAAAA=</HashCode>
       <FileName>BL\RaceExecutionManager.cs</FileName>
@@ -9,7 +12,10 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Hurace.Core.BL.InformationManager">
-    <Position X="0.5" Y="2.5" Width="2.75" />
+    <Position X="0.5" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>gRAAQgAgAAMAAgAiBAAAACgAAAAAEgKIAADIECAABIA=</HashCode>
       <FileName>BL\InformationManager.cs</FileName>
@@ -17,7 +23,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="Hurace.Core.BL.IRaceExecutionManager">
-    <Position X="6.25" Y="0.75" Width="2" />
+    <Position X="6.25" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAgAAAAAAAAgAAAABACAAAAAEAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>BL\IRaceExecutionManager.cs</FileName>
@@ -31,7 +37,7 @@
     </TypeIdentifier>
   </Interface>
   <Delegate Name="Hurace.Core.BL.OnTimeMeasured">
-    <Position X="8.5" Y="1.75" Width="1.5" />
+    <Position X="8.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>BAAAAAAAAAAAAAAAAAAAAAAAAABAAIAAAAAAAAAAAAA=</HashCode>
       <FileName>BL\IRaceExecutionManager.cs</FileName>
