@@ -30,18 +30,31 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.StartPosition selectedStartPosition;
         private ObservableCollection<Domain.Skier> skiers;
         private Domain.Skier selectedSkier;
+        private bool loading = true;
+        private bool menListSelected = true;
+
+        private ObservableCollection<Domain.Skier> maleSkiers;
+        private ObservableCollection<Domain.Skier> femaleSkiers;
+
+        private ObservableCollection<Domain.StartPosition> maleStartPositions;
+        private ObservableCollection<Domain.StartPosition> femaleStartPositions;
 
         public AsyncDelegateCommand AddRacerToStartListCommand { get; }
         public AsyncDelegateCommand RemoveRacerFromStartListCommand { get; }
         public AsyncDelegateCommand MoveSelectedStartPositionUpCommand { get; }
         public AsyncDelegateCommand MoveSelectedStartPositionDownCommand { get; }
+        public AsyncDelegateCommand SelectMenListCommand { get; }
+        public AsyncDelegateCommand SelectWomenListCommand { get; }
 
         public bool HasErrors => this.errors.Any();
 
         public CreateRaceViewModel(IRaceInformationManager raceManager)
         {
+            Loading = true;
+            MenListSelected = true;
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
             SelectedDate = DateTime.Now;
+
 
             this.AddRacerToStartListCommand = new AsyncDelegateCommand(
                 AddRacerToStartList,
@@ -55,6 +68,34 @@ namespace Hurace.RaceControl.ViewModels
             this.MoveSelectedStartPositionDownCommand = new AsyncDelegateCommand(
                 MoveRacerDownInStartList,
                 (object obj) => selectedStartPosition != null && selectedStartPosition.Position < StartPositions.Count);
+            this.SelectMenListCommand = new AsyncDelegateCommand(
+                (object obj) =>
+                {
+                    femaleSkiers = Skiers;
+                    femaleStartPositions = StartPositions;
+
+                    Skiers = maleSkiers;
+                    StartPositions = maleStartPositions;
+
+                    MenListSelected = true;
+
+                    return Task.CompletedTask;
+                },
+                (object obj) => !menListSelected);
+            this.SelectWomenListCommand = new AsyncDelegateCommand(
+                (object obj) => 
+                {
+                    maleSkiers = Skiers;
+                    maleStartPositions = StartPositions;
+
+                    Skiers = femaleSkiers;
+                    StartPositions = femaleStartPositions;
+
+                    MenListSelected = false;
+
+                    return Task.CompletedTask;
+                },
+                (object obj) => menListSelected);
         }
 
         public async Task Initialize()
@@ -70,9 +111,19 @@ namespace Hurace.RaceControl.ViewModels
                 await raceManager.GetAllSeasonsAsync());
 
             StartPositions = new ObservableCollection<Domain.StartPosition>();
+            maleStartPositions = new ObservableCollection<Domain.StartPosition>();
+            femaleStartPositions = new ObservableCollection<Domain.StartPosition>();
 
             Skiers = new ObservableCollection<Domain.Skier>(
                 (await raceManager.GetAllSkiersAsync()).OrderBy(skier => skier.LastName));
+
+            maleSkiers = new ObservableCollection<Domain.Skier>(Skiers.Where(skier => skier.Sex.Reference.Label == "Männlich"));
+            femaleSkiers = new ObservableCollection<Domain.Skier>(Skiers.Where(skier => skier.Sex.Reference.Label == "Weiblich"));
+
+            Skiers = maleSkiers;
+            MenListSelected = true;
+
+            Loading = false;
         }
 
         private Task MoveRacerUpInStartList(object obj)
@@ -140,6 +191,16 @@ namespace Hurace.RaceControl.ViewModels
             StartPositions = tempList;
 
             return Task.CompletedTask;
+        }
+
+        #region Properties
+        public bool MenListSelected {
+            get => menListSelected;
+            set => base.Set(ref this.menListSelected, value);
+        }
+        public bool Loading {
+            get => loading;
+            set => base.Set(ref this.loading, value);
         }
 
         public ObservableCollection<Domain.RaceType> RaceTypes
@@ -223,5 +284,7 @@ namespace Hurace.RaceControl.ViewModels
                 this.Set(ref this.race, value);
             }
         }
+
+#endregion
     }
 }
