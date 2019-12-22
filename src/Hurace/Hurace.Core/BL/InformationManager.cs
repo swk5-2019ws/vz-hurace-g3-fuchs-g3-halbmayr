@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 #pragma warning disable IDE0010 // Add missing cases
 namespace Hurace.Core.BL
 {
-    public class RaceInformationManager : BaseInformationManager, IRaceInformationManager
+    public sealed class InformationManager : IInformationManager
     {
         #region Fields
 
@@ -26,7 +26,7 @@ namespace Hurace.Core.BL
         #endregion
         #region Constructors
 
-        public RaceInformationManager(
+        public InformationManager(
             IDataAccessObject<Entities.Country> countryDao,
             IDataAccessObject<Entities.Race> raceDao,
             IDataAccessObject<Entities.RaceType> raceTypeDao,
@@ -467,6 +467,76 @@ namespace Hurace.Core.BL
                     async () => (await GetAllSeasonsByVenueIdAsync(venueEntity.Id))
                         .Select(s => new Domain.Associated<Domain.Season>(s)))
             };
+        }
+
+        #endregion
+        #region Helper
+
+        private async Task<Domain.Associated<T>> LoadAssociatedDomainObject<T>(
+            Domain.Associated<T>.LoadingType desiredLoadingType,
+            Func<Task<Domain.Associated<T>>> loadDomainObjectAsReference,
+            Func<Domain.Associated<T>> loadDomainObjectAsForeignKey = null)
+            where T : Domain.DomainObjectBase
+        {
+            switch (desiredLoadingType)
+            {
+                case Domain.Associated<T>.LoadingType.None:
+                    return null;
+                case Domain.Associated<T>.LoadingType.ForeignKey:
+                    if (loadDomainObjectAsForeignKey == null)
+                    {
+                        var associatedDomainObject = await LoadAssociatedDomainObject(
+                            Domain.Associated<T>.LoadingType.Reference,
+                            loadDomainObjectAsReference);
+
+                        if (associatedDomainObject.Reference == null)
+                            return associatedDomainObject;
+
+                        var reference = associatedDomainObject.Reference;
+                        associatedDomainObject.Reference = null;
+                        associatedDomainObject.ForeignKey = reference.Id;
+                        return associatedDomainObject;
+                    }
+                    else
+                    {
+                        return loadDomainObjectAsForeignKey();
+                    }
+                case Domain.Associated<T>.LoadingType.Reference:
+                    if (loadDomainObjectAsReference == null)
+                        throw new InvalidOperationException(
+                            $"Can't load associated domain-object {typeof(T).Name} as reference because loader is null");
+
+                    return await loadDomainObjectAsReference();
+                default:
+                    throw new InvalidOperationException(
+                        $"Unknown value {desiredLoadingType} of {typeof(Domain.Associated<T>.LoadingType).Name}");
+            }
+        }
+
+        private async Task<IEnumerable<Domain.Associated<T>>> LoadAssociatedDomainObjectSet<T>(
+            Domain.Associated<T>.LoadingType desiredLoadingType,
+            Func<Task<IEnumerable<Domain.Associated<T>>>> loadDomainObjectAsReference,
+            Func<Task<IEnumerable<Domain.Associated<T>>>> loadDomainObjectAsForeignKey)
+            where T : Domain.DomainObjectBase
+        {
+            switch (desiredLoadingType)
+            {
+                case Domain.Associated<T>.LoadingType.None:
+                    return null;
+                case Domain.Associated<T>.LoadingType.ForeignKey:
+                    if (loadDomainObjectAsForeignKey == null)
+                        throw new InvalidOperationException(
+                            $"Can't load associated domain-object {typeof(T).Name} as foreign-key because loader is null");
+                    return await loadDomainObjectAsForeignKey();
+                case Domain.Associated<T>.LoadingType.Reference:
+                    if (loadDomainObjectAsReference == null)
+                        throw new InvalidOperationException(
+                            $"Can't load associated domain-object {typeof(T).Name} as reference because loader is null");
+                    return await loadDomainObjectAsReference();
+                default:
+                    throw new InvalidOperationException(
+                        $"Unknown value {desiredLoadingType} of {typeof(Domain.Associated<T>.LoadingType).Name}");
+            }
         }
 
         #endregion

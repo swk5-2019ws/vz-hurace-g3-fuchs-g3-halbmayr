@@ -12,14 +12,14 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private readonly IRaceInformationManager raceManager;
+        private readonly IInformationManager raceManager;
         private readonly IServiceProvider serviceProvider;
         private RaceDetailViewModel selectedRace;
         private CreateRaceViewModel createRaceViewModel;
         private bool createRaceVisible = false;
         private bool raceDetailViewVisible;
 
-        public MainViewModel(IServiceProvider serviceProvider, IRaceInformationManager raceManager)
+        public MainViewModel(IServiceProvider serviceProvider, IInformationManager raceManager)
         {
             this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));

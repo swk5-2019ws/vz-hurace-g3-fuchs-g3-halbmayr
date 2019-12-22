@@ -14,7 +14,7 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class CreateRaceViewModel : BaseViewModel
     {
-        private readonly IRaceInformationManager raceManager;
+        private readonly IInformationManager raceManager;
         private readonly IDictionary<string, string> errors = new Dictionary<string, string>();
         private Domain.Race race;
         private string description;
@@ -49,7 +49,7 @@ namespace Hurace.RaceControl.ViewModels
 
         public bool HasErrors => this.errors.Any();
 
-        public CreateRaceViewModel(IRaceInformationManager raceManager)
+        public CreateRaceViewModel(IInformationManager raceManager)
         {
             Loading = true;
             MenListSelected = true;

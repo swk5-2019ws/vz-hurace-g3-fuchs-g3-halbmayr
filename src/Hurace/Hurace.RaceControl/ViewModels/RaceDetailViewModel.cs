@@ -14,13 +14,13 @@ namespace Hurace.RaceControl.ViewModels
     public class RaceDetailViewModel : BaseViewModel
     {
         private readonly RaceClockResolver raceClockResolver;
-        private readonly IRaceInformationManager raceInformationManager;
+        private readonly IInformationManager raceInformationManager;
         private readonly IRaceExecutionManager raceExecutionManager;
         private bool executionRunning;
 
         public RaceDetailViewModel(
             RaceClockResolver raceClockResolver,
-            IRaceInformationManager raceInformationManager,
+            IInformationManager raceInformationManager,
             IRaceExecutionManager raceExecutionManager)
         {
             this.raceClockResolver = raceClockResolver ?? throw new ArgumentNullException(nameof(raceClockResolver));

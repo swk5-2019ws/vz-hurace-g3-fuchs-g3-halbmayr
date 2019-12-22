@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
 {
-    public interface IRaceInformationManager
+    public interface IInformationManager
     {
         Task<IEnumerable<Domain.Country>> GetAllCountriesAsync();
         Task<Domain.Country> GetCountryByIdAsync(int id);

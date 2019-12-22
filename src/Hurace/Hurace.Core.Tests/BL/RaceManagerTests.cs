@@ -27,7 +27,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -55,7 +55,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -83,7 +83,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -111,7 +111,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -139,7 +139,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -167,7 +167,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -195,7 +195,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -223,7 +223,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -251,7 +251,7 @@ namespace Hurace.Core.Tests.BL
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -279,7 +279,7 @@ namespace Hurace.Core.Tests.BL
             IDataAccessObject<Entities.Venue> venueDaoFake = null;
 
             Assert.Throws<ArgumentNullException>(() =>
-                new RaceInformationManager(
+                new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
                     raceTypeDaoFake,
@@ -357,7 +357,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => raceTypeDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult(raceTypeEntities.First(rte => rte.Id == 1)));
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -453,7 +453,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => raceTypeDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult(raceTypeEntities.First(rte => rte.Id == 1)));
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -544,7 +544,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => raceTypeDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult<Entities.RaceType>(null));
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -660,7 +660,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => venueDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult(venueEntities.First(rte => rte.Id == 1)));
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -768,7 +768,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => venueDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult(venueEntities.First(rte => rte.Id == 1)));
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -871,7 +871,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => venueDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily(() => Task.FromResult<Entities.Venue>(null));
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -1011,7 +1011,7 @@ namespace Hurace.Core.Tests.BL
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.First() }).Twice().Then
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.Skip(1).First() });
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -1149,7 +1149,7 @@ namespace Hurace.Core.Tests.BL
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.First() }).Twice().Then
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.Skip(1).First() });
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -1276,7 +1276,7 @@ namespace Hurace.Core.Tests.BL
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.First() }).Twice().Then
                 .ReturnsLazily(() => new List<Entities.Season> { });
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,
@@ -1398,7 +1398,7 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => skierDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily(() => skierEntities.First(s => s.Id == 1));
 
-            var raceManager = new RaceInformationManager(
+            var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
                 raceTypeDaoFake,

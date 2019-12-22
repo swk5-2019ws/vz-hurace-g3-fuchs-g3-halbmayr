@@ -13,9 +13,9 @@ namespace Hurace.Api.Controllers
     public class RaceController : ControllerBase
     {
         private readonly ILogger<RaceController> logger;
-        private readonly IRaceInformationManager raceManager;
+        private readonly IInformationManager raceManager;
 
-        public RaceController(ILogger<RaceController> logger, IRaceInformationManager raceManager)
+        public RaceController(ILogger<RaceController> logger, IInformationManager raceManager)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));

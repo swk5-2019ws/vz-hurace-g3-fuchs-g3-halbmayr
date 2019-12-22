@@ -59,7 +59,7 @@ namespace Hurace.RaceControl
                             : /*serviceProvider.GetService<(real implementation)>()*/ null;
                     });
 
-            services.AddScoped<IRaceInformationManager, RaceInformationManager>();
+            services.AddScoped<IInformationManager, InformationManager>();
             services.AddScoped<IRaceExecutionManager, RaceExecutionManager>();
 
             services.AddTransient<ViewModels.RaceDetailViewModel>();

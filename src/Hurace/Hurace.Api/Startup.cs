@@ -41,7 +41,7 @@ namespace Hurace.Api
             services.AddScoped<IDataAccessObject<Entities.TimeMeasurement>, GenericDao<Entities.TimeMeasurement>>();
             services.AddScoped<IDataAccessObject<Entities.Venue>, GenericDao<Entities.Venue>>();
 
-            services.AddScoped<IRaceInformationManager, RaceInformationManager>();
+            services.AddScoped<IInformationManager, InformationManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
