@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Hurace.Domain
 {
-    public class Race : DomainObjectBase
+    public sealed class Race : DomainObjectBase
     {
         public DateTime Date { get; set; }
         public string Description { get; set; }

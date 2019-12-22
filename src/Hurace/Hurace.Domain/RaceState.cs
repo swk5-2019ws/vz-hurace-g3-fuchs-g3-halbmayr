@@ -1,6 +1,6 @@
 ﻿namespace Hurace.Domain
 {
-    public class RaceState : DomainObjectBase
+    public sealed class RaceState : DomainObjectBase
     {
         public string Label { get; set; }
     }

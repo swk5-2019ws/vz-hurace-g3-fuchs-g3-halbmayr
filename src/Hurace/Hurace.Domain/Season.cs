@@ -2,7 +2,7 @@
 
 namespace Hurace.Domain
 {
-    public class Season : DomainObjectBase
+    public sealed class Season : DomainObjectBase
     {
         public string Name { get; set; }
         public DateTime StartDate { get; set; }

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Hurace.Core.DAL.AdoPersistence.AdoTemplate">
+    <Position X="4.25" Y="0.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAgQAAAAACAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAEA=</HashCode>
+      <FileName>DAL\AdoPersistence\AdoTemplate.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="connectionFactory" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Hurace.Core.DAL.AdoPersistence.GenericDao&lt;T&gt;" BaseTypeListCollapsed="true">
+    <Position X="4.25" Y="3.25" Width="2.25" />
+    <AssociationLine Name="RowMapper" Type="Hurace.Core.Db.Utilities.RowMapper&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="3.75" />
+        <Point X="7.049" Y="3.75" />
+        <Point X="7.049" Y="2.398" />
+        <Point X="8.25" Y="2.398" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAFAAAAAAEAAAAAAAAgAAAAQAIAAIIA=</HashCode>
+      <FileName>DAL\AdoPersistence\GenericDao.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="template" />
+      <Property Name="SqlQueryGenerator" />
+      <Property Name="RowMapper" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hurace.Core.Db.Utilities.RowMapper&lt;T&gt;">
+    <Position X="8.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Hurace.Core.Db.Utilities.SqlQueryGenerator&lt;T&gt;">
+    <Position X="8.25" Y="3.5" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="Hurace.Core.DAL.IDataAccessObject&lt;T&gt;">
+    <Position X="1" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAAgAAAAQAIAAIIA=</HashCode>
+      <FileName>DAL\IDataAccessObject.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Hurace.Core.Db.Connection.IConnectionFactory">
+    <Position X="0.5" Y="1.25" Width="2.25" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

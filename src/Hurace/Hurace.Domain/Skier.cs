@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Hurace.Domain
 {
-    public class Skier : DomainObjectBase
+    public sealed class Skier : DomainObjectBase
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

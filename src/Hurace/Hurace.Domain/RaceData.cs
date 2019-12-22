@@ -2,7 +2,7 @@
 
 namespace Hurace.Domain
 {
-    public class RaceData : DomainObjectBase
+    public sealed class RaceData : DomainObjectBase
     {
         public Associated<StartPosition> StartPosition { get; set; }
         public Associated<RaceState> RaceState { get; set; }
