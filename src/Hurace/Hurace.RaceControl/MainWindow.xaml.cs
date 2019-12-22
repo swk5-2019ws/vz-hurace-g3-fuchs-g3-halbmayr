@@ -1,8 +1,4 @@
-﻿using Hurace.Core.BL;
-using Hurace.Core.DAL.AdoPersistence;
-using Hurace.Core.Db.Connection;
-using System;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Hurace.RaceControl
 {

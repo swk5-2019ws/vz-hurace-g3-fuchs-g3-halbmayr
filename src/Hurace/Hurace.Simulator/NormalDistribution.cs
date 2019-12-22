@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 #pragma warning disable CA5394 // Do not use insecure randomness
 namespace Hurace.Simulator

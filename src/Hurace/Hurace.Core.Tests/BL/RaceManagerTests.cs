@@ -1415,8 +1415,29 @@ namespace Hurace.Core.Tests.BL
                 startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
                 skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.Reference);
 
-            Assert.False(true);
-            await Task.CompletedTask;
+            Assert.Equal(2, race.FirstStartList.Count());
+            Assert.Equal(0, race.FirstStartList.First().Reference.Id);
+            Assert.Equal(1, race.FirstStartList.First().Reference.Position);
+            Assert.Equal(0, race.FirstStartList.First().Reference.Skier.ForeignKey);
+            Assert.Equal(1, race.FirstStartList.Skip(1).First().Reference.Id);
+            Assert.Equal(2, race.FirstStartList.Skip(1).First().Reference.Position);
+            Assert.Equal(1, race.FirstStartList.Skip(1).First().Reference.Skier.ForeignKey);
+
+            Assert.Equal(2, race.SecondStartList.Count());
+            Assert.Equal(2, race.SecondStartList.First().Reference.Id);
+            Assert.Equal(1, race.SecondStartList.First().Reference.Position);
+            Assert.Equal(0, race.SecondStartList.First().Reference.Skier.ForeignKey);
+            Assert.Equal(3, race.SecondStartList.Skip(1).First().Reference.Id);
+            Assert.Equal(2, race.SecondStartList.Skip(1).First().Reference.Position);
+            Assert.Equal(1, race.SecondStartList.Skip(1).First().Reference.Skier.ForeignKey);
+
+            Assert.Equal(0, race.Skiers.First().Reference.Id);
+            Assert.Equal("Thomas", race.Skiers.First().Reference.FirstName);
+            Assert.Equal("Halbimayr", race.Skiers.First().Reference.LastName);
+
+            Assert.Equal(1, race.Skiers.Skip(1).First().Reference.Id);
+            Assert.Equal("Manuela", race.Skiers.Skip(1).First().Reference.FirstName);
+            Assert.Equal("Wolf (haha, funny joke vom thomas)", race.Skiers.Skip(1).First().Reference.LastName);
         }
     }
 }

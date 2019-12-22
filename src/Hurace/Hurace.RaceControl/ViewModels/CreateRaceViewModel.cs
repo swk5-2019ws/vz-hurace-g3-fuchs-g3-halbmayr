@@ -3,10 +3,7 @@ using Hurace.RaceControl.ViewModels.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 #pragma warning disable CA2227 // Collection properties should be read only
@@ -208,7 +205,7 @@ namespace Hurace.RaceControl.ViewModels
 
             foreach (var elem in StartPositions)
             {
-                if(SelectedStartPosition.Position < elem.Position)
+                if (SelectedStartPosition.Position < elem.Position)
                 {
                     elem.Position--;
                 }
@@ -285,32 +282,38 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.allSkiers, value);
         }
 
-        public ObservableCollection<Domain.Season> Seasons {
+        public ObservableCollection<Domain.Season> Seasons
+        {
             get => seasons;
             set => base.Set(ref this.seasons, value);
         }
 
-        public Domain.Season SelectedSeason {
+        public Domain.Season SelectedSeason
+        {
             get => selectedSeason;
             set => base.Set(ref this.selectedSeason, value);
         }
 
-        public ObservableCollection<Domain.StartPosition> StartPositions {
+        public ObservableCollection<Domain.StartPosition> StartPositions
+        {
             get => startPositions;
             set => base.Set(ref this.startPositions, value);
         }
 
-        public Domain.StartPosition SelectedStartPosition {
+        public Domain.StartPosition SelectedStartPosition
+        {
             get => selectedStartPosition;
             set => base.Set(ref this.selectedStartPosition, value);
         }
 
-        public ObservableCollection<Domain.Skier> Skiers {
+        public ObservableCollection<Domain.Skier> Skiers
+        {
             get => skiers;
             set => base.Set(ref this.skiers, value);
         }
 
-        public Domain.Skier SelectedSkier {
+        public Domain.Skier SelectedSkier
+        {
             get => selectedSkier;
             set => base.Set(ref this.selectedSkier, value);
         }
@@ -325,6 +328,6 @@ namespace Hurace.RaceControl.ViewModels
             }
         }
 
-#endregion
+        #endregion
     }
 }

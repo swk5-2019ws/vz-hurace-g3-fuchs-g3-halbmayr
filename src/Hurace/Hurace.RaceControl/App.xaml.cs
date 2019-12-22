@@ -4,7 +4,6 @@ using Hurace.Core.DAL.AdoPersistence;
 using Hurace.Core.Db.Connection;
 using Hurace.Simulator;
 using Hurace.Timer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;

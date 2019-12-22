@@ -85,8 +85,7 @@ namespace Hurace.Core.Db.Utilities
 
             queryStringBuilder.Append(")");
 
-            //TODO Cleanup fix
-            if(queryParameters.Count == 0)
+            if (queryParameters.Count == 0)
             {
                 queryStringBuilder.Clear();
                 queryStringBuilder.Append($"INSERT INTO [Hurace].[{newDomainObjct.GetType().Name}] DEFAULT VALUES");

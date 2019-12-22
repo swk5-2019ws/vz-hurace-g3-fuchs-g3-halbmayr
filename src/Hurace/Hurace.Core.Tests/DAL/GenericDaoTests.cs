@@ -80,17 +80,17 @@ namespace Hurace.Core.Tests.DAL
 
         [Theory]
         [InlineData(typeof(Entities.Country), 52)]
-        [InlineData(typeof(Entities.Race), 37)]
-        [InlineData(typeof(Entities.RaceData), 3710)]
+        [InlineData(typeof(Entities.Race), 74)]
+        [InlineData(typeof(Entities.RaceData), 7414)]
         [InlineData(typeof(Entities.RaceState), 5)]
         [InlineData(typeof(Entities.RaceType), 2)]
         [InlineData(typeof(Entities.Season), 2)]
         [InlineData(typeof(Entities.SeasonPlan), 62)]
         [InlineData(typeof(Entities.Sex), 2)]
         [InlineData(typeof(Entities.Skier), 521)]
-        [InlineData(typeof(Entities.StartList), 74)]
-        [InlineData(typeof(Entities.StartPosition), 3710)]
-        [InlineData(typeof(Entities.TimeMeasurement), 18745)]
+        [InlineData(typeof(Entities.StartList), 148)]
+        [InlineData(typeof(Entities.StartPosition), 7414)]
+        [InlineData(typeof(Entities.TimeMeasurement), 37544)]
         [InlineData(typeof(Entities.Venue), 31)]
         public async Task GetAllUnconditionalTests(Type domainType, int expectedResultCount)
         {
@@ -897,15 +897,17 @@ namespace Hurace.Core.Tests.DAL
                     testObject = new Entities.Race()
                     {
                         Id = 13,
-                        RaceTypeId = 1,
-                        FirstStartListId = 26,
-                        SecondStartListId = 27,
-                        NumberOfSensors = 6,
-                        Description = "Norwegian legend Sondre Norheim first began the trend " +
-                                      "of skis with curved sides, bindings with stiff heel bands " +
-                                      "made of willow, and the slalom turn style.",
-                        VenueId = 12,
-                        Date = new DateTime(2017, 12, 28)
+                        RaceTypeId = 0,
+                        FirstStartListId = 13,
+                        SecondStartListId = 87,
+                        NumberOfSensors = 5,
+                        Description = "The ancient origins of skiing can be traced back to prehistoric " +
+                            "times in Russia, Finland, Sweden and Norway where varying sizes and shapes" +
+                            " of wooden planks were preserved in peat bogs. Skis were first invented to" +
+                            " cross wetlands and marshes in the winter when they froze over.",
+                        VenueId = 4,
+                        Date = new DateTime(2019, 12, 03),
+                        GenderSpecificRaceId = 1
                     };
                     return testObject;
                 case nameof(Entities.RaceData):
@@ -913,8 +915,8 @@ namespace Hurace.Core.Tests.DAL
                     {
                         Id = 311,
                         StartListId = 6,
-                        SkierId = 164,
-                        RaceStateId = 1
+                        SkierId = 452,
+                        RaceStateId = 0
                     };
                     return testObject;
                 case nameof(Entities.RaceState):
@@ -935,9 +937,9 @@ namespace Hurace.Core.Tests.DAL
                     testObject = new Entities.Season()
                     {
                         Id = 1,
-                        Name = "Jährliche Saison 2018",
-                        StartDate = new DateTime(2018, 1, 1),
-                        EndDate = new DateTime(2018, 12, 31)
+                        Name = "Jährliche Saison 2020",
+                        StartDate = new DateTime(2020, 1, 1),
+                        EndDate = new DateTime(2020, 12, 31)
                     };
                     return testObject;
                 case nameof(Entities.SeasonPlan):
@@ -978,18 +980,18 @@ namespace Hurace.Core.Tests.DAL
                     testObject = new Entities.StartPosition()
                     {
                         Id = 53,
-                        SkierId = 0,
-                        StartListId = 0,
-                        Position = 54
+                        SkierId = 150,
+                        StartListId = 1,
+                        Position = 2
                     };
                     return testObject;
                 case nameof(Entities.TimeMeasurement):
                     testObject = new Entities.TimeMeasurement()
                     {
                         Id = 226,
-                        SensorId = 1,
-                        Measurement = 59000,
-                        RaceDataId = 45,
+                        SensorId = 4,
+                        Measurement = 24074,
+                        RaceDataId = 37,
                         IsValid = true
                     };
                     return testObject;
