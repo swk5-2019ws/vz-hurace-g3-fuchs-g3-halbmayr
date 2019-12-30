@@ -8,9 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 #pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
-namespace Hurace.Core.Dal.AdoPersistence
+namespace Hurace.Core.DAL.AdoPersistence
 {
-    internal class AdoTemplate
+    internal sealed class AdoTemplate
     {
         private readonly IConnectionFactory connectionFactory;
 
@@ -47,9 +47,9 @@ namespace Hurace.Core.Dal.AdoPersistence
             RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
         {
-            return
-                (await this.QueryObjectSetAsync(sqlQuery, rowMapper, queryParameters))
-                .SingleOrDefault();
+            var resultingSet = await this.QueryObjectSetAsync(sqlQuery, rowMapper, queryParameters);
+
+            return resultingSet.Count() == 1 ? resultingSet.First() : (default);
         }
 
         public async Task<int> QuerySingleInt32Async(

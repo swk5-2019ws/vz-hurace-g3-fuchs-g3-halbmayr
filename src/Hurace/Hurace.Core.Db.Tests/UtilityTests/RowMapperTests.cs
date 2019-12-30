@@ -75,6 +75,7 @@ namespace Hurace.Core.Db.Tests.UtilityTests
             A.CallTo(() => mockedDataRecord[A<string>.That.IsEqualTo("NumberOfSensors")]).Returns(expectedInt);
             A.CallTo(() => mockedDataRecord[A<string>.That.IsEqualTo("Description")]).Returns(expectedString);
             A.CallTo(() => mockedDataRecord[A<string>.That.IsEqualTo("Date")]).Returns(expectedDate);
+            A.CallTo(() => mockedDataRecord[A<string>.That.IsEqualTo("GenderSpecificRaceId")]).Returns(expectedInt);
 
             var mappedStartPosition = rowMapper.Map(mockedDataRecord);
 
@@ -86,6 +87,7 @@ namespace Hurace.Core.Db.Tests.UtilityTests
             Assert.Equal(expectedInt, mappedStartPosition.NumberOfSensors);
             Assert.Equal(expectedString, mappedStartPosition.Description);
             Assert.Equal(expectedDate, mappedStartPosition.Date);
+            Assert.Equal(expectedInt, mappedStartPosition.GenderSpecificRaceId);
         }
     }
 }

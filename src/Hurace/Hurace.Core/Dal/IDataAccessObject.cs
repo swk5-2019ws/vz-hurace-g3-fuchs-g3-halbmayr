@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hurace.Core.Dal
+namespace Hurace.Core.DAL
 {
     public interface IDataAccessObject<T>
     {

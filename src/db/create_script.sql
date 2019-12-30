@@ -250,14 +250,15 @@ GO
 
 CREATE TABLE [Hurace].[Race]
 (
- [Id]                int IDENTITY (1, 1) NOT NULL ,
- [RaceTypeId]        int NOT NULL ,
- [FirstStartListId]  int NULL ,
- [SecondStartListId] int NULL ,
- [NumberOfSensors]   int NOT NULL ,
- [Description]       varchar(280) NOT NULL ,
- [VenueId]           int NOT NULL ,
- [Date]              date NOT NULL ,
+ [Id]                   int IDENTITY (1, 1) NOT NULL ,
+ [RaceTypeId]           int NOT NULL ,
+ [FirstStartListId]     int NULL ,
+ [SecondStartListId]    int NULL ,
+ [NumberOfSensors]      int NOT NULL ,
+ [Description]          varchar(280) NOT NULL ,
+ [VenueId]              int NOT NULL ,
+ [Date]                 date NOT NULL ,
+ [GenderSpecificRaceId] int NOT NULL ,
 
 
  CONSTRAINT [Race_pk] PRIMARY KEY NONCLUSTERED ([Id] ASC),
@@ -267,6 +268,7 @@ CREATE TABLE [Hurace].[Race]
  CONSTRAINT [Race_StartList_1_fk] FOREIGN KEY ([FirstStartListId])  REFERENCES [Hurace].[StartList]([Id]),
  CONSTRAINT [Race_StartList_2_fk] FOREIGN KEY ([SecondStartListId])  REFERENCES [Hurace].[StartList]([Id]),
  CONSTRAINT [Race_Venue_fk] FOREIGN KEY ([VenueId])  REFERENCES [Hurace].[Venue]([Id]),
+ CONSTRAINT [Race_Gender_fk] FOREIGN KEY ([GenderSpecificRaceId]) REFERENCES [Hurace].[Sex]([Id]),
  CONSTRAINT [Race_NuOfSensors_gt_th_zero] CHECK ( [NumberOfSensors] > 0 )
 );
 GO

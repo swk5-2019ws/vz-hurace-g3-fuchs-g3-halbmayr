@@ -1,0 +1,89 @@
+﻿<Window x:Class="Hurace.RaceControl.Windows.SimulatorConfigWindow"
+        x:Name="SimulatorConfigWindowAccessor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        Title="SimulatorConfigWindow"
+        Height="350" MinHeight="350" MaxHeight="500"
+        Width="350" MinWidth="350" MaxWidth="500">
+    <Window.Resources>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="SensorId maximum:"
+                       Grid.Row="0"
+                       Grid.Column="0"/>
+
+            <TextBox Text="{Binding MaxSensorIdValue, Mode=TwoWay}"
+                     Margin="5"
+                     Grid.Row="0"
+                     Grid.Column="1"/>
+
+            <TextBlock Text="Intervall µ:"
+                       Grid.Row="1"
+                       Grid.Column="0"/>
+
+            <TextBox Text="{Binding TimerIntervalMean, Mode=TwoWay}"
+                     Margin="5"
+                     Grid.Row="1"
+                     Grid.Column="1"/>
+
+            <TextBlock Text="Intervall σ:"
+                       Grid.Row="2"
+                       Grid.Column="0"/>
+
+            <TextBox Text="{Binding TimerIntervalStdDev, Mode=TwoWay}"
+                     Margin="5"
+                     Grid.Row="2"
+                     Grid.Column="1"/>
+
+            <TextBlock Text="Risiko ausgelassener Signale:"
+                       Grid.Row="3"
+                       Grid.Column="0"/>
+
+            <TextBox Text="{Binding TimerFailureChance, Mode=TwoWay}"
+                     Margin="5"
+                     Grid.Row="3"
+                     Grid.Column="1"/>
+
+            <TextBlock Text="Risiko doppelt ausgelöster Signale:"
+                       Grid.Row="4"
+                       Grid.Column="0"/>
+
+            <TextBox Text="{Binding UnwantedTimerTriggerChance, Mode=TwoWay}"
+                     Margin="5"
+                     Grid.Row="4"
+                     Grid.Column="1"/>
+        </Grid>
+
+        <Button Content="Continue to Simulation"
+                Command="{Binding ContinueToSimulationCommand}"
+                CommandParameter="{Binding ElementName=SimulatorConfigWindowAccessor}"
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="5"/>
+    </StackPanel>
+</Window>

@@ -11,5 +11,6 @@ namespace Hurace.Entities
         public int NumberOfSensors { get; set; }
         public string Description { get; set; }
         public DateTime Date { get; set; }
+        public int GenderSpecificRaceId { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace Hurace.Core.Db.Utilities
     /// The queries are also sanitized with <see cref="QueryParameter"/>s.
     /// </summary>
     /// <typeparam name="T">the specific domain-object type</typeparam>
-    public class SqlQueryGenerator<T> where T : EntityObjectBase
+    public sealed class SqlQueryGenerator<T> where T : EntityObjectBase
     {
         /// <summary>
         /// Generates a SELECT query that generates a select query that only returns a single
@@ -84,6 +84,12 @@ namespace Hurace.Core.Db.Utilities
             AppendColumnValuesWithoutAssignment(queryStringBuilder, queryParameters, newDomainObjct);
 
             queryStringBuilder.Append(")");
+
+            if (queryParameters.Count == 0)
+            {
+                queryStringBuilder.Clear();
+                queryStringBuilder.Append($"INSERT INTO [Hurace].[{newDomainObjct.GetType().Name}] DEFAULT VALUES");
+            }
 
             return (queryStringBuilder.ToString(), queryParameters.ToArray());
         }

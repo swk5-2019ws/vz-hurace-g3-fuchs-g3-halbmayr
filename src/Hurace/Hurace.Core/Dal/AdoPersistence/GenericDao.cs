@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hurace.Core.Dal.AdoPersistence
+namespace Hurace.Core.DAL.AdoPersistence
 {
-    public class GenericDao<T> : IDataAccessObject<T> where T : Entities.EntityObjectBase, new()
+    public sealed class GenericDao<T> : IDataAccessObject<T> where T : Entities.EntityObjectBase, new()
     {
         private readonly AdoTemplate template;
 
@@ -37,6 +37,7 @@ namespace Hurace.Core.Dal.AdoPersistence
                 throw new InvalidOperationException($"The INSERT Query affected {affectedRowCount} rows -> should only affect 1");
 
             string getLastGivenIdentityQuery = SqlQueryGenerator.GenerateGetLastIdentityQuery();
+
             return await template.QuerySingleInt32Async(getLastGivenIdentityQuery);
         }
 

@@ -29,6 +29,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Db.Tests", "Hur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Entities", "Hurace.Entities\Hurace.Entities.csproj", "{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.RaceControl", "Hurace.RaceControl\Hurace.RaceControl.csproj", "{E0791745-2D05-4432-97CF-EE751147C13F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Api", "Hurace.Api\Hurace.Api.csproj", "{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Timer", "Hurace.Timer\Hurace.Timer.csproj", "{0B2D0E38-A8E0-46D8-980A-8F80F338C192}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Simulator.Tests", "Hurace.Simulator.Tests\Hurace.Simulator.Tests.csproj", "{CA3F679D-35ED-422E-9928-58F2F41D6EF8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Domain.Tests", "Hurace.Domain.Tests\Hurace.Domain.Tests.csproj", "{BF920A40-634B-4AA4-8C0A-CEF517450DF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hurace.Simulator", "Hurace.Simulator\Hurace.Simulator.csproj", "{EA9342EA-2F2F-4F1C-856C-745E61D85235}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +71,30 @@ Global
 		{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ED07408-42CA-48C6-8D42-17EE98FDA4BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0791745-2D05-4432-97CF-EE751147C13F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBE0FDD4-76D3-47D8-A6D5-9D7FE40CD7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B2D0E38-A8E0-46D8-980A-8F80F338C192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3F679D-35ED-422E-9928-58F2F41D6EF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3F679D-35ED-422E-9928-58F2F41D6EF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3F679D-35ED-422E-9928-58F2F41D6EF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3F679D-35ED-422E-9928-58F2F41D6EF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF920A40-634B-4AA4-8C0A-CEF517450DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF920A40-634B-4AA4-8C0A-CEF517450DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF920A40-634B-4AA4-8C0A-CEF517450DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF920A40-634B-4AA4-8C0A-CEF517450DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9342EA-2F2F-4F1C-856C-745E61D85235}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9342EA-2F2F-4F1C-856C-745E61D85235}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9342EA-2F2F-4F1C-856C-745E61D85235}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9342EA-2F2F-4F1C-856C-745E61D85235}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
