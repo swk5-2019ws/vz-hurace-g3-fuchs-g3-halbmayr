@@ -1,5 +1,6 @@
 ﻿using Hurace.Timer;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
@@ -7,8 +8,12 @@ namespace Hurace.Core.BL
     public class RaceExecutionManager : IRaceExecutionManager
     {
         private readonly IRaceClock raceClock;
+        private readonly IInformationManager informationManager;
 
-        public RaceExecutionManager() { }
+        public RaceExecutionManager(IInformationManager informationManager)
+        {
+            this.informationManager = informationManager ?? throw new ArgumentNullException(nameof(informationManager));
+        }
 
         public event OnTimeMeasured OnTimeMeasured;
 
@@ -16,7 +21,10 @@ namespace Hurace.Core.BL
         public Domain.Skier TrackedSkier { get; set; }
         public IRaceClock RaceClock { get; set; }
 
-        public void StartTimeTracking(IRaceClock raceClock, Domain.Race race, Domain.Skier skier)
+        public void StartTimeTracking(
+            IRaceClock raceClock,
+            Domain.Race race,
+            Domain.Skier skier)
         {
             //validate if there exists a startposition 
             //validate if the start poisition is the one up next
@@ -24,9 +32,15 @@ namespace Hurace.Core.BL
             this.raceClock.TimingTriggered += OnRaceSensorTriggered;
         }
 
-        public Task<bool> IsRaceStartable(int raceId)
+        public async Task<bool> IsRaceStartable(int raceId)
         {
-            throw new NotImplementedException();
+            var race = await informationManager.GetRaceByIdAsync(
+                raceId,
+                startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.ForeignKey);
+
+            return race.Date == DateTime.Now.Date &&
+                race.FirstStartList.Any() &&
+                race.SecondStartList.Any();
         }
 
         private void OnRaceSensorTriggered(int sensorId, DateTime time)

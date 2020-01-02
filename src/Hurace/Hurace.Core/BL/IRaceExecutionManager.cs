@@ -14,6 +14,9 @@ namespace Hurace.Core.BL
         IRaceClock RaceClock { get; set; }
 
         Task<bool> IsRaceStartable(int raceId);
-        void StartTimeTracking(IRaceClock raceClock, Domain.Race race, Domain.Skier skier);
+        void StartTimeTracking(
+            IRaceClock raceClock,
+            Domain.Race race,
+            Domain.Skier skier);
     }
 }
