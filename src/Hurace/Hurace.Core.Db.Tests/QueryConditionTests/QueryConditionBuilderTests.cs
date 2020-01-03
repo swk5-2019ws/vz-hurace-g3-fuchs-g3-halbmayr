@@ -320,7 +320,7 @@ namespace Hurace.Core.Db.Tests.QueryConditionTests
                     .DeclareCondition(expectedColumn, QueryConditionType.Equals, n));
 
             var condition = new QueryConditionBuilder()
-                .DeclareConditionFromBuilderSet(conditionSet)
+                .DeclareConditionFromBuilderSet(QueryConditionNodeType.And, conditionSet)
                 .Build();
 
             var conditionStringBuilder = new StringBuilder();
@@ -347,7 +347,7 @@ namespace Hurace.Core.Db.Tests.QueryConditionTests
 
             Assert.Throws<InvalidOperationException>(
                 () => new QueryConditionBuilder()
-                    .DeclareConditionFromBuilderSet(numberSet)
+                    .DeclareConditionFromBuilderSet(QueryConditionNodeType.And, numberSet)
                     .Build());
         }
 
@@ -356,7 +356,7 @@ namespace Hurace.Core.Db.Tests.QueryConditionTests
         {
             Assert.Throws<ArgumentNullException>(
                 () => new QueryConditionBuilder()
-                    .DeclareConditionFromBuilderSet(null)
+                    .DeclareConditionFromBuilderSet(QueryConditionNodeType.And, null)
                     .Build());
         }
     }

@@ -7,7 +7,8 @@ namespace Hurace.Core.BL
 {
     public class RaceExecutionManager : IRaceExecutionManager
     {
-        private readonly IRaceClock raceClock;
+        private IRaceClock raceClock;
+
         private readonly IInformationManager informationManager;
 
         public RaceExecutionManager(IInformationManager informationManager)
@@ -19,15 +20,33 @@ namespace Hurace.Core.BL
 
         public Domain.Race TrackedRace { get; set; }
         public Domain.Skier TrackedSkier { get; set; }
-        public IRaceClock RaceClock { get; set; }
-
-        public void StartTimeTracking(
-            IRaceClock raceClock,
-            Domain.Race race,
-            Domain.Skier skier)
+        public IRaceClock RaceClock
         {
-            //validate if there exists a startposition 
+            get => raceClock;
+            set
+            {
+                if (this.TrackedRace is null &&
+                    this.TrackedSkier is null)
+                {
+                    raceClock = value;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Cannot replace RaceClock while tracking a skier");
+                }
+            }
+        }
+
+        public async Task StartTimeTracking(
+            Domain.Race race,
+            bool firstStartList,
+            int position)
+        {
+            if (this.RaceClock is null)
+                throw new InvalidOperationException("Set RaceClock before tracking a race");
+
             //validate if the start poisition is the one up next
+            bool isNext = await informationManager.IsNextStartposition(race, firstStartList, position).ConfigureAwait(false);
 
             this.raceClock.TimingTriggered += OnRaceSensorTriggered;
         }
@@ -39,8 +58,7 @@ namespace Hurace.Core.BL
                 startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.ForeignKey);
 
             return race.Date == DateTime.Now.Date &&
-                race.FirstStartList.Any() &&
-                race.SecondStartList.Any();
+                race.FirstStartList.Any();
         }
 
         private void OnRaceSensorTriggered(int sensorId, DateTime time)

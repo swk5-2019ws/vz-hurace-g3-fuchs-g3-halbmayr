@@ -49,5 +49,10 @@ namespace Hurace.Core.BL
             int id,
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
+
+        Task<IEnumerable<Domain.StartPosition>> GetAllStartPositionsOfStartList(
+            int startListId,
+            Domain.Associated<Domain.Skier>.LoadingType skierLoadingType = Domain.Associated<Domain.Skier>.LoadingType.ForeignKey);
+        Task<bool> IsNextStartposition(Domain.Race race, bool firstStartlist, int position);
     }
 }

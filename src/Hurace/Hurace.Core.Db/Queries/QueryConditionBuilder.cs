@@ -86,7 +86,9 @@ namespace Hurace.Core.Db.Queries
         /// <param name="builderSet">the set of builders to be joined</param>
         /// <returns>a uniting <see cref="QueryConditionBuilder"/> that contains all passed
         /// <see cref="QueryConditionBuilder"/>.</returns>
-        public QueryConditionBuilder DeclareConditionFromBuilderSet(IEnumerable<QueryConditionBuilder> builderSet)
+        public QueryConditionBuilder DeclareConditionFromBuilderSet(
+            QueryConditionNodeType joiningNodeType,
+            IEnumerable<QueryConditionBuilder> builderSet)
         {
             if (builderSet is null)
                 throw new ArgumentNullException(nameof(builderSet));
@@ -100,7 +102,7 @@ namespace Hurace.Core.Db.Queries
                     ? builder
                     : new QueryConditionBuilder()
                         .DeclareConditionNode(
-                            QueryConditionNodeType.And,
+                            joiningNodeType,
                             () => agglomerativeConditionBuilder,
                             () => builder);
             }

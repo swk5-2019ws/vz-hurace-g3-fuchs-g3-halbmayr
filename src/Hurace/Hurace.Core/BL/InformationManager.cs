@@ -14,6 +14,8 @@ namespace Hurace.Core.BL
 
         private readonly IDataAccessObject<Entities.Country> countryDao;
         private readonly IDataAccessObject<Entities.Race> raceDao;
+        private readonly IDataAccessObject<Entities.RaceData> raceDataDao;
+        private readonly IDataAccessObject<Entities.RaceState> raceStateDao;
         private readonly IDataAccessObject<Entities.RaceType> raceTypeDao;
         private readonly IDataAccessObject<Entities.Venue> venueDao;
         private readonly IDataAccessObject<Entities.SeasonPlan> seasonPlanDao;
@@ -21,6 +23,7 @@ namespace Hurace.Core.BL
         private readonly IDataAccessObject<Entities.Skier> skierDao;
         private readonly IDataAccessObject<Entities.StartList> startListDao;
         private readonly IDataAccessObject<Entities.StartPosition> startPositionDao;
+        private readonly IDataAccessObject<Entities.TimeMeasurement> timeMeasurementDao;
         private readonly IDataAccessObject<Entities.Season> seasonDao;
 
         #endregion
@@ -29,6 +32,8 @@ namespace Hurace.Core.BL
         public InformationManager(
             IDataAccessObject<Entities.Country> countryDao,
             IDataAccessObject<Entities.Race> raceDao,
+            IDataAccessObject<Entities.RaceData> raceDataDao,
+            IDataAccessObject<Entities.RaceState> raceStateDao,
             IDataAccessObject<Entities.RaceType> raceTypeDao,
             IDataAccessObject<Entities.Season> seasonDao,
             IDataAccessObject<Entities.SeasonPlan> seasonPlanDao,
@@ -36,10 +41,13 @@ namespace Hurace.Core.BL
             IDataAccessObject<Entities.Skier> skierDao,
             IDataAccessObject<Entities.StartList> startListDao,
             IDataAccessObject<Entities.StartPosition> startPositionDao,
+            IDataAccessObject<Entities.TimeMeasurement> timeMeasurementDao,
             IDataAccessObject<Entities.Venue> venueDao)
         {
             this.countryDao = countryDao ?? throw new ArgumentNullException(nameof(countryDao));
             this.raceDao = raceDao ?? throw new ArgumentNullException(nameof(raceDao));
+            this.raceDataDao = raceDataDao ?? throw new ArgumentNullException(nameof(raceDataDao));
+            this.raceStateDao = raceStateDao ?? throw new ArgumentNullException(nameof(raceStateDao));
             this.raceTypeDao = raceTypeDao ?? throw new ArgumentNullException(nameof(raceTypeDao));
             this.venueDao = venueDao ?? throw new ArgumentNullException(nameof(venueDao));
             this.seasonPlanDao = seasonPlanDao ?? throw new ArgumentNullException(nameof(seasonPlanDao));
@@ -47,6 +55,7 @@ namespace Hurace.Core.BL
             this.skierDao = skierDao ?? throw new ArgumentNullException(nameof(skierDao));
             this.startListDao = startListDao ?? throw new ArgumentNullException(nameof(startListDao));
             this.startPositionDao = startPositionDao ?? throw new ArgumentNullException(nameof(startPositionDao));
+            this.timeMeasurementDao = timeMeasurementDao ?? throw new ArgumentNullException(nameof(timeMeasurementDao));
             this.seasonDao = seasonDao ?? throw new ArgumentNullException(nameof(seasonDao));
         }
 
@@ -407,6 +416,51 @@ namespace Hurace.Core.BL
                                 async () => new Domain.Associated<Domain.Skier>(await this.GetSkierByIdAsync(startPositionE.SkierId)),
                                 () => new Domain.Associated<Domain.Skier>(startPositionE.SkierId))
                         }));
+        }
+
+        public async Task<bool> IsNextStartposition(Domain.Race race, bool firstStartlist, int position)
+        {
+            if (race is null)
+                throw new ArgumentNullException(nameof(race));
+
+            var raceEnt = await raceDao.GetByIdAsync(race.Id).ConfigureAwait(false);
+
+            var startPositionCondition = new QueryConditionBuilder()
+                .DeclareCondition(
+                    nameof(Entities.StartPosition.StartListId),
+                    QueryConditionType.Equals,
+                    firstStartlist ? raceEnt.FirstStartListId : raceEnt.SecondStartListId)
+                .Build();
+            var startPositionEntities = await startPositionDao.GetAllConditionalAsync(startPositionCondition).ConfigureAwait(false);
+
+            var raceDataConditionSet = startPositionEntities.Select(
+                sp => new QueryConditionBuilder()
+                    .DeclareConditionNode(
+                        QueryConditionNodeType.And,
+                        () => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, sp.StartListId),
+                        () => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.RaceData.SkierId), QueryConditionType.Equals, sp.SkierId)));
+            var raceDataCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(
+                    QueryConditionNodeType.Or,
+                    raceDataConditionSet)
+                .Build();
+
+            var raceDataSet = (await raceDataDao.GetAllConditionalAsync(raceDataCondition).ConfigureAwait(false))
+                .OrderBy(rd => startPositionEntities
+                                   .First(sp => sp.SkierId == rd.SkierId &&
+                                                sp.StartListId == rd.StartListId)
+                                   .Position)
+                .Select(rd => (
+                    RaceData: rd,
+                    StartPosition: startPositionEntities.First(sp => sp.SkierId == rd.SkierId && sp.StartListId == rd.StartListId)
+                ));
+            var raceStateSet = await raceStateDao.GetAllConditionalAsync().ConfigureAwait(false);
+
+            //Startbereit
+
+            return true;
         }
 
         #endregion

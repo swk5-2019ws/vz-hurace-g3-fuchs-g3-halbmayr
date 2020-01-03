@@ -17,6 +17,8 @@ namespace Hurace.Core.Tests.BL
         {
             IDataAccessObject<Entities.Country> countryDaoFake = null;
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -24,12 +26,15 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -37,6 +42,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -45,6 +51,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             IDataAccessObject<Entities.Race> raceDaoFake = null;
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -52,12 +60,15 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -65,6 +76,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -73,19 +85,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
-            IDataAccessObject<Entities.RaceType> raceTypeDaoFake = null;
+            IDataAccessObject<Entities.RaceData> raceDataDaoFake = null;
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
+            var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
             var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -93,6 +110,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -101,19 +119,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            IDataAccessObject<Entities.RaceState> raceStateDaoFake = null;
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
-            IDataAccessObject<Entities.Skier> skierDaoFake = null;
+            var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
             var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -121,6 +144,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -129,19 +153,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
-            var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
+            IDataAccessObject<Entities.RaceType> raceTypeDaoFake = null;
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
-            IDataAccessObject<Entities.Season> seasonDaoFake = null;
+            var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
             var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -149,6 +178,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -157,19 +187,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
-            var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
+            IDataAccessObject<Entities.Skier> skierDaoFake = null;
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
-            IDataAccessObject<Entities.SeasonPlan> seasonPlanDaoFake = null;
+            var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -177,6 +212,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -185,19 +221,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
-            var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
+            IDataAccessObject<Entities.Season> seasonDaoFake = null;
             var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
-            IDataAccessObject<Entities.Sex> sexDaoFake = null;
+            var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -205,6 +246,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -213,19 +255,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
-            var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
+            IDataAccessObject<Entities.SeasonPlan> seasonPlanDaoFake = null;
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
-            IDataAccessObject<Entities.StartList> startListDaoFake = null;
+            var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -233,6 +280,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -241,19 +289,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
             var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
-            var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
+            IDataAccessObject<Entities.Sex> sexDaoFake = null;
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
-            IDataAccessObject<Entities.StartPosition> startPositionDaoFake = null;
+            var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -261,6 +314,7 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -269,19 +323,24 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
             var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
-            var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
+            IDataAccessObject<Entities.StartList> startListDaoFake = null;
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
-            IDataAccessObject<Entities.Venue> venueDaoFake = null;
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
+            var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             Assert.Throws<ArgumentNullException>(() =>
                 new InformationManager(
                     countryDaoFake,
                     raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
                     raceTypeDaoFake,
                     seasonDaoFake,
                     seasonPlanDaoFake,
@@ -289,6 +348,109 @@ namespace Hurace.Core.Tests.BL
                     skierDaoFake,
                     startListDaoFake,
                     startPositionDaoFake,
+                    timeMeasurementDaoFake,
+                    venueDaoFake));
+        }
+
+        [Fact]
+        public void InstantiateRaceInformationManagerWrongTest11()
+        {
+            var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
+            var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
+            var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
+            var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
+            var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
+            var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
+            var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
+            var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
+            IDataAccessObject<Entities.StartPosition> startPositionDaoFake = null;
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
+            var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
+
+            Assert.Throws<ArgumentNullException>(() =>
+                new InformationManager(
+                    countryDaoFake,
+                    raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
+                    raceTypeDaoFake,
+                    seasonDaoFake,
+                    seasonPlanDaoFake,
+                    sexDaoFake,
+                    skierDaoFake,
+                    startListDaoFake,
+                    startPositionDaoFake,
+                    timeMeasurementDaoFake,
+                    venueDaoFake));
+        }
+
+        [Fact]
+        public void InstantiateRaceInformationManagerWrongTest12()
+        {
+            var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
+            var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
+            var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
+            var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
+            var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
+            var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
+            var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
+            var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
+            var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            IDataAccessObject<Entities.TimeMeasurement> timeMeasurementDaoFake = null;
+            var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
+
+            Assert.Throws<ArgumentNullException>(() =>
+                new InformationManager(
+                    countryDaoFake,
+                    raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
+                    raceTypeDaoFake,
+                    seasonDaoFake,
+                    seasonPlanDaoFake,
+                    sexDaoFake,
+                    skierDaoFake,
+                    startListDaoFake,
+                    startPositionDaoFake,
+                    timeMeasurementDaoFake,
+                    venueDaoFake));
+        }
+
+        [Fact]
+        public void InstantiateRaceInformationManagerWrongTest13()
+        {
+            var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
+            var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
+            var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
+            var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
+            var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
+            var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
+            var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
+            var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
+            var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
+            IDataAccessObject<Entities.Venue> venueDaoFake = null;
+
+            Assert.Throws<ArgumentNullException>(() =>
+                new InformationManager(
+                    countryDaoFake,
+                    raceDaoFake,
+                    raceDataDaoFake,
+                    raceStateDaoFake,
+                    raceTypeDaoFake,
+                    seasonDaoFake,
+                    seasonPlanDaoFake,
+                    sexDaoFake,
+                    skierDaoFake,
+                    startListDaoFake,
+                    startPositionDaoFake,
+                    timeMeasurementDaoFake,
                     venueDaoFake));
         }
 
@@ -298,6 +460,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -305,6 +469,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -360,6 +525,8 @@ namespace Hurace.Core.Tests.BL
             var raceManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -367,6 +534,7 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
             var raceDomainObjects = await raceManager.GetAllRacesAsync(
@@ -394,6 +562,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -401,6 +571,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -453,9 +624,11 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => raceTypeDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult(raceTypeEntities.First(rte => rte.Id == 1)));
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -463,9 +636,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
@@ -490,6 +664,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -497,6 +673,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -544,9 +721,11 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => raceTypeDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult<Entities.RaceType>(null));
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -554,9 +733,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
@@ -591,6 +771,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -598,6 +780,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -660,9 +843,11 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => venueDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult(venueEntities.First(rte => rte.Id == 1)));
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -670,9 +855,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
@@ -699,6 +885,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -706,6 +894,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -768,9 +957,11 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => venueDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily((call) => Task.FromResult(venueEntities.First(rte => rte.Id == 1)));
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -778,9 +969,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
@@ -807,6 +999,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -814,6 +1008,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -871,9 +1066,11 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => venueDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily(() => Task.FromResult<Entities.Venue>(null));
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -881,9 +1078,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
@@ -915,6 +1113,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -922,6 +1122,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -1011,9 +1212,11 @@ namespace Hurace.Core.Tests.BL
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.First() }).Twice().Then
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.Skip(1).First() });
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -1021,9 +1224,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference);
@@ -1053,6 +1257,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -1060,6 +1266,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -1149,9 +1356,11 @@ namespace Hurace.Core.Tests.BL
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.First() }).Twice().Then
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.Skip(1).First() });
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -1159,9 +1368,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.ForeignKey);
@@ -1187,6 +1397,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -1194,6 +1406,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -1276,9 +1489,11 @@ namespace Hurace.Core.Tests.BL
                 .ReturnsLazily(() => new List<Entities.Season> { seasonEntities.First() }).Twice().Then
                 .ReturnsLazily(() => new List<Entities.Season> { });
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -1286,9 +1501,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var raceDomainObjects = await raceManager.GetAllRacesAsync(
+            var raceDomainObjects = await informationManager.GetAllRacesAsync(
                 raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
                 venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.ForeignKey);
@@ -1314,6 +1530,8 @@ namespace Hurace.Core.Tests.BL
         {
             var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
             var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
             var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
             var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
             var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
@@ -1321,6 +1539,7 @@ namespace Hurace.Core.Tests.BL
             var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
             var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
             var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
             var raceEntities = new List<Entities.Race>
@@ -1398,9 +1617,11 @@ namespace Hurace.Core.Tests.BL
             A.CallTo(() => skierDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
                 .ReturnsLazily(() => skierEntities.First(s => s.Id == 1));
 
-            var raceManager = new InformationManager(
+            var informationManager = new InformationManager(
                 countryDaoFake,
                 raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
                 raceTypeDaoFake,
                 seasonDaoFake,
                 seasonPlanDaoFake,
@@ -1408,9 +1629,10 @@ namespace Hurace.Core.Tests.BL
                 skierDaoFake,
                 startListDaoFake,
                 startPositionDaoFake,
+                timeMeasurementDaoFake,
                 venueDaoFake);
 
-            var race = await raceManager.GetRaceByIdAsync(
+            var race = await informationManager.GetRaceByIdAsync(
                 0,
                 startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
                 skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.Reference);

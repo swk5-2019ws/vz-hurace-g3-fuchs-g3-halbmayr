@@ -364,7 +364,7 @@ namespace Hurace.Core.Tests.DAL
                 .Build();
 
             var expectedNumberOfSensors = 10;
-            var expectedDate = DateTime.Now.Date;
+            var expectedDate = DateTime.Now.Date.AddYears(1);
 
             foreach (var raceId in comparisonRaceIds)
             {
