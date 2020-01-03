@@ -167,7 +167,7 @@ namespace Hurace.RaceControl.ViewModels
         }
 
 #pragma warning disable IDE0060 // Remove unused parameter
-        public async Task CreateRace(object obj)
+        public async Task CreateRace(object obje)
 #pragma warning restore IDE0060 // Remove unused parameter
         {
             var tempStartList = new List<Domain.Associated<Domain.StartPosition>>();
@@ -403,14 +403,11 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.selectedSkier, value);
         }
 
-        public Domain.Race Race
-        {
+        public Domain.Race Race {
             get => race;
-            set
-            {
+            set =>
                 //TODO validation
                 this.Set(ref this.race, value);
-            }
         }
 
         #endregion

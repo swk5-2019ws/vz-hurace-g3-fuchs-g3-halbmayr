@@ -18,6 +18,7 @@
         Width="900" MinWidth="900">
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:InvertedBoolToVisibilityConverter x:Key="InvertedVisibilityConverter"/>
     </Window.Resources>
     
     <Grid>
@@ -70,9 +71,15 @@
                         Grid.Column="0"
                         Margin="5,5,2.5,5"/>
                 <Button Content="Erstellen"
+                        Visibility="{Binding CreateRaceButtonVisible, Converter={StaticResource VisibilityConverter}}"
                         Command="{Binding CreateRaceCommand}"
                         Grid.Column="1"
                         Margin="2.5,5,5,5"/>
+                <Button Content="Aktualisieren"
+                        Visibility="{Binding CreateRaceButtonVisible, Converter={StaticResource InvertedVisibilityConverter}}"
+                        Command="{Binding EditRacecommand}"
+                        Grid.Column="1"
+                        Margin="2.5,5,5,5"/> 
             </Grid>
         </DockPanel>
 

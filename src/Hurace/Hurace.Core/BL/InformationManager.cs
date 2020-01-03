@@ -92,31 +92,98 @@ namespace Hurace.Core.BL
             if (race == null) throw new ArgumentNullException(nameof(race));
             if (race.Id == -1)
             {
-                int firstStartListId = await startListDao.CreateAsync(new Entities.StartList());
-                int secondStartListId = await startListDao.CreateAsync(new Entities.StartList());
+                await CreateRace(race);
+            }else if (race.Id > -1 && (await GetAllRacesAsync()).Where(_race => _race.Id == race.Id).Count() == 1)
+            {
+                await UpdateRace(race);
+            }
+        }
 
-                foreach (var racer in race.FirstStartList)
-                {
-                    await startPositionDao.CreateAsync(new Entities.StartPosition
-                    {
-                        StartListId = firstStartListId,
-                        SkierId = racer.Reference.Skier.Reference.Id,
-                        Position = racer.Reference.Position
-                    });
-                }
+        public async Task CreateRace(Domain.Race race)
+        {
+            int firstStartListId = await startListDao.CreateAsync(new Entities.StartList());
+            int secondStartListId = await startListDao.CreateAsync(new Entities.StartList());
 
-                await raceDao.CreateAsync(new Entities.Race
+            foreach (var racer in race.FirstStartList)
+            {
+                await startPositionDao.CreateAsync(new Entities.StartPosition
                 {
-                    RaceTypeId = race.RaceType.Reference.Id,
-                    VenueId = race.Venue.Reference.Id,
-                    FirstStartListId = firstStartListId,
-                    SecondStartListId = secondStartListId,
-                    NumberOfSensors = race.NumberOfSensors,
-                    Description = race.Description,
-                    Date = race.Date,
-                    GenderSpecificRaceId = race.GenderSpecificRaceId
+                    StartListId = firstStartListId,
+                    SkierId = racer.Reference.Skier.Reference.Id,
+                    Position = racer.Reference.Position
+                });
+
+                await raceDataDao.CreateAsync(new Entities.RaceData
+                {
+                    StartListId = firstStartListId,
+                    SkierId = racer.Reference.Skier.Reference.Id,
+                    RaceStateId = 4                                     // 4 == Startbereit
                 });
             }
+
+            await raceDao.CreateAsync(new Entities.Race
+            {
+                RaceTypeId = race.RaceType.Reference.Id,
+                VenueId = race.Venue.Reference.Id,
+                FirstStartListId = firstStartListId,
+                SecondStartListId = secondStartListId,
+                NumberOfSensors = race.NumberOfSensors,
+                Description = race.Description,
+                Date = race.Date,
+                GenderSpecificRaceId = race.GenderSpecificRaceId
+            });
+        }
+
+        public async Task UpdateRace(Domain.Race race)
+        {
+            Entities.Race entRace = await raceDao.GetByIdAsync(race.Id);
+            int firstStartListId = entRace.FirstStartListId;
+
+            IEnumerable<Entities.StartPosition> oldStartPositions = await startPositionDao.GetAllConditionalAsync(
+                new QueryConditionBuilder().DeclareCondition("StartListId", QueryConditionType.Equals, firstStartListId).Build());
+
+            IEnumerable<Entities.RaceData> oldRaceData = await raceDataDao.GetAllConditionalAsync(
+                new QueryConditionBuilder().DeclareCondition("StartListId", QueryConditionType.Equals, firstStartListId).Build());
+
+            foreach (var sp in oldStartPositions)
+            {
+                await startPositionDao.DeleteByIdAsync(sp.Id);
+            }
+
+            foreach (var rd in oldRaceData)
+            {
+                await raceDataDao.DeleteByIdAsync(rd.Id);
+            }
+
+            foreach (var racer in race.FirstStartList)
+            {
+                await startPositionDao.CreateAsync(new Entities.StartPosition
+                {
+                    StartListId = firstStartListId,
+                    SkierId = racer.Reference.Skier.Reference.Id,
+                    Position = racer.Reference.Position
+                });
+
+                await raceDataDao.CreateAsync(new Entities.RaceData
+                {
+                    StartListId = firstStartListId,
+                    SkierId = racer.Reference.Skier.Reference.Id,
+                    RaceStateId = 4                                     // 4 == Startbereit
+                });
+            }
+
+            await raceDao.UpdateAsync(new Entities.Race
+            {
+                Id = race.Id,
+                RaceTypeId = race.RaceType.Reference.Id,
+                VenueId = race.Venue.Reference.Id,
+                FirstStartListId = firstStartListId,
+                SecondStartListId = entRace.SecondStartListId,
+                NumberOfSensors = race.NumberOfSensors,
+                Description = race.Description,
+                Date = race.Date,
+                GenderSpecificRaceId = race.GenderSpecificRaceId
+            });
         }
 
         public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync(

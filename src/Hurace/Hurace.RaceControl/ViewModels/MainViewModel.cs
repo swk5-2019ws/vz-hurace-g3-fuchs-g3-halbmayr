@@ -16,6 +16,7 @@ namespace Hurace.RaceControl.ViewModels
         private CreateRaceViewModel createRaceViewModel;
         private bool createRaceVisible = false;
         private bool raceDetailViewVisible;
+        private bool createRaceButtonVisible;
 
         public MainViewModel(IServiceProvider serviceProvider, IInformationManager raceManager)
         {
@@ -28,6 +29,7 @@ namespace Hurace.RaceControl.ViewModels
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
+                    this.CreateRaceButtonVisible = true;
                     this.CreateRaceControlVisible = true;
                     this.RaceDetailControlVisible = false;
                     await this.CreateRaceViewModel.Initialize();
@@ -35,11 +37,16 @@ namespace Hurace.RaceControl.ViewModels
                 });
 
             this.CreateRaceCommand = new AsyncDelegateCommand(
-                createRaceViewModel.CreateRace, null);
+                async _ =>
+                {
+                    await createRaceViewModel.CreateRace(new object());
+                }
+                , null);
 
             this.EditRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
+                    this.CreateRaceButtonVisible = false;
                     this.CreateRaceControlVisible = true;
                     this.RaceDetailControlVisible = false;
                     await this.CreateRaceViewModel.InitializeExistingRace(SelectedRace.Race);
@@ -53,6 +60,12 @@ namespace Hurace.RaceControl.ViewModels
 
         public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
 
+
+        public bool CreateRaceButtonVisible
+        {
+            get => createRaceButtonVisible;
+            set => base.Set(ref this.createRaceButtonVisible, value);
+        }
         public bool CreateRaceControlVisible
         {
             get => createRaceVisible;
