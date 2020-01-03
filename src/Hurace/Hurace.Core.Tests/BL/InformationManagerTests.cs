@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Hurace.Core.Tests.BL
 {
-    public class RaceManagerTests
+    public class InformationManagerTests
     {
         [Fact]
         public void InstantiateRaceInformationManagerWrongTest1()
