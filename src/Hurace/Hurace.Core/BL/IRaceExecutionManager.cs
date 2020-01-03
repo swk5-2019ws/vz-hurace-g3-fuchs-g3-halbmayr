@@ -1,5 +1,4 @@
-﻿using Hurace.Timer;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
 {
@@ -9,9 +8,7 @@ namespace Hurace.Core.BL
     {
         event OnTimeMeasured OnTimeMeasured;
 
-        Domain.Race TrackedRace { get; }
-        Domain.Skier TrackedSkier { get; }
-        IRaceClock RaceClock { get; set; }
+        Timer.IRaceClock RaceClock { get; set; }
 
         Task<bool> IsRaceStartable(int raceId);
         Task StartTimeTracking(

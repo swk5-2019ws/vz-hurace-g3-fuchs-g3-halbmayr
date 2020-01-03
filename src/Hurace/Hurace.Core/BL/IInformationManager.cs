@@ -42,6 +42,16 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
             Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None);
 
+        Task<IEnumerable<Domain.StartPosition>> GetAllStartPositionsOfStartList(
+            int startListId,
+            Domain.Associated<Domain.Skier>.LoadingType skierLoadingType = Domain.Associated<Domain.Skier>.LoadingType.ForeignKey);
+        Task<bool> IsNextStartposition(Domain.Race race, bool firstStartlist, int position);
+
+        Task<Domain.Skier> GetSkierByRaceAndStartlistAndPosition(Domain.Race race, bool firstStartList, int position);
+
+        Task<Dictionary<int, (double mean, double standardDeviation)>> CalculateNormalDistributionOfMeasumentsPerSensor(
+            int venueId, int raceTypeId);
+
         Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync(
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
@@ -49,10 +59,5 @@ namespace Hurace.Core.BL
             int id,
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
-
-        Task<IEnumerable<Domain.StartPosition>> GetAllStartPositionsOfStartList(
-            int startListId,
-            Domain.Associated<Domain.Skier>.LoadingType skierLoadingType = Domain.Associated<Domain.Skier>.LoadingType.ForeignKey);
-        Task<bool> IsNextStartposition(Domain.Race race, bool firstStartlist, int position);
     }
 }

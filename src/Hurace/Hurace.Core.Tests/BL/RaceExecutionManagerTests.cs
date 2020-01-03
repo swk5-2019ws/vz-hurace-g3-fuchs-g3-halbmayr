@@ -291,6 +291,175 @@ namespace Hurace.Core.Tests.BL
             var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
             var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
 
+            //mock venue and raceType
+            //mock different races (if possible more than 15) with startlists, raceData and timeMeasurements
+            //test calculation of normal distribution
+
+            var date = DateTime.Now.Date;
+            var raceId = 0;
+            var numberOfSensors = 5;
+            A.CallTo(() => raceDaoFake.GetByIdAsync(A<int>._))
+                .ReturnsLazily(() => new Entities.Race
+                {
+                    Date = date,
+                    FirstStartListId = 0,
+                    SecondStartListId = 1,
+                    Id = raceId,
+                    NumberOfSensors = numberOfSensors
+                });
+
+            A.CallTo(() => skierDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(0)))
+                .ReturnsLazily(() => new Entities.Skier
+                {
+                    FirstName = "Manuel",
+                    LastName = "Fuchs",
+                    Id = 0,
+                    DateOfBirth = new DateTime(1996, 12, 6),
+                    IsRemoved = false
+                });
+            A.CallTo(() => skierDaoFake.GetByIdAsync(A<int>.That.IsEqualTo(1)))
+                .ReturnsLazily(() => new Entities.Skier
+                {
+                    FirstName = "Thomas",
+                    LastName = "Halbmayr",
+                    Id = 1,
+                    DateOfBirth = new DateTime(1994, 11, 25),
+                    IsRemoved = false
+                });
+
+            var firstStartPosition = new Entities.StartPosition
+            {
+                Id = 0,
+                Position = 1,
+                StartListId = 0,
+                SkierId = 0
+            };
+            var secondStartPosition = new Entities.StartPosition
+            {
+                Id = 1,
+                Position = 2,
+                StartListId = 0,
+                SkierId = 1
+            };
+            var thirdStartPosition = new Entities.StartPosition
+            {
+                Id = 0,
+                Position = 1,
+                StartListId = 1,
+                SkierId = 1
+            };
+            var fourthStartPosition = new Entities.StartPosition
+            {
+                Id = 1,
+                Position = 2,
+                StartListId = 1,
+                SkierId = 0
+            };
+            var firstStartPositionSet = new List<Entities.StartPosition> { firstStartPosition, secondStartPosition };
+            var secondStartPositionSet = new List<Entities.StartPosition> { thirdStartPosition, fourthStartPosition };
+            A.CallTo(() => startPositionDaoFake.GetAllConditionalAsync(A<IQueryCondition>._))
+                .ReturnsLazily(() => firstStartPositionSet).Once().Then
+                .ReturnsLazily(() => new List<Entities.StartPosition> { firstStartPosition }).Once().Then
+                //.ReturnsLazily(() => secondStartPositionSet).Once().Then
+                .ReturnsLazily(() => Task.FromResult<IEnumerable<Entities.StartPosition>>(null));
+
+            A.CallTo(() => raceStateDaoFake.GetAllConditionalAsync(A<IQueryCondition>._))
+                .ReturnsLazily(() => new List<Entities.RaceState>
+                {
+                    new Entities.RaceState
+                    {
+                        Id = 0,
+                        Label = "Startbereit"
+                    }
+                });
+
+            var firstRaceData = new Entities.RaceData
+            {
+                Id = 1,
+                RaceStateId = 0,
+                SkierId = 1,
+                StartListId = 0
+            };
+            var secondRaceData = new Entities.RaceData
+            {
+                Id = 0,
+                RaceStateId = 0,
+                SkierId = 0,
+                StartListId = 0
+            };
+            var thirdRaceData = new Entities.RaceData
+            {
+                Id = 3,
+                RaceStateId = 0,
+                SkierId = 1,
+                StartListId = 1
+            };
+            var fourthRaceData = new Entities.RaceData
+            {
+                Id = 2,
+                RaceStateId = 0,
+                SkierId = 0,
+                StartListId = 1
+            };
+            A.CallTo(() => raceDataDaoFake.GetAllConditionalAsync(A<IQueryCondition>._))
+                .ReturnsLazily(() => new List<Entities.RaceData> { firstRaceData, secondRaceData }).Once().Then
+                .ReturnsLazily(() => new List<Entities.RaceData> { thirdRaceData, fourthRaceData }).Once().Then
+                .ReturnsLazily(() => Task.FromResult<IEnumerable<Entities.RaceData>>(null));
+
+            var informationManager = new Core.BL.InformationManager(
+                countryDaoFake,
+                raceDaoFake,
+                raceDataDaoFake,
+                raceStateDaoFake,
+                raceTypeDaoFake,
+                seasonDaoFake,
+                seasonPlanDaoFake,
+                sexDaoFake,
+                skierDaoFake,
+                startListDaoFake,
+                startPositionDaoFake,
+                timeMeasurementDaoFake,
+                venueDaoFake);
+
+            var raceExecutionManager = new Core.BL.RaceExecutionManager(informationManager);
+            raceExecutionManager.OnTimeMeasured +=
+                (race, skier, measurement) =>
+                {
+
+                };
+
+            var fakedRaceClock = A.Fake<Timer.IRaceClock>();
+            raceExecutionManager.RaceClock = fakedRaceClock;
+
+            var race = await informationManager
+                .GetRaceByIdAsync(
+                    raceId,
+                    startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.None,
+                    skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.None)
+                .ConfigureAwait(false);
+
+            await raceExecutionManager.StartTimeTracking(race, true, 1).ConfigureAwait(false);
+
+            fakedRaceClock.TimingTriggered += Raise.FreeForm.With(0, DateTime.Now);
+        }
+
+        [Fact]
+        public async Task StartTimeTrackingOnFirstStartListFailingTest()
+        {
+            var countryDaoFake = A.Fake<IDataAccessObject<Entities.Country>>();
+            var raceDaoFake = A.Fake<IDataAccessObject<Entities.Race>>();
+            var raceDataDaoFake = A.Fake<IDataAccessObject<Entities.RaceData>>();
+            var raceStateDaoFake = A.Fake<IDataAccessObject<Entities.RaceState>>();
+            var raceTypeDaoFake = A.Fake<IDataAccessObject<Entities.RaceType>>();
+            var skierDaoFake = A.Fake<IDataAccessObject<Entities.Skier>>();
+            var seasonDaoFake = A.Fake<IDataAccessObject<Entities.Season>>();
+            var seasonPlanDaoFake = A.Fake<IDataAccessObject<Entities.SeasonPlan>>();
+            var sexDaoFake = A.Fake<IDataAccessObject<Entities.Sex>>();
+            var startListDaoFake = A.Fake<IDataAccessObject<Entities.StartList>>();
+            var startPositionDaoFake = A.Fake<IDataAccessObject<Entities.StartPosition>>();
+            var timeMeasurementDaoFake = A.Fake<IDataAccessObject<Entities.TimeMeasurement>>();
+            var venueDaoFake = A.Fake<IDataAccessObject<Entities.Venue>>();
+
             int raceId = 0;
             A.CallTo(() => raceDaoFake.GetByIdAsync(A<int>._))
                 .ReturnsLazily(() => new Entities.Race
@@ -373,13 +542,6 @@ namespace Hurace.Core.Tests.BL
                 {
                     new Entities.RaceData
                     {
-                        Id = 0,
-                        RaceStateId = 0,
-                        SkierId = 0,
-                        StartListId = 0
-                    },
-                    new Entities.RaceData
-                    {
                         Id = 1,
                         RaceStateId = 0,
                         SkierId = 1,
@@ -387,19 +549,30 @@ namespace Hurace.Core.Tests.BL
                     },
                     new Entities.RaceData
                     {
-                        Id = 2,
+                        Id = 0,
                         RaceStateId = 0,
                         SkierId = 0,
-                        StartListId = 1
-                    },
+                        StartListId = 0
+                    }
+                }).Once().Then
+                .ReturnsLazily(() => new List<Entities.RaceData>
+                {
                     new Entities.RaceData
                     {
                         Id = 3,
                         RaceStateId = 0,
                         SkierId = 1,
                         StartListId = 1
+                    },
+                    new Entities.RaceData
+                    {
+                        Id = 2,
+                        RaceStateId = 0,
+                        SkierId = 0,
+                        StartListId = 1
                     }
-                });
+                }).Once().Then
+                .ReturnsLazily(() => Task.FromResult<IEnumerable<Entities.RaceData>>(null));
 
             var informationManager = new Core.BL.InformationManager(
                 countryDaoFake,
@@ -428,7 +601,8 @@ namespace Hurace.Core.Tests.BL
                     skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.None)
                 .ConfigureAwait(false);
 
-            await raceExecutionManager.StartTimeTracking(race, true, 1).ConfigureAwait(false);
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await raceExecutionManager.StartTimeTracking(race, true, 2).ConfigureAwait(false));
         }
     }
 }

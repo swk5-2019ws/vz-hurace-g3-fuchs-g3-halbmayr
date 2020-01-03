@@ -50,5 +50,8 @@ namespace Hurace.Domain
                 this.reference = value;
             }
         }
+
+        public bool Initialised => (ForeignKey.HasValue && Reference is null) ||
+                                   (!ForeignKey.HasValue && Reference != null);
     }
 }

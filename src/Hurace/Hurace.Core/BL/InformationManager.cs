@@ -390,6 +390,34 @@ namespace Hurace.Core.BL
             };
         }
 
+        public async Task<Domain.Skier> GetSkierByRaceAndStartlistAndPosition(Domain.Race race, bool firstStartList, int position)
+        {
+            if (race is null)
+                throw new ArgumentNullException(nameof(race));
+
+            var raceEnt = await raceDao.GetByIdAsync(race.Id).ConfigureAwait(false);
+
+            var startPositionCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.StartPosition.Position), QueryConditionType.Equals, position),
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(
+                            nameof(Entities.StartPosition.StartListId),
+                            QueryConditionType.Equals,
+                            firstStartList ? raceEnt.FirstStartListId : raceEnt.SecondStartListId))
+                .Build();
+            var startPositionSet = await startPositionDao.GetAllConditionalAsync(startPositionCondition).ConfigureAwait(false);
+
+            if (startPositionSet.Count() != 1)
+                throw new InvalidOperationException(
+                    $"No Startpositions found for Race with id {race.Id} that have a position of {position}");
+
+            var startPosition = startPositionSet.First();
+            return await GetSkierByIdAsync(startPosition.SkierId).ConfigureAwait(false);
+        }
+
         #endregion
         #region StartPosition-Methods
 
@@ -458,9 +486,61 @@ namespace Hurace.Core.BL
                 ));
             var raceStateSet = await raceStateDao.GetAllConditionalAsync().ConfigureAwait(false);
 
-            //Startbereit
+            var startableRaceState = raceStateSet.First(rs => rs.Label == "Startbereit");
+            var startableRaceDataSet = raceDataSet.Where(rd => rd.RaceData.RaceStateId == startableRaceState.Id);
 
-            return true;
+            return startableRaceDataSet.Any() &&
+                startableRaceDataSet.First().StartPosition.Position == position;
+        }
+
+        #endregion
+        #region TimeMeasurement-Methods
+
+        public async Task<Dictionary<int, (double mean, double standardDeviation)>> CalculateNormalDistributionOfMeasumentsPerSensor(
+                int venueId, int raceTypeId)
+        {
+            var raceCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.Race.RaceTypeId), QueryConditionType.Equals, raceTypeId),
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.Race.VenueId), QueryConditionType.Equals, venueId))
+                .Build();
+
+            var startListIdSet = (await raceDao.GetAllConditionalAsync(raceCondition).ConfigureAwait(false))
+                .OrderByDescending(r => r.Date)
+                .Take(15)
+                .SelectMany(r => new[] { r.FirstStartListId, r.SecondStartListId });
+
+            var raceDataSet = new List<Entities.RaceData>();
+            foreach (var startListId in startListIdSet)
+            {
+                var raceDataCondition = new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, startListId)
+                    .Build();
+                raceDataSet.AddRange(await raceDataDao.GetAllConditionalAsync(raceDataCondition).ConfigureAwait(false));
+            }
+
+            var timeMeasurementSet = new List<Entities.TimeMeasurement>();
+            foreach (var raceData in raceDataSet)
+            {
+                var timeMeasurementCondition = new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, raceData.Id)
+                    .Build();
+                timeMeasurementSet.AddRange(await timeMeasurementDao.GetAllConditionalAsync(timeMeasurementCondition));
+            }
+
+            return timeMeasurementSet
+                .GroupBy(
+                    m => m.SensorId,
+                    (sensorId, result) => (
+                        SensorId: sensorId,
+                        Mean: result.Average(m => m.Measurement),
+                        StdDev: CalculateStdDev(result.Select(m => m.Measurement))))
+                .ToDictionary(
+                    distribution => distribution.SensorId,
+                    distribution => (distribution.Mean, distribution.StdDev));
         }
 
         #endregion
@@ -525,6 +605,17 @@ namespace Hurace.Core.BL
 
         #endregion
         #region Helper
+
+        private static double CalculateStdDev(IEnumerable<int> measurements)
+        {
+            double average = measurements.Average();
+
+            var sumOfSquares = measurements
+                .Select(m => (m - average) * (m - average))
+                .Sum();
+
+            return Math.Sqrt(sumOfSquares / measurements.Count());
+        }
 
         private async Task<Domain.Associated<T>> LoadAssociatedDomainObject<T>(
             Domain.Associated<T>.LoadingType desiredLoadingType,
