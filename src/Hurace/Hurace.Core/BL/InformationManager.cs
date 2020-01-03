@@ -180,32 +180,26 @@ namespace Hurace.Core.BL
                             () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId)),
                     FirstStartList = await LoadAssociatedDomainObjectSet(
                             startListLoadingType,
-                            async () => (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId))
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId, skierLoadingType))
                                 .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
-                            async () => (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId))
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId, skierLoadingType))
                                 .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id))),
                     SecondStartList = await LoadAssociatedDomainObjectSet(
                             startListLoadingType,
-                            async () => (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId))
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId, skierLoadingType))
                                 .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
-                            async () => (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId))
+                            async () => (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId, skierLoadingType))
                                 .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id)))
                 };
 
             if (skierLoadingType != Domain.Associated<Domain.Skier>.LoadingType.None)
             {
+                if (startListLoadingType != Domain.Associated<Domain.StartPosition>.LoadingType.Reference)
+                    throw new InvalidOperationException("Cannot load skiers if startlists arent loaded.");
+
                 var skierIds = new List<int>();
-                switch (startListLoadingType)
-                {
-                    case Domain.Associated<Domain.StartPosition>.LoadingType.ForeignKey:
-                        skierIds.AddRange(race.FirstStartList.Select(position => position.ForeignKey.Value));
-                        skierIds.AddRange(race.SecondStartList.Select(position => position.ForeignKey.Value));
-                        break;
-                    case Domain.Associated<Domain.StartPosition>.LoadingType.Reference:
-                        skierIds.AddRange(race.FirstStartList.Select(position => position.Reference.Id));
-                        skierIds.AddRange(race.SecondStartList.Select(position => position.Reference.Id));
-                        break;
-                }
+                skierIds.AddRange(race.FirstStartList.Select(position => position.Reference.Skier.Reference.Id));
+                skierIds.AddRange(race.SecondStartList.Select(position => position.Reference.Skier.Reference.Id));
 
                 if (skierIds.Any())
                 {
