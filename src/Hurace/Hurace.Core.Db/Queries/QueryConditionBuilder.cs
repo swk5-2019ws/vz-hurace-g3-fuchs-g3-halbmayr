@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Hurace.Core.Db.Queries
 {
@@ -27,7 +29,7 @@ namespace Hurace.Core.Db.Queries
         {
             if (this.QueryCondition != null)
                 throw new InvalidOperationException("Can't declare more than 1 condition on this layer");
-            else if (columnToCheck == null)
+            else if (string.IsNullOrEmpty(columnToCheck))
                 throw new ArgumentNullException(nameof(columnToCheck));
             else if (compareValue == null)
                 throw new ArgumentNullException(nameof(compareValue));
@@ -74,6 +76,35 @@ namespace Hurace.Core.Db.Queries
                 SecondCondition = rightConditionBuilder().Build()
             };
 
+            return this;
+        }
+
+        /// <summary>
+        /// Declares a uniting-condition from a set of <see cref="QueryConditionBuilder"/>.
+        /// The single conditions are joined with a <see cref="QueryConditionNodeType.And"/> condition.
+        /// </summary>
+        /// <param name="builderSet">the set of builders to be joined</param>
+        /// <returns>a uniting <see cref="QueryConditionBuilder"/> that contains all passed
+        /// <see cref="QueryConditionBuilder"/>.</returns>
+        public QueryConditionBuilder DeclareConditionFromBuilderSet(IEnumerable<QueryConditionBuilder> builderSet)
+        {
+            if (builderSet is null)
+                throw new ArgumentNullException(nameof(builderSet));
+            else if (!builderSet.Any())
+                throw new InvalidOperationException($"{nameof(builderSet)} is empty");
+
+            QueryConditionBuilder agglomerativeConditionBuilder = null;
+            foreach (var builder in builderSet)
+            {
+                agglomerativeConditionBuilder = agglomerativeConditionBuilder == null
+                    ? builder
+                    : new QueryConditionBuilder()
+                        .DeclareConditionNode(
+                            QueryConditionNodeType.And,
+                            () => agglomerativeConditionBuilder,
+                            () => builder);
+            }
+            this.QueryCondition = agglomerativeConditionBuilder.QueryCondition;
             return this;
         }
 

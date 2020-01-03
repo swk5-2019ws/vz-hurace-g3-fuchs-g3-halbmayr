@@ -18,19 +18,29 @@ namespace Hurace.Core.Db.Tests.QueryConditionTests
         }
 
         [Fact]
+        public void QueryConditionWithInvalidColumnToCheckTest1()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () => new QueryConditionBuilder()
+                    .DeclareCondition("", QueryConditionType.Equals, null)
+                    .Build());
+        }
+
+        [Fact]
+        public void QueryConditionWithInvalidColumnToCheckTest2()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () => new QueryConditionBuilder()
+                    .DeclareCondition(null, QueryConditionType.Equals, 1)
+                    .Build());
+        }
+
+        [Fact]
         public void QueryConditionWithInvalidValueTest()
         {
             Assert.Throws<ArgumentNullException>(
                 () => new QueryConditionBuilder()
                     .DeclareCondition("Id", QueryConditionType.Equals, null)
-                    .Build());
-        }
-        [Fact]
-        public void QueryConditionWithColumnNameTest()
-        {
-            Assert.Throws<ArgumentNullException>(
-                () => new QueryConditionBuilder()
-                    .DeclareCondition(null, QueryConditionType.Equals, 1)
                     .Build());
         }
 
@@ -298,6 +308,56 @@ namespace Hurace.Core.Db.Tests.QueryConditionTests
             Assert.Equal("Viktoria", firstNameParameter2.Value);
             Assert.Equal("Hirscher", lastNameParameter1.Value);
             Assert.Equal("Mathis", lastNameParameter2.Value);
+        }
+
+        [Fact]
+        public void ConditionFromBuilderSetTest()
+        {
+            var expectedColumn = "Id";
+            var numberSource = new List<int> { 1, 2, 3, 4 };
+            var conditionSet = numberSource
+                .Select(n => new QueryConditionBuilder()
+                    .DeclareCondition(expectedColumn, QueryConditionType.Equals, n));
+
+            var condition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(conditionSet)
+                .Build();
+
+            var conditionStringBuilder = new StringBuilder();
+            var parameterSet = new List<QueryParameter>();
+
+            condition.AppendTo(conditionStringBuilder, parameterSet);
+
+            var conditionStr = conditionStringBuilder.ToString();
+
+            for (int i = 0; i < conditionSet.Count(); i++)
+            {
+                Assert.Contains($"[{expectedColumn}] = @{expectedColumn}{i}", conditionStr, StringComparison.Ordinal);
+            }
+            foreach (var number in numberSource)
+            {
+                Assert.True(parameterSet.First(p => (int)p.Value == number) != null);
+            }
+        }
+
+        [Fact]
+        public void ConditionFromEmptySetTest()
+        {
+            var numberSet = new List<QueryConditionBuilder>();
+
+            Assert.Throws<InvalidOperationException>(
+                () => new QueryConditionBuilder()
+                    .DeclareConditionFromBuilderSet(numberSet)
+                    .Build());
+        }
+
+        [Fact]
+        public void ConditionFromInvalidSetTest()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () => new QueryConditionBuilder()
+                    .DeclareConditionFromBuilderSet(null)
+                    .Build());
         }
     }
 }
