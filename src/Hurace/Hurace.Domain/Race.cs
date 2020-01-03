@@ -14,5 +14,6 @@ namespace Hurace.Domain
         public IEnumerable<Associated<StartPosition>> FirstStartList { get; set; }
         public IEnumerable<Associated<StartPosition>> SecondStartList { get; set; }
         public IEnumerable<Associated<Skier>> Skiers { get; set; }
+        public int GenderSpecificRaceId { get; set; }
     }
 }
