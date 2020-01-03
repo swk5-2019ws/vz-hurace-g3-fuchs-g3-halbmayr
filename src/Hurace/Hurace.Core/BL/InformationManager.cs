@@ -390,7 +390,7 @@ namespace Hurace.Core.BL
         {
             var condition = new QueryConditionBuilder()
                 .DeclareCondition(
-                    nameof(Entities.StartPosition.Position),
+                    nameof(Entities.StartPosition.StartListId),
                     QueryConditionType.Equals,
                     startListId)
                 .Build();
