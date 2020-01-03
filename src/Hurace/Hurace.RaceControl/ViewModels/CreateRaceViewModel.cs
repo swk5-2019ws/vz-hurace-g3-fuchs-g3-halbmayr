@@ -30,6 +30,8 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.Skier selectedSkier;
         private bool loading = true;
         private bool menListSelected = true;
+        private int genderSpecififcRaceId;
+        private string createRaceHeader;
 
         private ObservableCollection<Domain.Skier> maleSkiers;
         private ObservableCollection<Domain.Skier> femaleSkiers;
@@ -50,10 +52,9 @@ namespace Hurace.RaceControl.ViewModels
         {
             Loading = true;
             MenListSelected = true;
-            Race = new Domain.Race();
+            
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
             SelectedDate = DateTime.Now;
-
 
             this.AddRacerToStartListCommand = new AsyncDelegateCommand(
                 AddRacerToStartList,
@@ -68,37 +69,18 @@ namespace Hurace.RaceControl.ViewModels
                 MoveRacerDownInStartList,
                 (object obj) => selectedStartPosition != null && selectedStartPosition.Position < StartPositions.Count);
             this.SelectMenListCommand = new AsyncDelegateCommand(
-                (object obj) =>
-                {
-                    femaleSkiers = Skiers;
-                    femaleStartPositions = StartPositions;
-
-                    Skiers = maleSkiers;
-                    StartPositions = maleStartPositions;
-
-                    MenListSelected = true;
-
-                    return Task.CompletedTask;
-                },
+                SelectMenList,
                 (object obj) => !menListSelected);
             this.SelectWomenListCommand = new AsyncDelegateCommand(
-                (object obj) =>
-                {
-                    maleSkiers = Skiers;
-                    maleStartPositions = StartPositions;
-
-                    Skiers = femaleSkiers;
-                    StartPositions = femaleStartPositions;
-
-                    MenListSelected = false;
-
-                    return Task.CompletedTask;
-                },
+                SelectWomenList,
                 (object obj) => menListSelected);
         }
 
-        public async Task Initialize()
+        public async Task InitializeExistingRace(Domain.Race race)
         {
+            CreateRaceHeader = "Rennen bearbeiten";
+            this.Race = race ?? throw new ArgumentNullException(nameof(race));
+
             Venues = new ObservableCollection<Domain.Venue>(
                 await raceManager.GetAllVenuesAsync(
                     Domain.Associated<Domain.Country>.LoadingType.Reference));
@@ -109,6 +91,66 @@ namespace Hurace.RaceControl.ViewModels
             Seasons = new ObservableCollection<Domain.Season>(
                 await raceManager.GetAllSeasonsAsync());
 
+            await InitSkierLists();
+
+            Loading = false;
+
+            Domain.Race tempRace = await raceManager.GetRaceByIdAsync(Race.Id,
+                Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                Domain.Associated<Domain.Season>.LoadingType.Reference,
+                Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
+                Domain.Associated<Domain.Skier>.LoadingType.Reference,
+                Domain.Associated<Domain.Sex>.LoadingType.Reference,
+                Domain.Associated<Domain.Country>.LoadingType.Reference);
+
+            SelectedVenue = Venues.FirstOrDefault(venue => venue.Id == tempRace.Venue.Reference.Id);
+            SelectedSeason = Seasons.FirstOrDefault(season => season.Id == tempRace.Season.Reference.Id);
+            SelectedRaceType = RaceTypes.FirstOrDefault(raceType => raceType.Id == tempRace.RaceType.Reference.Id);
+            SelectedNumberOfSensors = tempRace.NumberOfSensors;
+            SelectedDate = tempRace.Date;
+            Description = tempRace.Description;
+
+            if (race.GenderSpecificRaceId == 0)
+                await SelectWomenList(new object());
+            else
+                await SelectMenList(new object());
+
+            foreach (var racer in tempRace.FirstStartList)
+            {
+                StartPositions.Add(racer.Reference);
+                skiers.Remove(skiers.FirstOrDefault(skier => skier.Id == racer.Reference.Skier.Reference.Id));
+            }
+        }
+
+        public async Task Initialize()
+        {
+            Race = new Domain.Race
+            {
+                Id = -1
+            };
+
+            CreateRaceHeader = "Neues Rennen Anlegen";
+
+            Venues = new ObservableCollection<Domain.Venue>(
+                await raceManager.GetAllVenuesAsync(
+                    Domain.Associated<Domain.Country>.LoadingType.Reference));
+
+            RaceTypes = new ObservableCollection<Domain.RaceType>(
+                await raceManager.GetAllRaceTypesAsync());
+
+            Seasons = new ObservableCollection<Domain.Season>(
+                await raceManager.GetAllSeasonsAsync());
+
+            Description = "";
+
+            await InitSkierLists();
+
+            Loading = false;
+        }
+
+        public async Task InitSkierLists()
+        {
             StartPositions = new ObservableCollection<Domain.StartPosition>();
             maleStartPositions = new ObservableCollection<Domain.StartPosition>();
             femaleStartPositions = new ObservableCollection<Domain.StartPosition>();
@@ -121,11 +163,12 @@ namespace Hurace.RaceControl.ViewModels
 
             Skiers = maleSkiers;
             MenListSelected = true;
-
-            Loading = false;
+            genderSpecififcRaceId = 0;
         }
 
-        public Task CreateRace(object obj)
+#pragma warning disable IDE0060 // Remove unused parameter
+        public async Task CreateRace(object obj)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var tempStartList = new List<Domain.Associated<Domain.StartPosition>>();
             var tempSkiers = new List<Domain.Associated<Domain.Skier>>();
@@ -148,8 +191,45 @@ namespace Hurace.RaceControl.ViewModels
             Race.Season = new Domain.Associated<Domain.Season>(SelectedSeason);
             Race.FirstStartList = tempStartList;
             Race.Skiers = tempSkiers;
+            Race.GenderSpecificRaceId = genderSpecififcRaceId;
 
-            raceManager.CreateOrUpdateRace(Race);
+            await raceManager.CreateOrUpdateRace(Race);
+
+            SelectedDate = DateTime.Now;
+            Description = "";
+            SelectedNumberOfSensors = 5;
+            SelectedRaceType = null;
+            SelectedVenue = null;
+            SelectedSeason = null;
+            await InitSkierLists();
+
+            return;
+        }
+
+        private Task SelectMenList(object obj)
+        {
+            femaleSkiers = Skiers;
+            femaleStartPositions = StartPositions;
+
+            Skiers = maleSkiers;
+            StartPositions = maleStartPositions;
+
+            MenListSelected = true;
+            genderSpecififcRaceId = 0;
+
+            return Task.CompletedTask;
+        }
+
+        private Task SelectWomenList(object obj)
+        {
+            maleSkiers = Skiers;
+            maleStartPositions = StartPositions;
+
+            Skiers = femaleSkiers;
+            StartPositions = femaleStartPositions;
+
+            MenListSelected = false;
+            genderSpecififcRaceId = 1;
 
             return Task.CompletedTask;
         }
@@ -223,6 +303,11 @@ namespace Hurace.RaceControl.ViewModels
 
         #region Properties
 
+        public string CreateRaceHeader 
+        {
+            get => createRaceHeader;
+            set => base.Set(ref this.createRaceHeader, value);
+        }
         public bool MenListSelected
         {
             get => menListSelected;

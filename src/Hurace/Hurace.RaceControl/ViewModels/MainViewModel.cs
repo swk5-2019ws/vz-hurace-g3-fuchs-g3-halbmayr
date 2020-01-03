@@ -26,18 +26,29 @@ namespace Hurace.RaceControl.ViewModels
             this.createRaceViewModel = new CreateRaceViewModel(raceManager);
 
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
-                _ =>
+                async _ =>
                 {
                     this.CreateRaceControlVisible = true;
                     this.RaceDetailControlVisible = false;
-                    return Task.CompletedTask;
+                    await this.CreateRaceViewModel.Initialize();
+                    return;
                 });
 
             this.CreateRaceCommand = new AsyncDelegateCommand(
                 createRaceViewModel.CreateRace, null);
+
+            this.EditRaceCommand = new AsyncDelegateCommand(
+                async _ =>
+                {
+                    this.CreateRaceControlVisible = true;
+                    this.RaceDetailControlVisible = false;
+                    await this.CreateRaceViewModel.InitializeExistingRace(SelectedRace.Race);
+                    return;
+                });
         }
 
         public AsyncDelegateCommand CreateRaceCommand { get; }
+        public AsyncDelegateCommand EditRaceCommand { get; }
         public AsyncDelegateCommand OpenCreateRaceCommand { get; set; }
 
         public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
