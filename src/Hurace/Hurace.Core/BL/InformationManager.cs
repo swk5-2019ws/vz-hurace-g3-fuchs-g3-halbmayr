@@ -80,28 +80,34 @@ namespace Hurace.Core.BL
 
         public async Task CreateOrUpdateRace(Domain.Race race)
         {
-            if (race == null) throw new ArgumentNullException();
-            int startListId = await startListDao.CreateAsync(new Entities.StartList());
-
-            foreach (var racer in race.FirstStartList)
+            if (race == null) throw new ArgumentNullException(nameof(race));
+            if (race.Id == -1)
             {
-                await startPositionDao.CreateAsync(new Entities.StartPosition
+                int firstStartListId = await startListDao.CreateAsync(new Entities.StartList());
+                int secondStartListId = await startListDao.CreateAsync(new Entities.StartList());
+
+                foreach (var racer in race.FirstStartList)
                 {
-                    StartListId = startListId,
-                    SkierId = racer.Reference.Skier.Reference.Id,
-                    Position = racer.Reference.Position
+                    await startPositionDao.CreateAsync(new Entities.StartPosition
+                    {
+                        StartListId = firstStartListId,
+                        SkierId = racer.Reference.Skier.Reference.Id,
+                        Position = racer.Reference.Position
+                    });
+                }
+
+                await raceDao.CreateAsync(new Entities.Race
+                {
+                    RaceTypeId = race.RaceType.Reference.Id,
+                    VenueId = race.Venue.Reference.Id,
+                    FirstStartListId = firstStartListId,
+                    SecondStartListId = secondStartListId,
+                    NumberOfSensors = race.NumberOfSensors,
+                    Description = race.Description,
+                    Date = race.Date,
+                    GenderSpecificRaceId = race.GenderSpecificRaceId
                 });
             }
-
-            await raceDao.CreateAsync(new Entities.Race
-            {
-                RaceTypeId = race.RaceType.Reference.Id,
-                VenueId = race.Venue.Reference.Id,
-                FirstStartListId = startListId,
-                NumberOfSensors = race.NumberOfSensors,
-                Description = race.Description,
-                Date = race.Date
-            });
         }
 
         public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync(
@@ -390,7 +396,7 @@ namespace Hurace.Core.BL
         {
             var condition = new QueryConditionBuilder()
                 .DeclareCondition(
-                    nameof(Entities.StartPosition.StartListId),
+                    nameof(Entities.StartPosition.Position),
                     QueryConditionType.Equals,
                     startListId)
                 .Build();
