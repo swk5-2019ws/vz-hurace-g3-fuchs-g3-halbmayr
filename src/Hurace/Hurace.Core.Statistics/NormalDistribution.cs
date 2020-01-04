@@ -36,6 +36,18 @@ namespace Hurace.Core.Statistics
         }
 
         /// <summary>
+        /// Generates a random observation from the passed normal-distribution
+        /// </summary>
+        /// <param name="mean">mean of the passed normal-distribution</param>
+        /// <param name="stdDev">standard-deviation of the passed normal-distribution</param>
+        /// <returns>the generated random observation</returns>
+        public static double GenerateObservation(double mean, double stdDev)
+        {
+            var distribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(mean, stdDev);
+            return distribution.Generate();
+        }
+
+        /// <summary>
         /// Calculates the x-value boundaries of the area that covers a certain amount 
         /// of cumulative density function of the passed normal-distribution.
         /// </summary>
@@ -45,7 +57,7 @@ namespace Hurace.Core.Statistics
         /// the normal-distribution function. This percentage has to be in the interval ]0,1[</param>
         /// <returns>a touple containing the lower and upper boundary x-value of the
         /// passed area</returns>
-        public static (double lowerBoundary, double upperBoundary) GetBoundaries(
+        public static (double lowerBoundary, double upperBoundary) CalculateBoundaries(
             double mean,
             double stdDev,
             double areaCoverage)

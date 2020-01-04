@@ -27,10 +27,10 @@ namespace Hurace.Simulator
             {
                 if (randomizer.NextDouble() > this.UnwantedTimerTriggerChance)
                 {
-                    Thread.Sleep((int)NormalDistribution.NextDouble(
-                        randomizer,
-                        this.TimerIntervalMean,
-                        this.TimerIntervalStdDev));
+                    Thread.Sleep(
+                        (int)Core.Statistics.NormalDistribution.GenerateObservation(
+                            this.TimerIntervalMean,
+                            this.TimerIntervalStdDev));
                 }
 
                 if (randomizer.NextDouble() > this.TimerFailureChance)

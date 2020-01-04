@@ -90,7 +90,7 @@ namespace Hurace.Core.Statistics.Tests
             var expectedLowerBoundary = -1.96;
             var expectedUpperBoundary = 1.96;
 
-            (var actualLowerBoundary, var actualUpperBoundardy) = NormalDistribution.GetBoundaries(0, 1, 0.95);
+            (var actualLowerBoundary, var actualUpperBoundardy) = NormalDistribution.CalculateBoundaries(0, 1, 0.95);
 
             Assert.Equal(expectedLowerBoundary, Math.Round(actualLowerBoundary, 2));
             Assert.Equal(expectedUpperBoundary, Math.Round(actualUpperBoundardy, 2));

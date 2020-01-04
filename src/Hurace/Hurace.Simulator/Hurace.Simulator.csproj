@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Hurace.Core.Statistics\Hurace.Core.Statistics.csproj" />
     <ProjectReference Include="..\Hurace.Timer\Hurace.Timer.csproj" />
   </ItemGroup>
 
