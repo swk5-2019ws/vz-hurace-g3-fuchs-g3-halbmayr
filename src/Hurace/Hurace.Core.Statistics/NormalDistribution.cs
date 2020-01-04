@@ -30,20 +30,14 @@ namespace Hurace.Core.Statistics
             if (areaCoverage <= 0 || areaCoverage >= 1)
                 throw new InvalidOperationException($"{nameof(areaCoverage)} has to be in boundary ]0,1[ but is {areaCoverage}");
 
-            var standardNormalDistribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(0, 1);
+            var distribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(mean, stdDev);
 
             var lowerBoundaryPercentage = (1 - areaCoverage) / 2;
             var upperBoundaryPercentage = 1 - lowerBoundaryPercentage;
 
-            var standardizedLowerBoundary = standardNormalDistribution
-                .InverseDistributionFunction(lowerBoundaryPercentage);
-
-            var standardizedUpperBoundary = standardNormalDistribution
-                .InverseDistributionFunction(upperBoundaryPercentage);
-
             return (
-                DenormalizeValue(mean, stdDev, standardizedLowerBoundary),
-                DenormalizeValue(mean, stdDev, standardizedUpperBoundary));
+                distribution.InverseDistributionFunction(lowerBoundaryPercentage),
+                distribution.InverseDistributionFunction(upperBoundaryPercentage));
         }
     }
 }
