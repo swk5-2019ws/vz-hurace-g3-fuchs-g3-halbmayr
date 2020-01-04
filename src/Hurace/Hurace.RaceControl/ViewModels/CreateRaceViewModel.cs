@@ -6,6 +6,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
+#pragma warning disable CA1801 // Review unused parameters
+#pragma warning disable CA1720 // Identifier contains type name
+#pragma warning disable IDE0060 // Remove unused parameter
 #pragma warning disable CA2227 // Collection properties should be read only
 namespace Hurace.RaceControl.ViewModels
 {
@@ -52,7 +55,7 @@ namespace Hurace.RaceControl.ViewModels
         {
             Loading = true;
             MenListSelected = true;
-            
+
             this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
             SelectedDate = DateTime.Now;
 
@@ -166,9 +169,7 @@ namespace Hurace.RaceControl.ViewModels
             genderSpecififcRaceId = 0;
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        public async Task CreateRace(object obje)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public async Task CreateRace(object obj)
         {
             var tempStartList = new List<Domain.Associated<Domain.StartPosition>>();
             var tempSkiers = new List<Domain.Associated<Domain.Skier>>();
