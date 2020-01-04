@@ -6,6 +6,21 @@ namespace Hurace.Core.Statistics
 {
     public static class NormalDistribution
     {
+        /// <summary>
+        /// Calculates the mean of the passed set of <see cref="int"/>
+        /// </summary>
+        /// <param name="values">set of <see cref="int"/> to calculate the mean value from</param>
+        /// <returns>the calculated mean</returns>
+        public static double CalculateMean(IEnumerable<int> values)
+        {
+            return values.Average();
+        }
+
+        /// <summary>
+        /// Calculates the standard-deviation of the passed set of <see cref="int"/>
+        /// </summary>
+        /// <param name="values">set of <see cref="int"/> to calculate the standard-deviation from</param>
+        /// <returns>the calculated standard-deviation</returns>
         public static double CalculateStandardDeviation(IEnumerable<int> values)
         {
             if (!values.Any())
@@ -20,8 +35,16 @@ namespace Hurace.Core.Statistics
             return Math.Sqrt(sumOfSquares / values.Count());
         }
 
-        public static double DenormalizeValue(double mean, double stdDev, double value) => (value * stdDev) + mean;
-
+        /// <summary>
+        /// Calculates the x-value boundaries of the area that covers a certain amount 
+        /// of cumulative density function of the passed normal-distribution.
+        /// </summary>
+        /// <param name="mean">mean of the passed normal-distribution</param>
+        /// <param name="stdDev">standard-deviation of the passed normal-distribution</param>
+        /// <param name="areaCoverage">describes the percentage of area that should be covered below
+        /// the normal-distribution function. This percentage has to be in the interval ]0,1[</param>
+        /// <returns>a touple containing the lower and upper boundary x-value of the
+        /// passed area</returns>
         public static (double lowerBoundary, double upperBoundary) GetBoundaries(
             double mean,
             double stdDev,
