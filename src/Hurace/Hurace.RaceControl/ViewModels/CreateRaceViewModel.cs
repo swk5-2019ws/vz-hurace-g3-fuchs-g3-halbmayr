@@ -169,7 +169,7 @@ namespace Hurace.RaceControl.ViewModels
             genderSpecififcRaceId = 0;
         }
 
-        public async Task CreateRace(object obj)
+        public async Task<int> CreateOrUpdateRace(object obj)
         {
             var tempStartList = new List<Domain.Associated<Domain.StartPosition>>();
             var tempSkiers = new List<Domain.Associated<Domain.Skier>>();
@@ -194,7 +194,7 @@ namespace Hurace.RaceControl.ViewModels
             Race.Skiers = tempSkiers;
             Race.GenderSpecificRaceId = genderSpecififcRaceId;
 
-            await raceManager.CreateOrUpdateRace(Race);
+            int raceId = await raceManager.CreateOrUpdateRace(Race);
 
             SelectedDate = DateTime.Now;
             Description = "";
@@ -204,7 +204,7 @@ namespace Hurace.RaceControl.ViewModels
             SelectedSeason = null;
             await InitSkierLists();
 
-            return;
+            return raceId;
         }
 
         private Task SelectMenList(object obj)

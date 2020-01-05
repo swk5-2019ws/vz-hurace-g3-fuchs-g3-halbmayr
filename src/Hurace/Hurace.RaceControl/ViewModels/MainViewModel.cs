@@ -36,14 +36,23 @@ namespace Hurace.RaceControl.ViewModels
                     return;
                 });
 
-            this.CreateRaceCommand = new AsyncDelegateCommand(
+            this.CreateOrUpdateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
-                    await createRaceViewModel.CreateRace(new object());
+                    var rlvm = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
+                    var tempRace = await raceManager.GetRaceByIdAsync(await createRaceViewModel.CreateOrUpdateRace(new object()),
+                        raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                        venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                        seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference);
+                    rlvm.Race = tempRace;
+                    this.RaceListItemViewModels.Add(rlvm);
+                    this.CreateRaceButtonVisible = false;
+                    this.CreateRaceControlVisible = false;
+                    this.RaceDetailControlVisible = true;
                 }
                 , null);
 
-            this.EditRaceCommand = new AsyncDelegateCommand(
+            this.OpenEditRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
                     this.CreateRaceButtonVisible = false;
@@ -52,10 +61,11 @@ namespace Hurace.RaceControl.ViewModels
                     await this.CreateRaceViewModel.InitializeExistingRace(SelectedRace.Race);
                     return;
                 });
+
         }
 
-        public AsyncDelegateCommand CreateRaceCommand { get; }
-        public AsyncDelegateCommand EditRaceCommand { get; }
+        public AsyncDelegateCommand CreateOrUpdateRaceCommand { get; }
+        public AsyncDelegateCommand OpenEditRaceCommand { get; }
         public AsyncDelegateCommand OpenCreateRaceCommand { get; set; }
 
         public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
