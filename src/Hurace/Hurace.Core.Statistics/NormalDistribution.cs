@@ -13,7 +13,10 @@ namespace Hurace.Core.Statistics
         /// <returns>the calculated mean</returns>
         public static double CalculateMean(IEnumerable<int> values)
         {
-            return values.Average();
+            if (values is null)
+                throw new ArgumentNullException(nameof(values));
+
+            return values.Any() ? values.Average() : double.NaN;
         }
 
         /// <summary>
@@ -23,8 +26,10 @@ namespace Hurace.Core.Statistics
         /// <returns>the calculated standard-deviation</returns>
         public static double CalculateStandardDeviation(IEnumerable<int> values)
         {
-            if (!values.Any())
-                throw new InvalidOperationException($"{nameof(values)} is empty -> can't calculate the standard deviation");
+            if (values is null)
+                throw new ArgumentNullException(nameof(values));
+            else if (!values.Any())
+                return double.NaN;
 
             double average = values.Average();
 
@@ -64,6 +69,8 @@ namespace Hurace.Core.Statistics
         {
             if (areaCoverage <= 0 || areaCoverage >= 1)
                 throw new InvalidOperationException($"{nameof(areaCoverage)} has to be in boundary ]0,1[ but is {areaCoverage}");
+            else if (double.IsNaN(mean) || double.IsNaN(stdDev))
+                return (double.NegativeInfinity, double.PositiveInfinity);
 
             var distribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(mean, stdDev);
 

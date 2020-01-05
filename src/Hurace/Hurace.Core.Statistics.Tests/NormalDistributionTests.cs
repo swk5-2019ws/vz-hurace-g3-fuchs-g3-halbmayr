@@ -36,11 +36,14 @@ namespace Hurace.Core.Statistics.Tests
         }
 
         [Fact]
-        public void CalculateMeanFailingTest()
+        public void CalculateMeanTest3()
         {
             var values = new List<int>();
+            var expectedMean = double.NaN;
 
             var mean = NormalDistribution.CalculateMean(values);
+
+            Assert.Equal(expectedMean, mean);
         }
 
         [Fact]
@@ -84,12 +87,14 @@ namespace Hurace.Core.Statistics.Tests
         }
 
         [Fact]
-        public void CalculateStandardDeviationFailingTest()
+        public void CalculateStandardDeviationTest4()
         {
             var values = new List<int> { };
+            var expectedStandardDeviation = double.NaN;
 
-            Assert.Throws<InvalidOperationException>(
-                () => NormalDistribution.CalculateStandardDeviation(values));
+            var standardDeviation = NormalDistribution.CalculateStandardDeviation(values);
+
+            Assert.Equal(expectedStandardDeviation, standardDeviation);
         }
 
         [Fact]
@@ -110,10 +115,10 @@ namespace Hurace.Core.Statistics.Tests
             var expectedLowerBoundary = double.NegativeInfinity;
             var expectedUpperBoundary = double.PositiveInfinity;
 
-            (var actualLowerBoundary, var actualUpperBoundardy) = NormalDistribution.CalculateBoundaries(0, double.NaN, 0.95);
+            (var actualLowerBoundary, var actualUpperBoundardy) = NormalDistribution.CalculateBoundaries(double.NaN, double.NaN, 0.95);
 
-            Assert.Equal(expectedLowerBoundary, Math.Round(actualLowerBoundary, 2));
-            Assert.Equal(expectedUpperBoundary, Math.Round(actualUpperBoundardy, 2));
+            Assert.Equal(expectedLowerBoundary, actualLowerBoundary);
+            Assert.Equal(expectedUpperBoundary, actualUpperBoundardy);
         }
     }
 }
