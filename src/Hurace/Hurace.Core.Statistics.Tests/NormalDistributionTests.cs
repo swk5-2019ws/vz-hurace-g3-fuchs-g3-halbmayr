@@ -98,6 +98,17 @@ namespace Hurace.Core.Statistics.Tests
         }
 
         [Fact]
+        public void CalculateStandardDeviationTest5()
+        {
+            var values = new List<int> { 0, 0, 0, 0 };
+            var expectedStandardDeviation = 0;
+
+            var standardDeviation = NormalDistribution.CalculateStandardDeviation(values);
+
+            Assert.Equal(expectedStandardDeviation, standardDeviation);
+        }
+
+        [Fact]
         public void CalculateBoundariesTest()
         {
             var expectedLowerBoundary = -1.96;
@@ -110,12 +121,26 @@ namespace Hurace.Core.Statistics.Tests
         }
 
         [Fact]
-        public void CalculateBoundariesWithInvalidParametersTest()
+        public void CalculateBoundariesWithInvalidParametersTest1()
         {
             var expectedLowerBoundary = double.NegativeInfinity;
             var expectedUpperBoundary = double.PositiveInfinity;
 
             (var actualLowerBoundary, var actualUpperBoundardy) = NormalDistribution.CalculateBoundaries(double.NaN, double.NaN, 0.95);
+
+            Assert.Equal(expectedLowerBoundary, actualLowerBoundary);
+            Assert.Equal(expectedUpperBoundary, actualUpperBoundardy);
+        }
+
+        [Fact]
+        public void CalculateBoundariesWithInvalidParametersTest2()
+        {
+            int mean = 5;
+            int stdDev = 0;
+            var expectedLowerBoundary = mean;
+            var expectedUpperBoundary = mean;
+
+            (var actualLowerBoundary, var actualUpperBoundardy) = NormalDistribution.CalculateBoundaries(mean, stdDev, 0.95);
 
             Assert.Equal(expectedLowerBoundary, actualLowerBoundary);
             Assert.Equal(expectedUpperBoundary, actualUpperBoundardy);
