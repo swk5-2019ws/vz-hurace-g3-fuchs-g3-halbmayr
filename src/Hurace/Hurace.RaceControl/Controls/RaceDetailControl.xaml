@@ -3,10 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Hurace.RaceControl.Controls"
              xmlns:converter="clr-namespace:Hurace.RaceControl.Converters"
-             xmlns:viewModels="clr-namespace:Hurace.RaceControl.ViewModels"
-             xmlns:controls="clr-namespace:Hurace.RaceControl.Controls"
              mc:Ignorable="d"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -32,58 +29,59 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1">
-                <Grid Margin="15,15,15,10" Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
+            <Grid Margin="15,15,15,10" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
 
-                    <DockPanel Grid.Column="0">
-                        <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Text="{Binding Race.Venue.Reference.Name}"
-                                   DockPanel.Dock="Top"/>
+                <DockPanel Grid.Column="0" Grid.Row="0">
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                Text="{Binding Race.Venue.Reference.Name}"
+                                DockPanel.Dock="Top"
+                               Margin="5"/>
 
-                        <TextBlock Text="{Binding Race.Season.Reference.Name}"
-                                   DockPanel.Dock="Left"/>
+                    <TextBlock Text="{Binding Race.Season.Reference.Name}"
+                                DockPanel.Dock="Left"
+                               Margin="5"/>
 
-                        <TextBlock Text="{Binding Race.Date}"
-                                   TextAlignment="Center"
-                                   DockPanel.Dock="Right"/>
-                    </DockPanel>
+                    <TextBlock Text="{Binding Race.Date}"
+                                TextAlignment="Center"
+                                DockPanel.Dock="Right"
+                               Margin="5"/>
+                </DockPanel>
 
-                    <Button Grid.Column="1"
-                            Command="{Binding StartRaceExecutionCommand}"
-                            Margin="2,0"
-                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                            Foreground="White"
-                            ToolTip="Starte das Rennen"
-                            Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
-                        <materialDesign:PackIcon Kind="PlayCircleOutline"/>
-                    </Button>
+                <Button Grid.Column="1" Grid.Row="0"
+                        Command="{Binding StartRaceExecutionCommand}"
+                        Margin="5,0"
+                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                        Foreground="White"
+                        ToolTip="Starte das Rennen"
+                        Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+                    <materialDesign:PackIcon Kind="PlayCircleOutline"/>
+                </Button>
 
-                    <Button Grid.Column="2"
-                            Command="{Binding StartSimulatedRaceExecutionCommand}"
-                            Margin="2,0"
-                            Style="{StaticResource MaterialDesignRaisedLightButton}"
-                            Foreground="White"
-                            ToolTip="Starte die Simulation"
-                            Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
-                        <materialDesign:PackIcon Kind="PlaySpeed"/>
-                    </Button>
+                <Button Grid.Column="2" Grid.Row="0"
+                        Command="{Binding StartSimulatedRaceExecutionCommand}"
+                        Margin="5,0"
+                        Style="{StaticResource MaterialDesignRaisedLightButton}"
+                        Foreground="White"
+                        ToolTip="Starte die Simulation"
+                        Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+                    <materialDesign:PackIcon Kind="PlaySpeed"/>
+                </Button>
 
-                    <Button Grid.Column="3"
-                            Command="{Binding StopRaceExecutionCommand}"
-                            Margin="2,0"
-                            Background="Red"
-                            ToolTip="Beende Simulation"
-                            Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
-                        <materialDesign:PackIcon Kind="Stop"/>
-                    </Button>
-                </Grid>
-            </materialDesign:Card>
+                <Button Grid.Column="3" Grid.Row="0"
+                        Command="{Binding StopRaceExecutionCommand}"
+                        Margin="5,0"
+                        Background="Red"
+                        ToolTip="Beende Simulation"
+                        Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
+                    <materialDesign:PackIcon Kind="Stop"/>
+                </Button>
+            </Grid>
             <Grid Grid.Row="1" Margin="0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -94,18 +92,32 @@
             </Grid>
             <StackPanel Grid.Row="2" Orientation="Horizontal">
                 <StackPanel Orientation="Vertical">
-                    <ListView ItemsSource="{Binding Race.FirstStartList}">
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Race.FirstStartList.Reference.Position}"></TextBlock>
-                                <TextBlock Text=""></TextBlock>
-                                <TextBlock Text="{Binding Race.FirstStartList.Reference.Skier.Reference.LastName}"></TextBlock>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView>
+                    <ListBox ItemsSource="{Binding StartList}"
+                     SelectionMode="Single"
+                     BorderThickness="0"
+                     ScrollViewer.VerticalScrollBarVisibility="Visible"
+                             MaxHeight="300">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Position}"/>
+                                    <TextBlock Text=" "/>
+                                    <TextBlock Text="{Binding Skier.Reference.FirstName}"/>
+                                    <TextBlock Text=" "/>
+                                    <TextBlock Text="{Binding Skier.Reference.LastName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Margin="0,0,0,50"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+
                 </StackPanel>
                 <StackPanel Orientation="Vertical">
-                    <ListView ItemsSource="{Binding TimeMeasurments}">
+                    <ListView>
                         <DataTemplate>
                             <!-- TimeMeasurment-->
                         </DataTemplate>

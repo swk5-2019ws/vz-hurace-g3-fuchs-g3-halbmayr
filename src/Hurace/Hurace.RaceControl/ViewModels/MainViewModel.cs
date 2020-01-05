@@ -96,6 +96,7 @@ namespace Hurace.RaceControl.ViewModels
                 base.Set(ref this.selectedRace, value);
                 this.RaceDetailControlVisible = true;
                 this.CreateRaceControlVisible = false;
+                this.SelectedRace.LoadRaceData();
             }
         }
 

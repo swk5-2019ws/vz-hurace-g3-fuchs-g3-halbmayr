@@ -14,6 +14,8 @@ namespace Hurace.RaceControl.ViewModels
         private readonly IInformationManager raceInformationManager;
         private readonly IRaceExecutionManager raceExecutionManager;
         private bool executionRunning;
+        private bool raceCompleted;
+        private ObservableCollection<StartPosition> startList;
 
         public RaceDetailViewModel(
             RaceClockResolver raceClockResolver,
@@ -23,6 +25,8 @@ namespace Hurace.RaceControl.ViewModels
             this.raceClockResolver = raceClockResolver ?? throw new ArgumentNullException(nameof(raceClockResolver));
             this.raceInformationManager = raceInformationManager ?? throw new ArgumentNullException(nameof(raceInformationManager));
             this.raceExecutionManager = raceExecutionManager ?? throw new ArgumentNullException(nameof(raceExecutionManager));
+
+            startList = new ObservableCollection<StartPosition>();
 
             this.StartRaceExecutionCommand = new AsyncDelegateCommand(
                 this.StartRaceExecution,
@@ -41,11 +45,34 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.executionRunning, value);
         }
 
+        public ObservableCollection<StartPosition> StartList
+        {
+            get => startList;
+            set => base.Set(ref this.startList, value);
+        }
+
         public Race Race { get; set; }
         public AsyncDelegateCommand StartRaceExecutionCommand { get; }
         public AsyncDelegateCommand StartSimulatedRaceExecutionCommand { get; }
         public AsyncDelegateCommand StopRaceExecutionCommand { get; set; }
-        public ObservableCollection<StartPosition> StartList { get; }
+
+        public async Task LoadRaceData()
+        {
+            var tempRace = await raceInformationManager.GetRaceByIdAsync(Race.Id,
+                Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                Domain.Associated<Domain.Season>.LoadingType.Reference,
+                Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
+                Domain.Associated<Domain.Skier>.LoadingType.Reference,
+                Domain.Associated<Domain.Sex>.LoadingType.Reference,
+                Domain.Associated<Domain.Country>.LoadingType.Reference);
+            foreach (var sp in tempRace.FirstStartList)
+            {
+                StartList.Add(sp.Reference);
+            }
+            var sl = startList;
+            StartList = sl;
+        }
 
         public bool CanStartRaceExecution(object argument)
         {

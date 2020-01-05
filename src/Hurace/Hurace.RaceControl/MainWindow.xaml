@@ -24,14 +24,15 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260" MinWidth="180" MaxWidth="260"/>
-            <ColumnDefinition MinWidth="500"/>
+            <ColumnDefinition MinWidth="500" Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
             <ListBox ItemsSource="{Binding RaceListItemViewModels}"
                      SelectedItem="{Binding SelectedRace}"
                      SelectionMode="Single"
-                     BorderThickness="0">
+                     BorderThickness="0"
+                     >
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:RaceDetailViewModel}">
                         <controls:RaceListItemControl/>
@@ -85,21 +86,24 @@
 
         <Grid Grid.Column="1"
               Visibility="{Binding RaceDetailControlVisible, Converter={StaticResource VisibilityConverter}}">
-            <Canvas>
-                <controls:RaceDetailControl 
+            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10" >
+                <Canvas>
+                    <controls:RaceDetailControl 
                     DataContext="{Binding SelectedRace}"
+                    Width="Auto"
                     Canvas.Left="0"
                     Canvas.Top="0"/>
 
-                <Button Margin="2,0"
+                    <Button Margin="2,0"
                         Foreground="White"
                         ToolTip="Bearbeiten"
                         Command="{Binding OpenEditRaceCommand}"
-                        Canvas.Top="30"
-                        Canvas.Right="30">
-                    <materialDesign:PackIcon Kind="Pencil"/>
-                </Button>
-            </Canvas>
+                        Canvas.Top="38.5"
+                        Canvas.Left="513">
+                        <materialDesign:PackIcon Kind="Pencil"/>
+                    </Button>
+                </Canvas>
+            </materialDesign:Card>
         </Grid>
     </Grid>
 </Window>
