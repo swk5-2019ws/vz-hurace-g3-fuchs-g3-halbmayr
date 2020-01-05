@@ -62,18 +62,21 @@ namespace Hurace.Core.BL
 
             this.trackedRace = race;
             this.trackedPosition = position;
-            this.trackedRaceData = await informationManager.GetRaceDataByRaceAndStartlistAndPosition(race, firstStartList, position);
+            this.trackedRaceData =
+                await informationManager.GetRaceDataByRaceAndStartlistAndPosition(race, firstStartList, position)
+                    .ConfigureAwait(false);
 
             this.trackedSkier = await informationManager.GetSkierByRaceAndStartlistAndPosition(race, firstStartList, position)
                 .ConfigureAwait(false);
             this.measurementDistributionDictionary =
                 await informationManager.CalculateNormalDistributionOfMeasumentsPerSensor(
-                    race.Venue.ForeignKey.Value, race.RaceType.ForeignKey.Value);
+                        race.Venue.ForeignKey.Value, race.RaceType.ForeignKey.Value)
+                    .ConfigureAwait(false);
 
-            var raceStates = await informationManager.GetAllRaceStates();
+            var raceStates = await informationManager.GetAllRaceStates().ConfigureAwait(false);
             trackedRaceData.RaceState = new Domain.Associated<Domain.RaceState>(raceStates.First(rs => rs.Label == "Laufend"));
 
-            await informationManager.UpdateRaceData(trackedRaceData);
+            await informationManager.UpdateRaceData(trackedRaceData).ConfigureAwait(false);
 
             this.raceClock.TimingTriggered += OnRaceSensorTriggered;
         }
@@ -145,7 +148,7 @@ namespace Hurace.Core.BL
                         {
                             this.raceClock.TimingTriggered -= OnRaceSensorTriggered;
 
-                            var raceStates = await informationManager.GetAllRaceStates();
+                            var raceStates = await informationManager.GetAllRaceStates().ConfigureAwait(false);
 
                             trackedRaceData.RaceState = new Domain.Associated<Domain.RaceState>(
                                 raceStates.First(rs => rs.Label == "Abgeschlossen"));

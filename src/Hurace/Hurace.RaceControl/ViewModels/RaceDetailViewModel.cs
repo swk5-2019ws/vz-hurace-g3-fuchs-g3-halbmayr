@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 
+#pragma warning disable CA2227 // Collection properties should be read only
 namespace Hurace.RaceControl.ViewModels
 {
     public class RaceDetailViewModel : BaseViewModel
@@ -52,24 +53,31 @@ namespace Hurace.RaceControl.ViewModels
         }
 
         public Race Race { get; set; }
+
         public AsyncDelegateCommand StartRaceExecutionCommand { get; }
+
         public AsyncDelegateCommand StartSimulatedRaceExecutionCommand { get; }
+
         public AsyncDelegateCommand StopRaceExecutionCommand { get; set; }
 
         public async Task LoadRaceData()
         {
             var tempRace = await raceInformationManager.GetRaceByIdAsync(Race.Id,
-                Domain.Associated<Domain.RaceType>.LoadingType.Reference,
-                Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                Domain.Associated<Domain.Season>.LoadingType.Reference,
-                Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
-                Domain.Associated<Domain.Skier>.LoadingType.Reference,
-                Domain.Associated<Domain.Sex>.LoadingType.Reference,
-                Domain.Associated<Domain.Country>.LoadingType.Reference);
+                    Associated<RaceType>.LoadingType.Reference,
+                    Associated<Venue>.LoadingType.Reference,
+                    Associated<Season>.LoadingType.Reference,
+                    Associated<StartPosition>.LoadingType.Reference,
+                    Associated<Skier>.LoadingType.Reference,
+                    Associated<Sex>.LoadingType.Reference,
+                    Associated<Country>.LoadingType.Reference)
+                .ConfigureAwait(false);
+
             foreach (var sp in tempRace.FirstStartList)
             {
-                StartList.Add(sp.Reference);
+                Application.Current.Dispatcher.Invoke(
+                    () => StartList.Add(sp.Reference));
             }
+
             var sl = startList;
             StartList = sl;
         }
@@ -82,6 +90,8 @@ namespace Hurace.RaceControl.ViewModels
         public async Task StartRaceExecution(object argument)
         {
             MessageBox.Show("not supported yet");
+
+            await Task.CompletedTask.ConfigureAwait(false);
             //await this.StartRaceLogic(this.raceClockResolver(false));
         }
 
@@ -96,7 +106,8 @@ namespace Hurace.RaceControl.ViewModels
             var simulatorConfigWindow = new Windows.SimulatorConfigWindow(simulation);
             simulatorConfigWindow.ShowDialog();
 
-            await this.StartRaceLogic(simulation);
+            await this.StartRaceLogic(simulation)
+                .ConfigureAwait(false);
         }
 
         public bool CanStopRaceExecution(object argument)
@@ -113,19 +124,25 @@ namespace Hurace.RaceControl.ViewModels
 
         private async Task StartRaceLogic(Timer.IRaceClock raceClock)
         {
-            this.ExecutionRunning = true;
-
             this.raceExecutionManager.RaceClock = raceClock;
 
-            this.Race = await raceInformationManager.GetRaceByIdAsync(
-                this.Race.Id,
-                raceTypeLoadingType: Associated<RaceType>.LoadingType.None,
-                venueLoadingType: Associated<Venue>.LoadingType.Reference,
-                seasonLoadingType: Associated<Season>.LoadingType.Reference,
-                startListLoadingType: Associated<StartPosition>.LoadingType.Reference,
-                skierLoadingType: Associated<Skier>.LoadingType.Reference,
-                skierSexLoadingType: Associated<Sex>.LoadingType.None,
-                skierCountryLoadingType: Associated<Country>.LoadingType.Reference);
+            var race = await raceInformationManager.GetRaceByIdAsync(
+                    this.Race.Id,
+                    raceTypeLoadingType: Associated<RaceType>.LoadingType.None,
+                    venueLoadingType: Associated<Venue>.LoadingType.Reference,
+                    seasonLoadingType: Associated<Season>.LoadingType.Reference,
+                    startListLoadingType: Associated<StartPosition>.LoadingType.Reference,
+                    skierLoadingType: Associated<Skier>.LoadingType.Reference,
+                    skierSexLoadingType: Associated<Sex>.LoadingType.None,
+                    skierCountryLoadingType: Associated<Country>.LoadingType.Reference)
+                .ConfigureAwait(false);
+
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    this.ExecutionRunning = true;
+                    this.Race = race;
+                });
         }
     }
 }

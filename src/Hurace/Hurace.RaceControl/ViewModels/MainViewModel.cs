@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Hurace.RaceControl.ViewModels
 {
@@ -29,37 +30,57 @@ namespace Hurace.RaceControl.ViewModels
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
-                    this.CreateRaceButtonVisible = true;
-                    this.CreateRaceControlVisible = true;
-                    this.RaceDetailControlVisible = false;
-                    await this.CreateRaceViewModel.Initialize();
-                    return;
+                    Application.Current.Dispatcher.Invoke(
+                        () =>
+                        {
+                            this.CreateRaceButtonVisible = true;
+                            this.CreateRaceControlVisible = true;
+                            this.RaceDetailControlVisible = false;
+                        });
+
+                    await this.CreateRaceViewModel.Initialize()
+                        .ConfigureAwait(false);
                 });
 
             this.CreateOrUpdateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
-                    var rlvm = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
-                    var tempRace = await raceManager.GetRaceByIdAsync(await createRaceViewModel.CreateOrUpdateRace(new object()),
-                        raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
-                        venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                        seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference);
-                    rlvm.Race = tempRace;
-                    this.RaceListItemViewModels.Add(rlvm);
-                    this.CreateRaceButtonVisible = false;
-                    this.CreateRaceControlVisible = false;
-                    this.RaceDetailControlVisible = true;
-                }
-                , null);
+                    var raceDetailViewModel = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
+
+                    var tempRace = await raceManager.GetRaceByIdAsync(
+                                await createRaceViewModel.CreateOrUpdateRace(new object())
+                                    .ConfigureAwait(false),
+                                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
+                        .ConfigureAwait(false);
+
+                    raceDetailViewModel.Race = tempRace;
+
+                    Application.Current.Dispatcher.Invoke(
+                        () =>
+                        {
+                            this.RaceListItemViewModels.Add(raceDetailViewModel);
+                            this.CreateRaceButtonVisible = false;
+                            this.CreateRaceControlVisible = false;
+                            this.RaceDetailControlVisible = true;
+                        });
+                },
+                null);
 
             this.OpenEditRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
-                    this.CreateRaceButtonVisible = false;
-                    this.CreateRaceControlVisible = true;
-                    this.RaceDetailControlVisible = false;
-                    await this.CreateRaceViewModel.InitializeExistingRace(SelectedRace.Race);
-                    return;
+                    Application.Current.Dispatcher.Invoke(
+                        () =>
+                        {
+                            this.CreateRaceButtonVisible = false;
+                            this.CreateRaceControlVisible = true;
+                            this.RaceDetailControlVisible = false;
+                        });
+
+                    await this.CreateRaceViewModel.InitializeExistingRace(SelectedRace.Race)
+                        .ConfigureAwait(false);
                 });
 
         }
@@ -70,12 +91,12 @@ namespace Hurace.RaceControl.ViewModels
 
         public ObservableCollection<RaceDetailViewModel> RaceListItemViewModels { get; private set; }
 
-
         public bool CreateRaceButtonVisible
         {
             get => createRaceButtonVisible;
             set => base.Set(ref this.createRaceButtonVisible, value);
         }
+
         public bool CreateRaceControlVisible
         {
             get => createRaceVisible;
@@ -110,18 +131,22 @@ namespace Hurace.RaceControl.ViewModels
         {
             var raceListDetailViewModels =
                 (await this.raceManager.GetAllRacesAsync(
-                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
-                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference))
+                        raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                        venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                        seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
+                    .ConfigureAwait(false))
                 .Select(race => (this.serviceProvider.GetRequiredService<RaceDetailViewModel>(), race));
 
             foreach (var (raceDetailViewModel, race) in raceListDetailViewModels)
             {
                 raceDetailViewModel.Race = race;
-                this.RaceListItemViewModels.Add(raceDetailViewModel);
+
+                Application.Current.Dispatcher.Invoke(
+                    () => this.RaceListItemViewModels.Add(raceDetailViewModel));
             }
 
-            await createRaceViewModel.Initialize();
+            await createRaceViewModel.Initialize()
+                .ConfigureAwait(false);
         }
     }
 }

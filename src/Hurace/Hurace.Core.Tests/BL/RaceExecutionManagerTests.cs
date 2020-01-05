@@ -84,7 +84,7 @@ namespace Hurace.Core.Tests.BL
 
             var raceExecutionManager = new Core.BL.RaceExecutionManager(informationManager);
 
-            Assert.True(await raceExecutionManager.IsRaceStartable(raceId));
+            Assert.True(await raceExecutionManager.IsRaceStartable(raceId).ConfigureAwait(false));
         }
 
         [Fact]
@@ -145,7 +145,7 @@ namespace Hurace.Core.Tests.BL
 
             var raceExecutionManager = new Core.BL.RaceExecutionManager(informationManager);
 
-            Assert.True(await raceExecutionManager.IsRaceStartable(raceId));
+            Assert.True(await raceExecutionManager.IsRaceStartable(raceId).ConfigureAwait(false));
         }
 
         [Fact]
@@ -212,7 +212,7 @@ namespace Hurace.Core.Tests.BL
 
             var raceExecutionManager = new Core.BL.RaceExecutionManager(informationManager);
 
-            Assert.False(await raceExecutionManager.IsRaceStartable(raceId));
+            Assert.False(await raceExecutionManager.IsRaceStartable(raceId).ConfigureAwait(false));
         }
 
         [Fact]
@@ -273,7 +273,7 @@ namespace Hurace.Core.Tests.BL
 
             var raceExecutionManager = new Core.BL.RaceExecutionManager(informationManager);
 
-            Assert.False(await raceExecutionManager.IsRaceStartable(raceId));
+            Assert.False(await raceExecutionManager.IsRaceStartable(raceId).ConfigureAwait(false));
         }
 
         [Fact]
@@ -435,7 +435,8 @@ namespace Hurace.Core.Tests.BL
                 .ConfigureAwait(false);
 
             await Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await raceExecutionManager.StartTimeTracking(race, true, 2).ConfigureAwait(false));
+                    async () => await raceExecutionManager.StartTimeTracking(race, true, 2).ConfigureAwait(false))
+                .ConfigureAwait(false);
         }
 
         [Fact]

@@ -538,9 +538,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await raceManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -640,9 +641,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -737,9 +739,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -859,9 +862,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -973,9 +977,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -1082,9 +1087,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -1228,9 +1234,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -1372,9 +1379,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.ForeignKey);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.ForeignKey)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -1505,9 +1513,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var raceDomainObjects = await informationManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.ForeignKey);
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.None,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.ForeignKey)
+                .ConfigureAwait(false);
 
             foreach (var raceDO in raceDomainObjects)
             {
@@ -1633,9 +1642,10 @@ namespace Hurace.Core.Tests.BL
                 venueDaoFake);
 
             var race = await informationManager.GetRaceByIdAsync(
-                0,
-                startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
-                skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.Reference);
+                    0,
+                    startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
+                    skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.Reference)
+                .ConfigureAwait(false);
 
             Assert.Equal(2, race.FirstStartList.Count());
             Assert.Equal(0, race.FirstStartList.First().Reference.Id);

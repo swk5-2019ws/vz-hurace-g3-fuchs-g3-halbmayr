@@ -40,7 +40,8 @@ namespace Hurace.Core.Db.Connection
             var dbConnection = this.GetDbProviderFactory().CreateConnection();
             dbConnection.ConnectionString = ConnectionString;
 
-            await dbConnection.OpenAsync();
+            await dbConnection.OpenAsync()
+                .ConfigureAwait(false);
 
             return dbConnection;
         }
