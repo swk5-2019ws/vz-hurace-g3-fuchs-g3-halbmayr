@@ -31,13 +31,13 @@
             <ListBox ItemsSource="{Binding RaceListItemViewModels}"
                      SelectedItem="{Binding SelectedRace}"
                      SelectionMode="Single"
-                     BorderThickness="0"
-                     >
+                     BorderThickness="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:RaceDetailViewModel}">
                         <controls:RaceListItemControl/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+                
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Margin="0,0,0,50"/>
@@ -92,23 +92,89 @@
                                  Margin="15"
                                  Background="{DynamicResource MaterialDesignPaper}">
                 <Grid Margin="7">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <controls:RaceDetailControl DataContext="{Binding SelectedRace}"
+                    <controls:RaceHeaderControl DataContext="{Binding SelectedRace}"
+                                                Grid.Row="0"
                                                 Grid.Column="0"/>
 
-                    <Button Margin="5,17,5,0"
-                            Foreground="White"
-                            ToolTip="Bearbeiten"
-                            Command="{Binding OpenEditRaceCommand}"
-                            Grid.Column="1"
-                            VerticalAlignment="Top">
-                        
-                        <materialDesign:PackIcon Kind="Pencil"/>
-                    </Button>
+                    <Grid Grid.Row="0"
+                          Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Command="{Binding StartRaceExecutionCommand}"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="5,0"
+                                Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                                Foreground="White"
+                                ToolTip="Starte das Rennen"
+                                Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+
+                            <materialDesign:PackIcon Kind="PlayCircleOutline"/>
+                        </Button>
+
+                        <Button Command="{Binding StartSimulatedRaceExecutionCommand}"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="5,0"
+                                Style="{StaticResource MaterialDesignRaisedLightButton}"
+                                Foreground="White"
+                                ToolTip="Starte die Simulation"
+                                Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+                            
+                            <materialDesign:PackIcon Kind="PlaySpeed"/>
+                        </Button>
+
+                        <Button Command="{Binding StopRaceExecutionCommand}"
+                                Grid.Row="0"
+                                Grid.Column="1" 
+                                Margin="5,0"
+                                Background="Red"
+                                BorderThickness="0"
+                                ToolTip="Beende Simulation"
+                                Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
+                            
+                            <materialDesign:PackIcon Kind="Stop"/>
+                        </Button>
+
+                        <Button Command="{Binding OpenEditRaceCommand}"
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Margin="5,0"
+                                Foreground="White"
+                                ToolTip="Rennen bearbeiten">
+
+                            <materialDesign:PackIcon Kind="Pencil"/>
+                        </Button>
+
+                        <Button Command="{Binding DeleteRaceCommand}"
+                                Grid.Row="0"
+                                Grid.Column="3"
+                                Margin="5,0"
+                                Foreground="White"
+                                ToolTip="Rennen entfernen">
+
+                            <materialDesign:PackIcon Kind="Delete"/>
+                        </Button>
+                    </Grid>
+                    
+                    <controls:RaceExecutionControl DataContext="{Binding SelectedRace}"
+                                                   Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Grid.ColumnSpan="2"/>
                 </Grid>
             </materialDesign:Card>
         </Grid>

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Hurace.RaceControl.Controls.RaceDetailControl"
+﻿<UserControl x:Class="Hurace.RaceControl.Controls.RaceExecutionControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -29,58 +29,6 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-
-                <DockPanel Grid.Column="0" Grid.Row="0">
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                               Text="{Binding Race.Venue.Reference.Name}"
-                               DockPanel.Dock="Top"
-                               Margin="5"/>
-
-                    <TextBlock Text="{Binding Race.Season.Reference.Name}"
-                               DockPanel.Dock="Left"
-                               Margin="5"/>
-
-                    <TextBlock Text="{Binding Race.Date}"
-                               TextAlignment="Center"
-                               DockPanel.Dock="Right"
-                               Margin="5"/>
-                </DockPanel>
-
-                <Button Grid.Column="1" Grid.Row="0"
-                        Command="{Binding StartRaceExecutionCommand}"
-                        Margin="5,0"
-                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                        Foreground="White"
-                        ToolTip="Starte das Rennen"
-                        Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
-                    <materialDesign:PackIcon Kind="PlayCircleOutline"/>
-                </Button>
-
-                <Button Grid.Column="2" Grid.Row="0"
-                        Command="{Binding StartSimulatedRaceExecutionCommand}"
-                        Margin="5,0"
-                        Style="{StaticResource MaterialDesignRaisedLightButton}"
-                        Foreground="White"
-                        ToolTip="Starte die Simulation"
-                        Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
-                    <materialDesign:PackIcon Kind="PlaySpeed"/>
-                </Button>
-
-                <Button Grid.Column="2" Grid.Row="0"
-                        Command="{Binding StopRaceExecutionCommand}"
-                        Margin="5,0"
-                        Background="Red"
-                        ToolTip="Beende Simulation"
-                        Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
-                    <materialDesign:PackIcon Kind="Stop"/>
-                </Button>
-            </Grid>
             <Grid Grid.Row="1" Margin="0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
