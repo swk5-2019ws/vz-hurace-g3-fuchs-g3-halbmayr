@@ -11,9 +11,10 @@ namespace Hurace.Core.BL
         private IRaceClock raceClock;
         private Domain.Race trackedRace;
         private Domain.Skier trackedSkier;
-        private bool? trackingFirstStartList;
+        private Domain.RaceData trackedRaceData;
         private int? trackedPosition;
         private IDictionary<int, (double mean, double standardDeviation)> measumentDistributionDictionary;
+        private DateTime? initialMeasurement;
 
         private readonly IInformationManager informationManager;
 
@@ -57,14 +58,19 @@ namespace Hurace.Core.BL
                 throw new ArgumentNullException($"FK of {nameof(Domain.RaceType)} has to be set in passed {nameof(Domain.Race)} instance");
 
             this.trackedRace = race;
-            this.trackingFirstStartList = firstStartList;
             this.trackedPosition = position;
+            this.trackedRaceData = await informationManager.GetRaceDataByRaceAndStartlistAndPosition(race, firstStartList, position);
 
             this.trackedSkier = await informationManager.GetSkierByRaceAndStartlistAndPosition(race, firstStartList, position)
                 .ConfigureAwait(false);
             this.measumentDistributionDictionary =
                 await informationManager.CalculateNormalDistributionOfMeasumentsPerSensor(
                     race.Venue.ForeignKey.Value, race.RaceType.ForeignKey.Value);
+
+            var raceStates = await informationManager.GetAllRaceStates();
+            trackedRaceData.RaceState = new Domain.Associated<Domain.RaceState>(raceStates.First(rs => rs.Label == "Laufend"));
+
+            await informationManager.UpdateRaceData(trackedRaceData);
 
             this.raceClock.TimingTriggered += OnRaceSensorTriggered;
         }
@@ -80,32 +86,50 @@ namespace Hurace.Core.BL
                 race.FirstStartList.Any();
         }
 
-        private void OnRaceSensorTriggered(int sensorId, DateTime time)
+        private async void OnRaceSensorTriggered(int sensorId, DateTime measuredTime)
         {
-            //todo: implement time validation -> use normal distribution of time measurements
-
-            bool isMeasurementValid = true;
-
-            if (!isMeasurementValid)
+            if (sensorId == 0 && initialMeasurement is null)
             {
-                //persist error
+                this.initialMeasurement = measuredTime;
+
+                var newTimeMeasurement = await informationManager.CreateTimemeasurement(0, 0, this.trackedRaceData.Id, true)
+                    .ConfigureAwait(false);
+
+                this.OnTimeMeasured?.Invoke(this.trackedRace, this.trackedSkier, newTimeMeasurement);
             }
-            else
+            else if (this.measumentDistributionDictionary.ContainsKey(sensorId))
             {
-                //persist successfully measured timemeasurement
-                this.OnTimeMeasured?.Invoke(this.trackedRace, this.trackedSkier, null);
+                (var mean, var stdDev) = measumentDistributionDictionary[sensorId];
+                (var lowerBoundary, var upperBoundary) = Statistics.NormalDistribution.CalculateBoundaries(mean, stdDev, 0.95);
 
-                if (sensorId == this.trackedRace.NumberOfSensors)
+                var difference = (this.initialMeasurement.Value - measuredTime).TotalMilliseconds;
+
+                var isTimeMeasurementValid = (lowerBoundary <= difference && difference <= upperBoundary) ||
+                                             sensorId == this.trackedRace.NumberOfSensors;
+
+                var newTimeMeasurement =
+                    await informationManager.CreateTimemeasurement(
+                        Convert.ToInt32(difference),
+                        sensorId,
+                        this.trackedRaceData.Id,
+                        isTimeMeasurementValid)
+                    .ConfigureAwait(false);
+
+                if (isTimeMeasurementValid)
                 {
-                    this.raceClock.TimingTriggered -= OnRaceSensorTriggered;
-                    this.trackedRace = null;
-                    this.trackedSkier = null;
-                    this.trackingFirstStartList = null;
-                    this.trackedPosition = null;
+                    this.OnTimeMeasured?.Invoke(this.trackedRace, this.trackedSkier, null);
+
+                    if (sensorId == this.trackedRace.NumberOfSensors)
+                    {
+                        this.raceClock.TimingTriggered -= OnRaceSensorTriggered;
+                        this.trackedRace = null;
+                        this.trackedSkier = null;
+                        this.trackedRaceData = null;
+                        this.trackedPosition = null;
+                        this.initialMeasurement = null;
+                    }
                 }
             }
-
-            throw new NotImplementedException();
         }
     }
 }

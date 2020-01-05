@@ -24,6 +24,15 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Sex>.LoadingType skierSexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.None,
             Domain.Associated<Domain.Country>.LoadingType skierCountryLoadingType = Domain.Associated<Domain.Country>.LoadingType.None);
 
+        Task<Domain.RaceData> GetRaceDataByRaceAndStartlistAndPosition(
+            Domain.Race race,
+            bool firstStartList,
+            int position,
+            Domain.Associated<Domain.RaceState>.LoadingType raceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference);
+        Task<bool> UpdateRaceData(Domain.RaceData raceData);
+
+        Task<IEnumerable<Domain.RaceState>> GetAllRaceStates();
+
         Task<IEnumerable<Domain.RaceType>> GetAllRaceTypesAsync();
         Task<Domain.RaceType> GetRaceTypeByIdAsync(int id);
 
@@ -49,6 +58,7 @@ namespace Hurace.Core.BL
 
         Task<Domain.Skier> GetSkierByRaceAndStartlistAndPosition(Domain.Race race, bool firstStartList, int position);
 
+        Task<Domain.TimeMeasurement> CreateTimemeasurement(int measurement, int sensorId, int raceDataId, bool isValid);
         Task<Dictionary<int, (double mean, double standardDeviation)>> CalculateNormalDistributionOfMeasumentsPerSensor(
             int venueId, int raceTypeId);
 

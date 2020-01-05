@@ -101,6 +101,9 @@ namespace Hurace.Core.BL
 
         public async Task CreateRace(Domain.Race race)
         {
+            if (race is null)
+                throw new ArgumentNullException(nameof(race));
+
             int firstStartListId = await startListDao.CreateAsync(new Entities.StartList());
             int secondStartListId = await startListDao.CreateAsync(new Entities.StartList());
 
@@ -111,14 +114,14 @@ namespace Hurace.Core.BL
                     StartListId = firstStartListId,
                     SkierId = racer.Reference.Skier.Reference.Id,
                     Position = racer.Reference.Position
-                });
+                }).ConfigureAwait(false);
 
                 await raceDataDao.CreateAsync(new Entities.RaceData
                 {
                     StartListId = firstStartListId,
                     SkierId = racer.Reference.Skier.Reference.Id,
                     RaceStateId = 4                                     // 4 == Startbereit
-                });
+                }).ConfigureAwait(false);
             }
 
             await raceDao.CreateAsync(new Entities.Race
@@ -306,6 +309,97 @@ namespace Hurace.Core.BL
         }
 
         #endregion
+        #region RaceData-Methods
+
+        public async Task<Domain.RaceData> GetRaceDataByRaceAndStartlistAndPosition(
+            Domain.Race race,
+            bool firstStartList,
+            int position,
+            Domain.Associated<Domain.RaceState>.LoadingType raceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference)
+        {
+            if (race is null)
+                throw new ArgumentNullException(nameof(race));
+
+            var raceEnt = await raceDao.GetByIdAsync(race.Id).ConfigureAwait(false);
+            var startListId = firstStartList ? raceEnt.FirstStartListId : raceEnt.SecondStartListId;
+            var skier = await GetSkierByRaceAndStartlistAndPosition(race, firstStartList, position);
+
+            var raceDataCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.RaceData.SkierId), QueryConditionType.Equals, skier.Id),
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, startListId))
+                .Build();
+
+            var raceDataEntSet = await raceDataDao.GetAllConditionalAsync(raceDataCondition).ConfigureAwait(false);
+            if (raceDataEntSet.Count() != 1)
+                throw new InvalidOperationException(
+                    $"There exist multiple raceData-Entities that share the same " +
+                    $"StartListId {startListId} and SkierId {skier.Id}");
+
+            var raceDataEnt = raceDataEntSet.First();
+
+            return new Domain.RaceData
+            {
+                Id = raceDataEnt.Id,
+                RaceState = await this.LoadAssociatedDomainObject(
+                        raceStateLoadingType,
+                        async () => new Domain.Associated<Domain.RaceState>(
+                            await GetRaceStateById(raceDataEnt.RaceStateId).ConfigureAwait(false)),
+                        () => new Domain.Associated<Domain.RaceState>(raceDataEnt.RaceStateId))
+                    .ConfigureAwait(false)
+            };
+        }
+
+        public async Task<bool> UpdateRaceData(Domain.RaceData raceData)
+        {
+            if (raceData is null)
+                throw new ArgumentNullException(nameof(raceData));
+
+            int? raceStateId = null;
+            if (raceData.RaceState.Initialised)
+            {
+                raceStateId = raceData.RaceState.ForeignKey ?? raceData.RaceState.Reference.Id;
+            }
+
+            var updatedColumns = new
+            {
+                RaceStateId = raceStateId ?? null
+            };
+            var updateCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.RaceData.Id), QueryConditionType.Equals, raceData.Id)
+                .Build();
+            return (await raceDataDao.UpdateAsync(updatedColumns, updateCondition).ConfigureAwait(false))
+                == 1;
+        }
+
+        #endregion
+        #region RaceState-Methods
+
+        public async Task<IEnumerable<Domain.RaceState>> GetAllRaceStates()
+        {
+            return (await raceStateDao.GetAllConditionalAsync().ConfigureAwait(false))
+                .Select(raceStateEntity => new Domain.RaceState
+                {
+                    Id = raceStateEntity.Id,
+                    Label = raceStateEntity.Label
+                });
+        }
+
+        public async Task<Domain.RaceState> GetRaceStateById(int raceStateId)
+        {
+            var raceStateEnt = await raceStateDao.GetByIdAsync(raceStateId);
+
+            return new Domain.RaceState
+            {
+                Id = raceStateEnt.Id,
+                Label = raceStateEnt.Label
+            };
+        }
+
+        #endregion
         #region RaceType-Methods
 
         public async Task<IEnumerable<Domain.RaceType>> GetAllRaceTypesAsync()
@@ -420,13 +514,13 @@ namespace Hurace.Core.BL
                        IsRemoved = skierEntity.IsRemoved,
                        LastName = skierEntity.LastName,
                        Country = await this.LoadAssociatedDomainObject(
-                    countryLoadingType,
-                    async () => new Domain.Associated<Domain.Country>(await GetCountryByIdAsync(skierEntity.CountryId)),
-                    () => new Domain.Associated<Domain.Country>(skierEntity.CountryId)),
+                           countryLoadingType,
+                           async () => new Domain.Associated<Domain.Country>(await GetCountryByIdAsync(skierEntity.CountryId)),
+                           () => new Domain.Associated<Domain.Country>(skierEntity.CountryId)),
                        Sex = await this.LoadAssociatedDomainObject(
-                    sexLoadingType,
-                    async () => new Domain.Associated<Domain.Sex>(await GetSexByIdAsync(skierEntity.SexId)),
-                    () => new Domain.Associated<Domain.Sex>(skierEntity.SexId))
+                           sexLoadingType,
+                           async () => new Domain.Associated<Domain.Sex>(await GetSexByIdAsync(skierEntity.SexId)),
+                           () => new Domain.Associated<Domain.Sex>(skierEntity.SexId))
                    }));
         }
 
@@ -477,7 +571,7 @@ namespace Hurace.Core.BL
                 .Build();
             var startPositionSet = await startPositionDao.GetAllConditionalAsync(startPositionCondition).ConfigureAwait(false);
 
-            if (startPositionSet.Count() != 1)
+            if (startPositionSet.Count() != 1) //startPositionSet is null
                 throw new InvalidOperationException(
                     $"No Startpositions found for Race with id {race.Id} that have a position of {position}");
 
@@ -563,6 +657,26 @@ namespace Hurace.Core.BL
         #endregion
         #region TimeMeasurement-Methods
 
+        public async Task<Domain.TimeMeasurement> CreateTimemeasurement(int measurement, int sensorId, int raceDataId, bool isValid)
+        {
+            var timeMeasurement = new Entities.TimeMeasurement
+            {
+                IsValid = isValid,
+                Measurement = measurement,
+                RaceDataId = raceDataId,
+                SensorId = sensorId
+            };
+
+            timeMeasurement.Id = await timeMeasurementDao.CreateAsync(timeMeasurement).ConfigureAwait(false);
+
+            return new Domain.TimeMeasurement
+            {
+                Id = timeMeasurement.Id,
+                Measurement = timeMeasurement.Measurement,
+                SensorId = timeMeasurement.SensorId
+            };
+        }
+
         public async Task<Dictionary<int, (double mean, double standardDeviation)>> CalculateNormalDistributionOfMeasumentsPerSensor(
                 int venueId, int raceTypeId)
         {
@@ -593,7 +707,12 @@ namespace Hurace.Core.BL
             foreach (var raceData in raceDataSet)
             {
                 var timeMeasurementCondition = new QueryConditionBuilder()
-                    .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, raceData.Id)
+                    .DeclareConditionNode(
+                        QueryConditionNodeType.And,
+                        () => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, raceData.Id),
+                        () => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.TimeMeasurement.IsValid), QueryConditionType.Equals, true))
                     .Build();
                 timeMeasurementSet.AddRange(await timeMeasurementDao.GetAllConditionalAsync(timeMeasurementCondition));
             }
@@ -603,8 +722,8 @@ namespace Hurace.Core.BL
                     m => m.SensorId,
                     (sensorId, result) => (
                         SensorId: sensorId,
-                        Mean: result.Average(m => m.Measurement),
-                        StdDev: CalculateStdDev(result.Select(m => m.Measurement))))
+                        Mean: Statistics.NormalDistribution.CalculateMean(result.Select(m => m.Measurement)),
+                        StdDev: Statistics.NormalDistribution.CalculateStandardDeviation(result.Select(m => m.Measurement))))
                 .ToDictionary(
                     distribution => distribution.SensorId,
                     distribution => (distribution.Mean, distribution.StdDev));
@@ -672,17 +791,6 @@ namespace Hurace.Core.BL
 
         #endregion
         #region Helper
-
-        private static double CalculateStdDev(IEnumerable<int> measurements)
-        {
-            double average = measurements.Average();
-
-            var sumOfSquares = measurements
-                .Select(m => (m - average) * (m - average))
-                .Sum();
-
-            return Math.Sqrt(sumOfSquares / measurements.Count());
-        }
 
         private async Task<Domain.Associated<T>> LoadAssociatedDomainObject<T>(
             Domain.Associated<T>.LoadingType desiredLoadingType,

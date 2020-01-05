@@ -304,11 +304,12 @@ namespace Hurace.RaceControl.ViewModels
 
         #region Properties
 
-        public string CreateRaceHeader 
+        public string CreateRaceHeader
         {
             get => createRaceHeader;
             set => base.Set(ref this.createRaceHeader, value);
         }
+
         public bool MenListSelected
         {
             get => menListSelected;
@@ -404,7 +405,8 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.selectedSkier, value);
         }
 
-        public Domain.Race Race {
+        public Domain.Race Race
+        {
             get => race;
             set =>
                 //TODO validation
