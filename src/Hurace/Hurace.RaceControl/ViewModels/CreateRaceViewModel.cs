@@ -81,6 +81,7 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task InitializeExistingRace(Domain.Race race)
         {
+            Loading = true;
             CreateRaceHeader = "Rennen bearbeiten";
             this.Race = race ?? throw new ArgumentNullException(nameof(race));
 
@@ -95,8 +96,6 @@ namespace Hurace.RaceControl.ViewModels
                 await raceManager.GetAllSeasonsAsync());
 
             await InitSkierLists();
-
-            Loading = false;
 
             Domain.Race tempRace = await raceManager.GetRaceByIdAsync(Race.Id,
                 Domain.Associated<Domain.RaceType>.LoadingType.Reference,
@@ -124,6 +123,7 @@ namespace Hurace.RaceControl.ViewModels
                 StartPositions.Add(racer.Reference);
                 skiers.Remove(skiers.FirstOrDefault(skier => skier.Id == racer.Reference.Skier.Reference.Id));
             }
+            Loading = false;
         }
 
         public async Task Initialize()
