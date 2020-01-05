@@ -81,6 +81,7 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task InitializeExistingRace(Domain.Race race)
         {
+            Loading = true;
             CreateRaceHeader = "Rennen bearbeiten";
             this.Race = race ?? throw new ArgumentNullException(nameof(race));
 
@@ -95,8 +96,6 @@ namespace Hurace.RaceControl.ViewModels
                 await raceManager.GetAllSeasonsAsync());
 
             await InitSkierLists();
-
-            Loading = false;
 
             Domain.Race tempRace = await raceManager.GetRaceByIdAsync(Race.Id,
                 Domain.Associated<Domain.RaceType>.LoadingType.Reference,
@@ -124,6 +123,7 @@ namespace Hurace.RaceControl.ViewModels
                 StartPositions.Add(racer.Reference);
                 skiers.Remove(skiers.FirstOrDefault(skier => skier.Id == racer.Reference.Skier.Reference.Id));
             }
+            Loading = false;
         }
 
         public async Task Initialize()
@@ -169,7 +169,7 @@ namespace Hurace.RaceControl.ViewModels
             genderSpecififcRaceId = 0;
         }
 
-        public async Task CreateRace(object obj)
+        public async Task<int> CreateOrUpdateRace(object obj)
         {
             var tempStartList = new List<Domain.Associated<Domain.StartPosition>>();
             var tempSkiers = new List<Domain.Associated<Domain.Skier>>();
@@ -194,7 +194,7 @@ namespace Hurace.RaceControl.ViewModels
             Race.Skiers = tempSkiers;
             Race.GenderSpecificRaceId = genderSpecififcRaceId;
 
-            await raceManager.CreateOrUpdateRace(Race);
+            int raceId = await raceManager.CreateOrUpdateRace(Race);
 
             SelectedDate = DateTime.Now;
             Description = "";
@@ -204,7 +204,7 @@ namespace Hurace.RaceControl.ViewModels
             SelectedSeason = null;
             await InitSkierLists();
 
-            return;
+            return raceId;
         }
 
         private Task SelectMenList(object obj)

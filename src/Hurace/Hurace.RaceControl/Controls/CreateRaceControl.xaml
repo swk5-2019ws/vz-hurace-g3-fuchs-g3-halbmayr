@@ -15,10 +15,10 @@
              d:DesignHeight="550" d:DesignWidth="500">
 
     <UserControl.Resources>
-        <converters:InvertedBoolConverter x:Key="VisibilityConverter"/>
+        <converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolConverter"/>
     </UserControl.Resources>
-   <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10">
-        <Grid Margin="7">
+    <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10" >
+        <Grid Margin="7" Visibility="{Binding Loading, Converter={StaticResource InvertedBoolConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -147,7 +147,7 @@
                          AcceptsReturn="True"/>
             </StackPanel>
 
-            <Grid Grid.Row="3" Visibility="{Binding Loading, Converter={StaticResource VisibilityConverter}}">
+            <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>
                     <ColumnDefinition Width="2*"/>

@@ -87,19 +87,21 @@ namespace Hurace.Core.BL
         #endregion
         #region Race-Methods
 
-        public async Task CreateOrUpdateRace(Domain.Race race)
+        public async Task<int> CreateOrUpdateRace(Domain.Race race)
         {
             if (race == null) throw new ArgumentNullException(nameof(race));
             if (race.Id == -1)
             {
-                await CreateRace(race);
-            }else if (race.Id > -1 && (await GetAllRacesAsync()).Where(_race => _race.Id == race.Id).Count() == 1)
-            {
-                await UpdateRace(race);
+                return await CreateRace(race);
             }
+            else if (race.Id > -1 && (await GetAllRacesAsync()).Where(_race => _race.Id == race.Id).Count() == 1)
+            {
+                return await UpdateRace(race);
+            }
+            throw new ArgumentOutOfRangeException(nameof(race), "trying to update non existent Race, RaceId out of Range");
         }
 
-        public async Task CreateRace(Domain.Race race)
+        public async Task<int> CreateRace(Domain.Race race)
         {
             if (race is null)
                 throw new ArgumentNullException(nameof(race));
@@ -124,7 +126,7 @@ namespace Hurace.Core.BL
                 }).ConfigureAwait(false);
             }
 
-            await raceDao.CreateAsync(new Entities.Race
+            return await raceDao.CreateAsync(new Entities.Race
             {
                 RaceTypeId = race.RaceType.Reference.Id,
                 VenueId = race.Venue.Reference.Id,
@@ -137,7 +139,7 @@ namespace Hurace.Core.BL
             });
         }
 
-        public async Task UpdateRace(Domain.Race race)
+        public async Task<int> UpdateRace(Domain.Race race)
         {
             Entities.Race entRace = await raceDao.GetByIdAsync(race.Id);
             int firstStartListId = entRace.FirstStartListId;
@@ -187,6 +189,8 @@ namespace Hurace.Core.BL
                 Date = race.Date,
                 GenderSpecificRaceId = race.GenderSpecificRaceId
             });
+
+            return race.Id;
         }
 
         public async Task<IEnumerable<Domain.Race>> GetAllRacesAsync(

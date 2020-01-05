@@ -72,12 +72,12 @@
                         Margin="5,5,2.5,5"/>
                 <Button Content="Erstellen"
                         Visibility="{Binding CreateRaceButtonVisible, Converter={StaticResource VisibilityConverter}}"
-                        Command="{Binding CreateRaceCommand}"
+                        Command="{Binding CreateOrUpdateRaceCommand}"
                         Grid.Column="1"
                         Margin="2.5,5,5,5"/>
                 <Button Content="Aktualisieren"
                         Visibility="{Binding CreateRaceButtonVisible, Converter={StaticResource InvertedVisibilityConverter}}"
-                        Command="{Binding EditRacecommand}"
+                        Command="{Binding CreateOrUpdateRaceCommand}"
                         Grid.Column="1"
                         Margin="2.5,5,5,5"/> 
             </Grid>
@@ -94,7 +94,7 @@
                 <Button Margin="2,0"
                         Foreground="White"
                         ToolTip="Bearbeiten"
-                        Command="{Binding EditRaceCommand}"
+                        Command="{Binding OpenEditRaceCommand}"
                         Canvas.Top="30"
                         Canvas.Right="30">
                     <materialDesign:PackIcon Kind="Pencil"/>

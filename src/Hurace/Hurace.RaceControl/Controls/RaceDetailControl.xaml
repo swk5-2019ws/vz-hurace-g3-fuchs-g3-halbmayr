@@ -84,7 +84,34 @@
                     </Button>
                 </Grid>
             </materialDesign:Card>
-            <controls:RaceExecutionOverviewControl DataContext="{Binding Race}" Grid.Row="1" Margin="5"/>
+            <Grid Grid.Row="1" Margin="0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Margin="10,0,0,0" Content="Anzeige" Grid.Column="0" VerticalAlignment="Top"></Button>
+                <Button Margin="2,0,0,0" Content="Ablauf" Grid.Column="1" VerticalAlignment="Top"></Button>
+            </Grid>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <StackPanel Orientation="Vertical">
+                    <ListView ItemsSource="{Binding Race.FirstStartList}">
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Race.FirstStartList.Reference.Position}"></TextBlock>
+                                <TextBlock Text=""></TextBlock>
+                                <TextBlock Text="{Binding Race.FirstStartList.Reference.Skier.Reference.LastName}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <ListView ItemsSource="{Binding TimeMeasurments}">
+                        <DataTemplate>
+                            <!-- TimeMeasurment-->
+                        </DataTemplate>
+                    </ListView>
+                </StackPanel>
+            </StackPanel>
         </Grid>
     </StackPanel>
 </UserControl>
