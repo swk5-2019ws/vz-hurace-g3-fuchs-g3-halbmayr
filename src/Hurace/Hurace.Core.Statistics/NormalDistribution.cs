@@ -48,6 +48,9 @@ namespace Hurace.Core.Statistics
         /// <returns>the generated random observation</returns>
         public static double GenerateObservation(double mean, double stdDev)
         {
+            if (stdDev == 0)
+                return mean;
+
             var distribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(mean, stdDev);
             return distribution.Generate();
         }
@@ -71,6 +74,8 @@ namespace Hurace.Core.Statistics
                 throw new InvalidOperationException($"{nameof(areaCoverage)} has to be in boundary ]0,1[ but is {areaCoverage}");
             else if (double.IsNaN(mean) || double.IsNaN(stdDev))
                 return (double.NegativeInfinity, double.PositiveInfinity);
+            else if (stdDev == 0)
+                return (mean, mean);
 
             var distribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(mean, stdDev);
 

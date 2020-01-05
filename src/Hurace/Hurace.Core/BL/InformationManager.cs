@@ -722,6 +722,7 @@ namespace Hurace.Core.BL
             }
 
             return timeMeasurementSet
+                .Where(measurement => timeMeasurementSet.Count(subMeasurement => subMeasurement.SensorId == measurement.SensorId) > 6)
                 .GroupBy(
                     m => m.SensorId,
                     (sensorId, result) => (
@@ -731,6 +732,39 @@ namespace Hurace.Core.BL
                 .ToDictionary(
                     distribution => distribution.SensorId,
                     distribution => (distribution.Mean, distribution.StdDev));
+        }
+
+        public async Task<Domain.TimeMeasurement> GetTimeMeasurementByRaceDataAndSensorId(int raceDataId, int sensorId)
+        {
+            var measurementConditionBuilders = new List<QueryConditionBuilder>
+            {
+                new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.TimeMeasurement.SensorId), QueryConditionType.Equals, sensorId),
+                new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, raceDataId),
+                new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.TimeMeasurement.IsValid), QueryConditionType.Equals, true)
+            };
+
+            var measurementCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(QueryConditionNodeType.And, measurementConditionBuilders)
+                .Build();
+
+            var timeMeasurementEntSet = await timeMeasurementDao.GetAllConditionalAsync(measurementCondition);
+            var timeMeasurementEntSetCount = timeMeasurementEntSet.Count();
+            if (timeMeasurementEntSetCount > 1)
+                throw new InvalidOperationException(
+                    $"Multiple VALID Timemeasurements found for the same raceDataId '{raceDataId}' " +
+                    $"and sensorId '{sensorId}' -> atleast none or exactly one measurements should exist.");
+
+            return timeMeasurementEntSetCount == 0
+                ? null
+                : new Domain.TimeMeasurement
+                {
+                    Id = timeMeasurementEntSet.First().Id,
+                    Measurement = timeMeasurementEntSet.First().Measurement,
+                    SensorId = timeMeasurementEntSet.First().SensorId
+                };
         }
 
         #endregion

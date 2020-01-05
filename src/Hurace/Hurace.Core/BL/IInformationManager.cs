@@ -61,6 +61,7 @@ namespace Hurace.Core.BL
         Task<Domain.TimeMeasurement> CreateTimemeasurement(int measurement, int sensorId, int raceDataId, bool isValid);
         Task<Dictionary<int, (double mean, double standardDeviation)>> CalculateNormalDistributionOfMeasumentsPerSensor(
             int venueId, int raceTypeId);
+        Task<Domain.TimeMeasurement> GetTimeMeasurementByRaceDataAndSensorId(int raceDataId, int sensorId);
 
         Task<IEnumerable<Domain.Venue>> GetAllVenuesAsync(
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.ForeignKey,
