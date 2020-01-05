@@ -48,6 +48,9 @@ namespace Hurace.Core.Statistics
         /// <returns>the generated random observation</returns>
         public static double GenerateObservation(double mean, double stdDev)
         {
+            if (stdDev == 0)
+                return mean;
+
             var distribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(mean, stdDev);
             return distribution.Generate();
         }

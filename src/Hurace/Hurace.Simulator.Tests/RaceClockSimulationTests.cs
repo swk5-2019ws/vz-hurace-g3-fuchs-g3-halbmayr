@@ -17,7 +17,7 @@ namespace Hurace.Simulator.Tests
             {
                 UnwantedTimerTriggerChance = 0,
                 TimerIntervalMean = 50,
-                TimerIntervalStdDev = 0.1,
+                TimerIntervalStdDev = 0,
                 TimerFailureChance = 0
             };
             simulation.TimingTriggered += (sensorId, time) => counter++;
