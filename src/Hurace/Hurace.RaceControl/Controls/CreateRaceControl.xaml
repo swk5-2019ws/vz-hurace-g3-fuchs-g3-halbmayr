@@ -14,10 +14,6 @@
              FontFamily="{materialDesign:MaterialDesignFont}"
              d:DesignHeight="550" d:DesignWidth="500">
 
-    <UserControl.Resources>
-        <converters:InvertedBoolToVisibilityConverter x:Key="InvertedBoolConverter"/>
-    </UserControl.Resources>
-
     <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10" >
         <Grid Margin="7"
               Visibility="{Binding Loading, Converter={StaticResource InvertedBoolConverter}}">

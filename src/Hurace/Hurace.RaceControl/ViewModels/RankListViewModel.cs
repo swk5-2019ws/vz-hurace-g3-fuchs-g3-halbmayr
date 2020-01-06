@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Hurace.RaceControl.ViewModels
 {
@@ -18,18 +19,24 @@ namespace Hurace.RaceControl.ViewModels
         {
             this.informationManager = informationManager ?? throw new ArgumentNullException(nameof(informationManager));
             this.race = race ?? throw new ArgumentNullException(nameof(race));
-            this.Ranks = new ObservableCollection<RankViewModel>();
+            this.Ranks = new ObservableCollection<Domain.RankedSkier>();
         }
 
-        public ObservableCollection<RankViewModel> Ranks { get; }
+        public ObservableCollection<Domain.RankedSkier> Ranks { get; }
 
         public async Task InitializeAsync()
         {
-            (var firstStartListData, var secondStartListData) =
-                await informationManager.GetRankListOfRace(race.Id)
-                    .ConfigureAwait(false);
+            var ranks = await this.informationManager.GetRankedSkiersOfRace(race.Id)
+                .ConfigureAwait(false);
 
-            //initialize rank list
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    foreach (var rank in ranks)
+                    {
+                        this.Ranks.Add(rank);
+                    }
+                });
         }
     }
 }

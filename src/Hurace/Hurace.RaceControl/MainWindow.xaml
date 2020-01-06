@@ -16,9 +16,14 @@
         FontFamily="{materialDesign:MaterialDesignFont}"
         Height="600" MinHeight="600"
         Width="900" MinWidth="900">
+
     <Window.Resources>
+        <converters:BoolAggregateConverter x:Key="AggVisibilityConverter"/>
         <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
-        <converters:InvertedBoolToVisibilityConverter x:Key="InvertedVisibilityConverter"/>
+        <converters:ValueConverterCollection x:Key="InvertedVisibilityConverter">
+            <converters:InvertedBoolConverter/>
+            <converters:BoolToVisibilityConverter/>
+        </converters:ValueConverterCollection>
     </Window.Resources>
     
     <Grid>
@@ -124,6 +129,12 @@
                                 Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
 
                             <materialDesign:PackIcon Kind="PlayCircleOutline"/>
+
+                            <!--<Button.Visibility>
+                                <MultiBinding>
+                                    
+                                </MultiBinding>
+                            </Button.Visibility>-->
                         </Button>
 
                         <Button Command="{Binding StartSimulatedRaceExecutionCommand}"

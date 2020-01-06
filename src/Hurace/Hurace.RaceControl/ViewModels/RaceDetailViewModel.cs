@@ -31,7 +31,9 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task LoadRaceData()
         {
-            var tempRace = await raceInformationManager.GetRaceByIdAsync(Race.Id,
+            var tempRace = await raceInformationManager.GetRaceByIdAsync(
+                    Race.Id,
+                    Associated<RaceState>.LoadingType.Reference,
                     Associated<RaceType>.LoadingType.Reference,
                     Associated<Venue>.LoadingType.Reference,
                     Associated<Season>.LoadingType.Reference,
