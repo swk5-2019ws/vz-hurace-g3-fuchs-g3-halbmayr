@@ -1,5 +1,4 @@
 ﻿using Hurace.Core.BL;
-using Hurace.Domain;
 using Hurace.RaceControl.ViewModels.Shared;
 using System;
 using System.Collections.ObjectModel;
@@ -11,44 +10,46 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class RaceDetailViewModel : BaseViewModel
     {
-        private readonly IInformationManager raceInformationManager;
-        private ObservableCollection<StartPosition> startList;
+        private Domain.Race race;
+        private ObservableCollection<Domain.StartPosition> startList;
 
-        public RaceDetailViewModel(IInformationManager raceInformationManager)
+        private readonly IInformationManager informationManager;
+
+        public RaceDetailViewModel(IInformationManager informationManager)
         {
-            this.raceInformationManager = raceInformationManager ?? throw new ArgumentNullException(nameof(raceInformationManager));
+            this.informationManager = informationManager ?? throw new ArgumentNullException(nameof(informationManager));
 
-            startList = new ObservableCollection<StartPosition>();
+            startList = new ObservableCollection<Domain.StartPosition>();
+            this.Ranks = new ObservableCollection<Domain.RankedSkier>();
         }
 
-        public ObservableCollection<StartPosition> StartList
+        public ObservableCollection<Domain.StartPosition> StartList
         {
             get => startList;
             set => base.Set(ref this.startList, value);
         }
 
-        public Race Race { get; set; }
-
-        public async Task LoadRaceData()
+        public Domain.Race Race
         {
-            var tempRace = await raceInformationManager.GetRaceByIdAsync(Race.Id,
-                    Associated<RaceType>.LoadingType.Reference,
-                    Associated<Venue>.LoadingType.Reference,
-                    Associated<Season>.LoadingType.Reference,
-                    Associated<StartPosition>.LoadingType.Reference,
-                    Associated<Skier>.LoadingType.Reference,
-                    Associated<Sex>.LoadingType.Reference,
-                    Associated<Country>.LoadingType.Reference)
+            get => race;
+            set => base.Set(ref this.race, value);
+        }
+
+        public ObservableCollection<Domain.RankedSkier> Ranks { get; }
+
+        public async Task LoadRankList()
+        {
+            var ranks = await this.informationManager.GetRankedSkiersOfRace(race.Id)
                 .ConfigureAwait(false);
 
-            foreach (var sp in tempRace.FirstStartList)
-            {
-                Application.Current.Dispatcher.Invoke(
-                    () => StartList.Add(sp.Reference));
-            }
-
-            var sl = startList;
-            StartList = sl;
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    foreach (var rank in ranks)
+                    {
+                        this.Ranks.Add(rank);
+                    }
+                });
         }
     }
 }

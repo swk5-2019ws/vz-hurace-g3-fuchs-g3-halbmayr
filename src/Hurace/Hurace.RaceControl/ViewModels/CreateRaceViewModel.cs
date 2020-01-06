@@ -222,7 +222,9 @@ namespace Hurace.RaceControl.ViewModels
 
             await InitSkierLists().ConfigureAwait(false);
 
-            Domain.Race tempRace = await raceManager.GetRaceByIdAsync(Race.Id,
+            Domain.Race tempRace = await raceManager.GetRaceByIdAsync(
+                    Race.Id,
+                    Domain.Associated<Domain.RaceState>.LoadingType.None,
                     Domain.Associated<Domain.RaceType>.LoadingType.Reference,
                     Domain.Associated<Domain.Venue>.LoadingType.Reference,
                     Domain.Associated<Domain.Season>.LoadingType.Reference,

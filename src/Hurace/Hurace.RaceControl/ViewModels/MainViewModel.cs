@@ -18,7 +18,6 @@ namespace Hurace.RaceControl.ViewModels
 
         private RaceDetailViewModel selectedRace;
         private CreateRaceViewModel createRaceViewModel;
-
         private readonly IServiceProvider serviceProvider;
         private readonly RaceClockResolver raceClockResolver;
         private readonly IInformationManager informationManager;
@@ -107,16 +106,30 @@ namespace Hurace.RaceControl.ViewModels
 
         }
 
-        private Task DeleteRace(object obj)
+        private async Task DeleteRace(object obj)
         {
-            throw new NotImplementedException();
+            await this.informationManager.DeleteRace(this.SelectedRace.Race.Id).ConfigureAwait(false);
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    this.RaceListItemViewModels.Remove(this.SelectedRace);
+                    this.SelectedRace = null;
+                });
         }
 
         public bool ExecutionRunning
         {
             get => executionRunning;
-            set => base.Set(ref this.executionRunning, value);
+            set
+            {
+                base.Set(ref this.executionRunning, value);
+                base.NotifyPropertyChanged(nameof(RaceNotCompleted));
+            }
         }
+
+        public bool RaceNotCompleted =>
+            !this.ExecutionRunning &&
+            (this.SelectedRace?.Race.OverallRaceState.Reference.Id == 3 || this.SelectedRace?.Race.OverallRaceState.Reference.Id == 4);
 
         public AsyncDelegateCommand CreateOrUpdateRaceCommand { get; }
         public AsyncDelegateCommand OpenEditRaceCommand { get; }
@@ -146,17 +159,24 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.raceDetailViewVisible, value);
         }
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         public RaceDetailViewModel SelectedRace
         {
             get => selectedRace;
             set
             {
                 base.Set(ref this.selectedRace, value);
-                this.RaceDetailControlVisible = true;
+
+                this.RaceDetailControlVisible = value != null;
                 this.CreateRaceControlVisible = false;
-                this.SelectedRace.LoadRaceData();
+
+                if (value != null)
+                {
+                    this.InitializeSelectedRace();
+                }
             }
         }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
         public CreateRaceViewModel CreateRaceViewModel
         {
@@ -184,6 +204,37 @@ namespace Hurace.RaceControl.ViewModels
 
             await createRaceViewModel.Initialize()
                 .ConfigureAwait(false);
+        }
+
+        public async Task InitializeSelectedRace()
+        {
+            var race = await informationManager.GetRaceByIdAsync(
+                    this.selectedRace.Race.Id,
+                    Domain.Associated<Domain.RaceState>.LoadingType.Reference,
+                    Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                    Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                    Domain.Associated<Domain.Season>.LoadingType.Reference,
+                    Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
+                    Domain.Associated<Domain.Skier>.LoadingType.Reference,
+                    Domain.Associated<Domain.Sex>.LoadingType.Reference,
+                    Domain.Associated<Domain.Country>.LoadingType.Reference)
+                .ConfigureAwait(false);
+
+            if (race.OverallRaceState.Reference.Id != 3 && race.OverallRaceState.Reference.Id != 4)
+                await this.SelectedRace.LoadRankList().ConfigureAwait(false);
+
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    this.SelectedRace.Race = race;
+
+                    foreach (var sp in race.FirstStartList)
+                    {
+                        this.selectedRace.StartList.Add(sp.Reference);
+                    }
+
+                    base.NotifyPropertyChanged(nameof(RaceNotCompleted));
+                });
         }
 
         public bool CanStartRaceExecution(object argument)

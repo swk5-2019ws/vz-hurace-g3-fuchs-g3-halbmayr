@@ -15,10 +15,14 @@
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Height="600" MinHeight="600"
-        Width="900" MinWidth="900">
+        Width="1000" MinWidth="1000">
+
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
-        <converters:InvertedBoolToVisibilityConverter x:Key="InvertedVisibilityConverter"/>
+        <converters:ValueConverterCollection x:Key="InvertedVisibilityConverter">
+            <converters:InvertedBoolConverter/>
+            <converters:BoolToVisibilityConverter/>
+        </converters:ValueConverterCollection>
     </Window.Resources>
     
     <Grid>
@@ -121,7 +125,7 @@
                                 Style="{StaticResource MaterialDesignRaisedAccentButton}"
                                 Foreground="White"
                                 ToolTip="Starte das Rennen"
-                                Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
 
                             <materialDesign:PackIcon Kind="PlayCircleOutline"/>
                         </Button>
@@ -133,7 +137,7 @@
                                 Style="{StaticResource MaterialDesignRaisedLightButton}"
                                 Foreground="White"
                                 ToolTip="Starte die Simulation"
-                                Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
                             
                             <materialDesign:PackIcon Kind="PlaySpeed"/>
                         </Button>
@@ -144,7 +148,7 @@
                                 Margin="5,0"
                                 Foreground="White"
                                 ToolTip="Rennen bearbeiten"
-                                Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
 
                             <materialDesign:PackIcon Kind="Pencil"/>
                         </Button>
@@ -174,6 +178,15 @@
                             <materialDesign:PackIcon Kind="Stop"/>
                         </Button>
                     </Grid>
+
+                    <DockPanel Grid.Row="1"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               LastChildFill="False"
+                               Visibility="{Binding RaceNotCompleted, Converter={StaticResource InvertedVisibilityConverter}}">
+
+                        <controls:RankListControl DataContext="{Binding SelectedRace}"/>
+                    </DockPanel>
 
                     <DockPanel Grid.Row="1"
                                Grid.Column="0"
