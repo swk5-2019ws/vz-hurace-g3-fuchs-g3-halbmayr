@@ -418,6 +418,12 @@ namespace Hurace.Core.BL
                 == 1;
         }
 
+        public async Task<(IEnumerable<Domain.RaceData> firstStartList, IEnumerable<Domain.RaceData> secondStartList)> GetRankListOfRace(
+            int raceId)
+        {
+            return (null, null);
+        }
+
         #endregion
         #region RaceState-Methods
 

@@ -30,6 +30,7 @@ namespace Hurace.Core.BL
             int position,
             Domain.Associated<Domain.RaceState>.LoadingType raceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference);
         Task<bool> UpdateRaceData(Domain.RaceData raceData);
+        Task<(IEnumerable<Domain.RaceData> firstStartList, IEnumerable<Domain.RaceData> secondStartList)> GetRankListOfRace(int raceId);
 
         Task<IEnumerable<Domain.RaceState>> GetAllRaceStates();
 
