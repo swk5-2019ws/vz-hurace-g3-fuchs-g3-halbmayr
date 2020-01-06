@@ -25,6 +25,8 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Sex>.LoadingType skierSexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.None,
             Domain.Associated<Domain.Country>.LoadingType skierCountryLoadingType = Domain.Associated<Domain.Country>.LoadingType.None);
 
+        Task DeleteRace(int raceId);
+
         Task<Domain.RaceData> GetRaceDataByRaceAndStartlistAndPosition(
             Domain.Race race,
             bool firstStartList,
@@ -53,9 +55,6 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
             Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None);
 
-        Task<IEnumerable<Domain.StartPosition>> GetAllStartPositionsOfStartList(
-            int startListId,
-            Domain.Associated<Domain.Skier>.LoadingType skierLoadingType = Domain.Associated<Domain.Skier>.LoadingType.ForeignKey);
         Task<bool> IsNextStartposition(Domain.Race race, bool firstStartlist, int position);
 
         Task<Domain.Skier> GetSkierByRaceAndStartlistAndPosition(Domain.Race race, bool firstStartList, int position);

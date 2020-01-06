@@ -106,9 +106,15 @@ namespace Hurace.RaceControl.ViewModels
 
         }
 
-        private Task DeleteRace(object obj)
+        private async Task DeleteRace(object obj)
         {
-            throw new NotImplementedException();
+            await this.informationManager.DeleteRace(this.SelectedRace.Race.Id).ConfigureAwait(false);
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    this.RaceListItemViewModels.Remove(this.SelectedRace);
+                    this.SelectedRace = null;
+                });
         }
 
         public bool ExecutionRunning
@@ -153,17 +159,22 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.raceDetailViewVisible, value);
         }
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         public RaceDetailViewModel SelectedRace
         {
             get => selectedRace;
             set
             {
                 base.Set(ref this.selectedRace, value);
-                this.RaceDetailControlVisible = true;
+
+                this.RaceDetailControlVisible = value != null;
                 this.CreateRaceControlVisible = false;
-                this.InitializeSelectedRace();
+
+                if (value != null)
+                    this.InitializeSelectedRace();
             }
         }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
         public CreateRaceViewModel CreateRaceViewModel
         {

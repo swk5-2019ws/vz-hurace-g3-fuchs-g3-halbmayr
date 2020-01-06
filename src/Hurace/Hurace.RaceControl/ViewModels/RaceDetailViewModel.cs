@@ -11,13 +11,11 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class RaceDetailViewModel : BaseViewModel
     {
-        private readonly IInformationManager raceInformationManager;
+        private Race race;
         private ObservableCollection<StartPosition> startList;
 
-        public RaceDetailViewModel(IInformationManager raceInformationManager)
+        public RaceDetailViewModel()
         {
-            this.raceInformationManager = raceInformationManager ?? throw new ArgumentNullException(nameof(raceInformationManager));
-
             startList = new ObservableCollection<StartPosition>();
         }
 
@@ -27,6 +25,10 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.startList, value);
         }
 
-        public Race Race { get; set; }
+        public Race Race
+        {
+            get => race;
+            set => base.Set(ref this.race, value);
+        }
     }
 }

@@ -360,6 +360,66 @@ namespace Hurace.Core.BL
             return race;
         }
 
+        public async Task DeleteRace(int raceId)
+        {
+            var raceEntity = await this.raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
+
+            var startListIdSet = new List<int> { raceEntity.FirstStartListId, raceEntity.SecondStartListId };
+
+            var raceDataIdSet = new List<int>();
+            foreach (var startListId in startListIdSet)
+            {
+                var raceDataCondition = new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, startListId)
+                    .Build();
+
+                raceDataIdSet.AddRange(
+                    (await raceDataDao.GetAllConditionalAsync(raceDataCondition).ConfigureAwait(false))
+                        .Select(rd => rd.Id));
+            }
+
+            if (raceDataIdSet.Any())
+            {
+                var timeMeasurementRemoveCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(
+                    QueryConditionNodeType.Or,
+                    raceDataIdSet.Select(
+                        raceDataId => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, raceDataId)))
+                .Build();
+                await timeMeasurementDao.DeleteAsync(timeMeasurementRemoveCondition).ConfigureAwait(false);
+            }
+
+            var raceDataRemoveCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(
+                    QueryConditionNodeType.Or,
+                    startListIdSet.Select(
+                        startListId => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, startListId)))
+                .Build();
+            await raceDataDao.DeleteAsync(raceDataRemoveCondition).ConfigureAwait(false);
+
+            var startPositionRemoveCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(
+                    QueryConditionNodeType.Or,
+                    startListIdSet.Select(
+                        startListId => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.StartPosition.StartListId), QueryConditionType.Equals, startListId)))
+                .Build();
+            await startPositionDao.DeleteAsync(startPositionRemoveCondition).ConfigureAwait(false);
+
+            await raceDao.DeleteByIdAsync(raceId).ConfigureAwait(false);
+
+            var startListRemoveCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(
+                    QueryConditionNodeType.Or,
+                    startListIdSet.Select(
+                        startListId => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.StartList.Id), QueryConditionType.Equals, startListId)))
+                .Build();
+            await startListDao.DeleteAsync(startListRemoveCondition).ConfigureAwait(false);
+        }
+
         #endregion
         #region RaceData-Methods
 
