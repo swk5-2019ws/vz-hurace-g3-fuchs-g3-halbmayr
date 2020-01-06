@@ -18,7 +18,6 @@ namespace Hurace.RaceControl.ViewModels
 
         private RaceDetailViewModel selectedRace;
         private CreateRaceViewModel createRaceViewModel;
-
         private readonly IServiceProvider serviceProvider;
         private readonly RaceClockResolver raceClockResolver;
         private readonly IInformationManager informationManager;
@@ -115,8 +114,16 @@ namespace Hurace.RaceControl.ViewModels
         public bool ExecutionRunning
         {
             get => executionRunning;
-            set => base.Set(ref this.executionRunning, value);
+            set
+            {
+                base.Set(ref this.executionRunning, value);
+                base.NotifyPropertyChanged(nameof(RaceNotCompleted));
+            }
         }
+
+        public bool RaceNotCompleted =>
+            !this.ExecutionRunning &&
+            (this.SelectedRace?.Race.OverallRaceState.Reference.Id == 3 || this.SelectedRace?.Race.OverallRaceState.Reference.Id == 4);
 
         public AsyncDelegateCommand CreateOrUpdateRaceCommand { get; }
         public AsyncDelegateCommand OpenEditRaceCommand { get; }
@@ -154,7 +161,7 @@ namespace Hurace.RaceControl.ViewModels
                 base.Set(ref this.selectedRace, value);
                 this.RaceDetailControlVisible = true;
                 this.CreateRaceControlVisible = false;
-                this.SelectedRace.LoadRaceData();
+                this.InitializeSelectedRace();
             }
         }
 
@@ -184,6 +191,34 @@ namespace Hurace.RaceControl.ViewModels
 
             await createRaceViewModel.Initialize()
                 .ConfigureAwait(false);
+        }
+
+        public async Task InitializeSelectedRace()
+        {
+            var race = await informationManager.GetRaceByIdAsync(
+                    this.selectedRace.Race.Id,
+                    Domain.Associated<Domain.RaceState>.LoadingType.Reference,
+                    Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                    Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                    Domain.Associated<Domain.Season>.LoadingType.Reference,
+                    Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
+                    Domain.Associated<Domain.Skier>.LoadingType.Reference,
+                    Domain.Associated<Domain.Sex>.LoadingType.Reference,
+                    Domain.Associated<Domain.Country>.LoadingType.Reference)
+                .ConfigureAwait(false);
+
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    this.SelectedRace.Race = race;
+
+                    foreach (var sp in race.FirstStartList)
+                    {
+                        this.selectedRace.StartList.Add(sp.Reference);
+                    }
+
+                    base.NotifyPropertyChanged(nameof(RaceNotCompleted));
+                });
         }
 
         public bool CanStartRaceExecution(object argument)

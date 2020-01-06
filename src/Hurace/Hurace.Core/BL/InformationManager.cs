@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#pragma warning disable IDE0046 // Convert to conditional expression
 #pragma warning disable IDE0010 // Add missing cases
 namespace Hurace.Core.BL
 {
@@ -250,6 +251,7 @@ namespace Hurace.Core.BL
 
         public async Task<Domain.Race> GetRaceByIdAsync(
             int raceId,
+            Domain.Associated<Domain.RaceState>.LoadingType overallRaceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference,
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None,
@@ -268,47 +270,54 @@ namespace Hurace.Core.BL
                     Description = raceEntity.Description,
                     Id = raceEntity.Id,
                     NumberOfSensors = raceEntity.NumberOfSensors,
+                    OverallRaceState = await LoadAssociatedDomainObject(
+                            overallRaceStateLoadingType,
+                            async () => new Domain.Associated<Domain.RaceState>(
+                                await LoadOverallRaceStateOfRace(raceEntity.Id).ConfigureAwait(false)),
+                            async () => new Domain.Associated<Domain.RaceState>(
+                                (await LoadOverallRaceStateOfRace(raceEntity.Id).ConfigureAwait(false)).Id))
+                        .ConfigureAwait(false),
                     RaceType = await LoadAssociatedDomainObject(
-                                raceTypeLoadingType,
-                                async () => new Domain.Associated<Domain.RaceType>(
-                                        await this.GetRaceTypeByIdAsync(raceEntity.RaceTypeId).ConfigureAwait(false)),
-                                    () => new Domain.Associated<Domain.RaceType>(raceEntity.RaceTypeId))
+                            raceTypeLoadingType,
+                            async () => new Domain.Associated<Domain.RaceType>(
+                                await this.GetRaceTypeByIdAsync(raceEntity.RaceTypeId).ConfigureAwait(false)),
+                            () => new Domain.Associated<Domain.RaceType>(raceEntity.RaceTypeId))
                         .ConfigureAwait(false),
                     Season = await LoadAssociatedDomainObject(
-                                seasonLoadingType,
-                                async () => new Domain.Associated<Domain.Season>(
-                                    await GetSeasonByDateAsync(raceEntity.Date).ConfigureAwait(false)))
+                            seasonLoadingType,
+                            async () => new Domain.Associated<Domain.Season>(
+                                await GetSeasonByDateAsync(raceEntity.Date).ConfigureAwait(false)))
                         .ConfigureAwait(false),
                     Venue = await LoadAssociatedDomainObject(
-                                venueLoadingType,
-                                async () => new Domain.Associated<Domain.Venue>(
-                                    await this.GetVenueByIdAsync(
-                                            raceEntity.VenueId,
-                                            seasonsOfVenueLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
-                                        .ConfigureAwait(false)),
-                                () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId))
+                            venueLoadingType,
+                            async () => new Domain.Associated<Domain.Venue>(
+                                await this.GetVenueByIdAsync(
+                                        raceEntity.VenueId,
+                                        seasonsOfVenueLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                                    .ConfigureAwait(false)),
+                            () => new Domain.Associated<Domain.Venue>(raceEntity.VenueId))
                         .ConfigureAwait(false),
                     FirstStartList = await LoadAssociatedDomainObjectSet(
-                                startListLoadingType,
-                                async () =>
-                                    (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId, skierLoadingType)
-                                        .ConfigureAwait(false))
-                                    .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
-                                async () =>
-                                    (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId, skierLoadingType)
-                                        .ConfigureAwait(false))
-                                    .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id)))
+                            startListLoadingType,
+                            async () =>
+                                (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId, skierLoadingType)
+                                    .ConfigureAwait(false))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
+                            async () =>
+                                (await GetAllStartPositionsOfStartList(raceEntity.FirstStartListId, skierLoadingType)
+                                    .ConfigureAwait(false))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id)))
                         .ConfigureAwait(false),
                     SecondStartList = await LoadAssociatedDomainObjectSet(
-                                startListLoadingType,
-                                async () =>
-                                    (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId, skierLoadingType)
-                                        .ConfigureAwait(false))
-                                    .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
-                                async () =>
-                                    (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId, skierLoadingType)
-                                        .ConfigureAwait(false))
-                                    .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id)))
+                            startListLoadingType,
+                            async () =>
+                                (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId, skierLoadingType)
+                                    .ConfigureAwait(false))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition)),
+                            async () =>
+                                (await GetAllStartPositionsOfStartList(raceEntity.SecondStartListId, skierLoadingType)
+                                    .ConfigureAwait(false))
+                                .Select(startPosition => new Domain.Associated<Domain.StartPosition>(startPosition.Id)))
                         .ConfigureAwait(false)
                 };
 
@@ -418,10 +427,9 @@ namespace Hurace.Core.BL
                 == 1;
         }
 
-        public async Task<(IEnumerable<Domain.RaceData> firstStartList, IEnumerable<Domain.RaceData> secondStartList)> GetRankListOfRace(
-            int raceId)
+        public async Task<IEnumerable<Domain.RankedSkier>> GetRankedSkiersOfRace(int raceId)
         {
-            return (null, null);
+            return null;
         }
 
         #endregion
@@ -446,6 +454,35 @@ namespace Hurace.Core.BL
                 Id = raceStateEnt.Id,
                 Label = raceStateEnt.Label
             };
+        }
+
+        public async Task<Domain.RaceState> LoadOverallRaceStateOfRace(int raceId)
+        {
+            var raceEnt = await raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
+
+            var raceDataSet = new List<Entities.RaceData>();
+            foreach (var startListId in new int[] { raceEnt.FirstStartListId, raceEnt.SecondStartListId })
+            {
+                var raceDataCondition = new QueryConditionBuilder()
+                    .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, startListId)
+                    .Build();
+
+                raceDataSet.AddRange(
+                    await raceDataDao.GetAllConditionalAsync(raceDataCondition)
+                        .ConfigureAwait(false));
+            }
+
+            var raceStates = await raceStateDao.GetAllConditionalAsync().ConfigureAwait(false);
+            var finishedRaceState = raceStates.First(rs => rs.Label == "Abgeschlossen");
+            var runningRaceState = raceStates.First(rs => rs.Label == "Laufend");
+            var readyToStartRaceState = raceStates.First(rs => rs.Label == "Startbereit");
+
+            if (raceDataSet.All(rd => rd.RaceStateId != runningRaceState.Id && rd.RaceStateId != readyToStartRaceState.Id))
+                return await GetRaceStateById(finishedRaceState.Id).ConfigureAwait(false);
+            else if (raceDataSet.Any(rd => rd.RaceStateId == runningRaceState.Id))
+                return await GetRaceStateById(runningRaceState.Id).ConfigureAwait(false);
+            else
+                return await GetRaceStateById(readyToStartRaceState.Id).ConfigureAwait(false);
         }
 
         #endregion
@@ -907,6 +944,49 @@ namespace Hurace.Core.BL
 
         #endregion
         #region Helper
+
+        private async Task<Domain.Associated<T>> LoadAssociatedDomainObject<T>(
+            Domain.Associated<T>.LoadingType desiredLoadingType,
+            Func<Task<Domain.Associated<T>>> loadDomainObjectAsReference,
+            Func<Task<Domain.Associated<T>>> loadDomainObjectAsForeignKey)
+            where T : Domain.DomainObjectBase
+        {
+            switch (desiredLoadingType)
+            {
+                case Domain.Associated<T>.LoadingType.None:
+                    return null;
+                case Domain.Associated<T>.LoadingType.ForeignKey:
+                    if (loadDomainObjectAsForeignKey == null)
+                    {
+                        var associatedDomainObject =
+                            await LoadAssociatedDomainObject(
+                                Domain.Associated<T>.LoadingType.Reference,
+                                loadDomainObjectAsReference)
+                            .ConfigureAwait(false);
+
+                        if (associatedDomainObject.Reference == null)
+                            return associatedDomainObject;
+
+                        var reference = associatedDomainObject.Reference;
+                        associatedDomainObject.Reference = null;
+                        associatedDomainObject.ForeignKey = reference.Id;
+                        return associatedDomainObject;
+                    }
+                    else
+                    {
+                        return await loadDomainObjectAsForeignKey().ConfigureAwait(false);
+                    }
+                case Domain.Associated<T>.LoadingType.Reference:
+                    if (loadDomainObjectAsReference == null)
+                        throw new InvalidOperationException(
+                            $"Can't load associated domain-object {typeof(T).Name} as reference because loader is null");
+
+                    return await loadDomainObjectAsReference().ConfigureAwait(false);
+                default:
+                    throw new InvalidOperationException(
+                        $"Unknown value {desiredLoadingType} of {typeof(Domain.Associated<T>.LoadingType).Name}");
+            }
+        }
 
         private async Task<Domain.Associated<T>> LoadAssociatedDomainObject<T>(
             Domain.Associated<T>.LoadingType desiredLoadingType,

@@ -16,6 +16,7 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
         Task<Domain.Race> GetRaceByIdAsync(
             int raceId,
+            Domain.Associated<Domain.RaceState>.LoadingType overallRaceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference,
             Domain.Associated<Domain.RaceType>.LoadingType raceTypeLoadingType = Domain.Associated<Domain.RaceType>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Venue>.LoadingType venueLoadingType = Domain.Associated<Domain.Venue>.LoadingType.ForeignKey,
             Domain.Associated<Domain.Season>.LoadingType seasonLoadingType = Domain.Associated<Domain.Season>.LoadingType.None,
@@ -30,7 +31,7 @@ namespace Hurace.Core.BL
             int position,
             Domain.Associated<Domain.RaceState>.LoadingType raceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference);
         Task<bool> UpdateRaceData(Domain.RaceData raceData);
-        Task<(IEnumerable<Domain.RaceData> firstStartList, IEnumerable<Domain.RaceData> secondStartList)> GetRankListOfRace(int raceId);
+        Task<IEnumerable<Domain.RankedSkier>> GetRankedSkiersOfRace(int raceId);
 
         Task<IEnumerable<Domain.RaceState>> GetAllRaceStates();
 

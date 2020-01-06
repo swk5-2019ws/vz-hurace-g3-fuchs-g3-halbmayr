@@ -28,29 +28,5 @@ namespace Hurace.RaceControl.ViewModels
         }
 
         public Race Race { get; set; }
-
-        public async Task LoadRaceData()
-        {
-            var tempRace = await raceInformationManager.GetRaceByIdAsync(
-                    Race.Id,
-                    Associated<RaceState>.LoadingType.Reference,
-                    Associated<RaceType>.LoadingType.Reference,
-                    Associated<Venue>.LoadingType.Reference,
-                    Associated<Season>.LoadingType.Reference,
-                    Associated<StartPosition>.LoadingType.Reference,
-                    Associated<Skier>.LoadingType.Reference,
-                    Associated<Sex>.LoadingType.Reference,
-                    Associated<Country>.LoadingType.Reference)
-                .ConfigureAwait(false);
-
-            foreach (var sp in tempRace.FirstStartList)
-            {
-                Application.Current.Dispatcher.Invoke(
-                    () => StartList.Add(sp.Reference));
-            }
-
-            var sl = startList;
-            StartList = sl;
-        }
     }
 }
