@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:local="clr-namespace:Hurace.RaceControl.Controls"
+             xmlns:converters="clr-namespace:Hurace.RaceControl.Converters"
              mc:Ignorable="d" 
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              Background="{DynamicResource MaterialDesignPaper}"
@@ -12,19 +12,35 @@
              TextElement.FontSize="14"
              FontFamily="{materialDesign:MaterialDesignFont}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Orientation="Vertical">
-        <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                   Text="Rangliste"
-                   Margin="5"/>
 
-        <!--<ListView ItemsSource="{Binding Ranks}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Vorname"
-                                    DisplayMemberBinding="{Binding Firstname}"
-                                    Width="100"/>
-                </GridView>
-            </ListView.View>
-        </ListView>-->
-    </StackPanel>
+    <UserControl.Resources>
+        <converters:TimeSpanConverter x:Key="TimeSpanVisualizer"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <DataGrid ItemsSource="{Binding Ranks}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Rang"
+                                    Binding="{Binding Rank}"/>
+                <DataGridTextColumn Header="Nachname"
+                                    Binding="{Binding LastName}"/>
+                <DataGridTextColumn Header="Vorname"
+                                    Binding="{Binding FirstName}"/>
+                <DataGridTextColumn Header="Land"
+                                    Binding="{Binding Country.Reference.Name}"/>
+                <DataGridTextColumn Header="1.Lauf"
+                                    Binding="{Binding ElapsedTimeInFirstRun, Converter={StaticResource TimeSpanVisualizer}}"/>
+                <DataGridTextColumn Header="2.Lauf"
+                                    Binding="{Binding ElapsedTimeInSecondRun, Converter={StaticResource TimeSpanVisualizer}}"/>
+                <DataGridTextColumn Header="Gesamtzeit"
+                                    Binding="{Binding ElapsedTotalTime, Converter={StaticResource TimeSpanVisualizer}}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
 </UserControl>

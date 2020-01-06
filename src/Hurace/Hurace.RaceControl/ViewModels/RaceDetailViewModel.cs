@@ -1,5 +1,4 @@
 ﻿using Hurace.Core.BL;
-using Hurace.Domain;
 using Hurace.RaceControl.ViewModels.Shared;
 using System;
 using System.Collections.ObjectModel;
@@ -11,24 +10,46 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class RaceDetailViewModel : BaseViewModel
     {
-        private Race race;
-        private ObservableCollection<StartPosition> startList;
+        private Domain.Race race;
+        private ObservableCollection<Domain.StartPosition> startList;
 
-        public RaceDetailViewModel()
+        private readonly IInformationManager informationManager;
+
+        public RaceDetailViewModel(IInformationManager informationManager)
         {
-            startList = new ObservableCollection<StartPosition>();
+            this.informationManager = informationManager ?? throw new ArgumentNullException(nameof(informationManager));
+
+            startList = new ObservableCollection<Domain.StartPosition>();
+            this.Ranks = new ObservableCollection<Domain.RankedSkier>();
         }
 
-        public ObservableCollection<StartPosition> StartList
+        public ObservableCollection<Domain.StartPosition> StartList
         {
             get => startList;
             set => base.Set(ref this.startList, value);
         }
 
-        public Race Race
+        public Domain.Race Race
         {
             get => race;
             set => base.Set(ref this.race, value);
+        }
+
+        public ObservableCollection<Domain.RankedSkier> Ranks { get; }
+
+        public async Task LoadRankList()
+        {
+            var ranks = await this.informationManager.GetRankedSkiersOfRace(race.Id)
+                .ConfigureAwait(false);
+
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    foreach (var rank in ranks)
+                    {
+                        this.Ranks.Add(rank);
+                    }
+                });
         }
     }
 }

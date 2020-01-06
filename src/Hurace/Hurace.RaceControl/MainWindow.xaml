@@ -15,7 +15,7 @@
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Height="600" MinHeight="600"
-        Width="900" MinWidth="900">
+        Width="1000" MinWidth="1000">
 
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>

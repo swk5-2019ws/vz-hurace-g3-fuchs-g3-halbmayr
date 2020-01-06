@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#pragma warning disable IDE0039 // Use local function
 #pragma warning disable IDE0046 // Convert to conditional expression
 #pragma warning disable IDE0010 // Add missing cases
 namespace Hurace.Core.BL
@@ -489,7 +490,128 @@ namespace Hurace.Core.BL
 
         public async Task<IEnumerable<Domain.RankedSkier>> GetRankedSkiersOfRace(int raceId)
         {
-            return null;
+            var raceEntity = await raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
+
+            var firstStartListCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.StartPosition.StartListId), QueryConditionType.Equals, raceEntity.FirstStartListId)
+                .Build();
+            var skierIdSet = (await startPositionDao.GetAllConditionalAsync(firstStartListCondition).ConfigureAwait(false))
+                .Select(sp => sp.SkierId);
+
+            var skierCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(
+                    QueryConditionNodeType.Or,
+                    skierIdSet.Select(
+                        skierId => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.Skier.Id), QueryConditionType.Equals, skierId)))
+                .Build();
+            var skierEntSet = await skierDao.GetAllConditionalAsync(skierCondition).ConfigureAwait(false);
+
+            Func<int, IQueryCondition> raceDataConditionGenerator =
+                startListId =>
+                {
+                    return new QueryConditionBuilder()
+                       .DeclareConditionNode(
+                           QueryConditionNodeType.And,
+                           () => new QueryConditionBuilder()
+                               .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, startListId),
+                           () => new QueryConditionBuilder()
+                               .DeclareConditionFromBuilderSet(
+                                   QueryConditionNodeType.Or,
+                                   skierIdSet.Select(skierId => new QueryConditionBuilder()
+                                       .DeclareCondition(nameof(Entities.RaceData.SkierId), QueryConditionType.Equals, skierId))))
+                       .Build();
+                };
+
+            var firstRaceDataSet = await raceDataDao.GetAllConditionalAsync(
+                    raceDataConditionGenerator(raceEntity.FirstStartListId))
+                .ConfigureAwait(false);
+            var secondRaceDataSet = await raceDataDao.GetAllConditionalAsync(
+                    raceDataConditionGenerator(raceEntity.SecondStartListId))
+                .ConfigureAwait(false);
+
+            var timeMeasurementCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.Or,
+                    () => new QueryConditionBuilder()
+                        .DeclareConditionFromBuilderSet(
+                            QueryConditionNodeType.Or,
+                            firstRaceDataSet.Select(rd => new QueryConditionBuilder()
+                                .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, rd.Id))),
+                    () => new QueryConditionBuilder()
+                        .DeclareConditionFromBuilderSet(
+                            QueryConditionNodeType.Or,
+                            secondRaceDataSet.Select(rd => new QueryConditionBuilder()
+                                .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, rd.Id))))
+                .Build();
+            var timeMeasurementSet = await timeMeasurementDao.GetAllConditionalAsync(timeMeasurementCondition)
+                .ConfigureAwait(false);
+
+            var countryEntSet = await countryDao.GetAllConditionalAsync().ConfigureAwait(false);
+
+            var rankedSkierSet = new List<Domain.RankedSkier>();
+            foreach (var skierEnt in skierEntSet)
+            {
+                var countryEnt = countryEntSet.First(c => c.Id == skierEnt.CountryId);
+
+                var rankedSkier = new Domain.RankedSkier()
+                {
+                    DateOfBirth = skierEnt.DateOfBirth,
+                    FirstName = skierEnt.FirstName,
+                    LastName = skierEnt.LastName,
+                    ImageUrl = skierEnt.ImageUrl,
+                    IsRemoved = skierEnt.IsRemoved,
+                    Country = new Domain.Associated<Domain.Country>(new Domain.Country { Id = countryEnt.Id, Name = countryEnt.Name })
+                };
+
+                var firstRaceDataEnt = firstRaceDataSet.First(rd => rd.SkierId == skierEnt.Id);
+
+                var firstFinalMeasurement = timeMeasurementSet
+                    .FirstOrDefault(tm => tm.RaceDataId == firstRaceDataEnt.Id &&
+                                          tm.IsValid &&
+                                          tm.SensorId == raceEntity.NumberOfSensors - 1);
+
+                rankedSkier.ElapsedTimeInFirstRun = firstFinalMeasurement != null
+                    ? TimeSpan.FromMilliseconds(firstFinalMeasurement.Measurement)
+                    : TimeSpan.MaxValue;
+
+                var secondRaceDataEnt = secondRaceDataSet.FirstOrDefault(rd => rd.SkierId == skierEnt.Id);
+                if (secondRaceDataEnt != null)
+                {
+                    var secondFinalMeasurement = timeMeasurementSet
+                        .FirstOrDefault(tm => tm.RaceDataId == secondRaceDataEnt.Id &&
+                                              tm.IsValid &&
+                                              tm.SensorId == raceEntity.NumberOfSensors - 1);
+
+                    rankedSkier.ElapsedTimeInSecondRun = secondFinalMeasurement != null
+                        ? TimeSpan.FromMilliseconds(secondFinalMeasurement.Measurement)
+                        : TimeSpan.MaxValue;
+
+                    rankedSkier.ElapsedTotalTime =
+                        rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue && rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue
+                            ? rankedSkier.ElapsedTimeInFirstRun + rankedSkier.ElapsedTimeInSecondRun
+                            : TimeSpan.MaxValue;
+                }
+
+                rankedSkierSet.Add(rankedSkier);
+            }
+
+            var orderedRankedSkierSet = rankedSkierSet.OrderBy(rs => rs.ElapsedTotalTime);
+
+            var counter = 1;
+            foreach (var rankedSkier in orderedRankedSkierSet)
+            {
+                rankedSkier.Rank = counter++;
+            }
+
+            var bestRankedSkier = orderedRankedSkierSet.First(ors => ors.Rank == 1);
+            foreach (var rankedSkier in orderedRankedSkierSet.Where(ors => ors.Rank != 1))
+            {
+                rankedSkier.ElapsedTimeInFirstRun -= bestRankedSkier.ElapsedTimeInFirstRun;
+                rankedSkier.ElapsedTimeInSecondRun -= bestRankedSkier.ElapsedTimeInSecondRun;
+            }
+
+            return orderedRankedSkierSet;
         }
 
         #endregion

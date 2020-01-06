@@ -171,7 +171,9 @@ namespace Hurace.RaceControl.ViewModels
                 this.CreateRaceControlVisible = false;
 
                 if (value != null)
+                {
                     this.InitializeSelectedRace();
+                }
             }
         }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -217,6 +219,9 @@ namespace Hurace.RaceControl.ViewModels
                     Domain.Associated<Domain.Sex>.LoadingType.Reference,
                     Domain.Associated<Domain.Country>.LoadingType.Reference)
                 .ConfigureAwait(false);
+
+            if (race.OverallRaceState.Reference.Id != 3 && race.OverallRaceState.Reference.Id != 4)
+                await this.SelectedRace.LoadRankList().ConfigureAwait(false);
 
             Application.Current.Dispatcher.Invoke(
                 () =>
