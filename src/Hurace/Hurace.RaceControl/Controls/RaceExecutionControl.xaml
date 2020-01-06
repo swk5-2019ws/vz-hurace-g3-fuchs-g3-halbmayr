@@ -27,20 +27,30 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
         <ListBox ItemsSource="{Binding StartList}"
+                 SelectedItem="{Binding SelectedStartList}"
                  SelectionMode="Single"
                  BorderThickness="0"
+                 Grid.Column="0"
+                 Grid.Row="0"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                  MaxHeight="300">
             
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Position}"/>
+                        <TextBlock Text="{Binding StartPosition.Position}"/>
                         <TextBlock Text=" "/>
-                        <TextBlock Text="{Binding Skier.Reference.FirstName}"/>
+                        <TextBlock Text="{Binding StartPosition.Skier.Reference.FirstName}"/>
                         <TextBlock Text=" "/>
-                        <TextBlock Text="{Binding Skier.Reference.LastName}" />
+                        <TextBlock Text="{Binding StartPosition.Skier.Reference.LastName}"/>
+                        <TextBlock Visibility="{Binding IsNext, Converter={StaticResource VisibilityConverter}}" Text="Nächster"/>
+                        <TextBlock Visibility="{Binding IsRunning, Converter={StaticResource VisibilityConverter}}" Text="Fährt"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -53,9 +63,38 @@
             
         </ListBox>
 
-        <Grid Grid.Row="0"
-              Grid.Column="1">
-            <!--Time-Measurements-->
-        </Grid>
+        <ListBox ItemsSource="{Binding SkierTimeResults.Measurments}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding SensorId}"/>
+                        <TextBlock Text=": "/>
+                        <TextBlock Text="{Binding Measurment}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            
+        </ListBox>
+
+        <DockPanel Grid.Row="1"
+                   Grid.Column="1">
+            <Button Command="{Binding AbortRaceCommand}"
+                            Margin="2,0"
+                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                            Foreground="White"
+                            Content="Abbruch"/>
+
+            <Button Command="{Binding DisqualifyRacerCommand}"
+                            Margin="2,0"
+                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                            Foreground="White"
+                            Content="Disqualifizieren"/>
+            
+            <Button Command="{Binding StartReleaseCommand}"
+                            Margin="2,0"
+                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                            Foreground="White"
+                            Content="Freigabe"/>
+        </DockPanel>
     </Grid>
 </UserControl>
