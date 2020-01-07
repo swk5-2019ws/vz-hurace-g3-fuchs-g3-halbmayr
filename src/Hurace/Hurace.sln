@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Simulator", "Hurace.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Statistics", "Hurace.Core.Statistics\Hurace.Core.Statistics.csproj", "{4624086F-D186-4E69-8CE9-F4E981D80001}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hurace.Core.Statistics.Tests", "Hurace.Core.Statistics.Tests\Hurace.Core.Statistics.Tests.csproj", "{35CA5516-55B7-4FC3-8E16-F9F253364490}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Statistics.Tests", "Hurace.Core.Statistics.Tests\Hurace.Core.Statistics.Tests.csproj", "{35CA5516-55B7-4FC3-8E16-F9F253364490}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
