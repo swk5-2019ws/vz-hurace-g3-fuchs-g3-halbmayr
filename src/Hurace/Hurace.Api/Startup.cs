@@ -44,10 +44,14 @@ namespace Hurace.Api
 
             services.AddScoped<IInformationManager, InformationManager>();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hurace API", Version = "v1" });
-            });
+            services.AddCors(builder =>
+                builder.AddDefaultPolicy(policy =>
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()));
+
+            services.AddOpenApiDocument(settings => settings.PostProcess = doc => doc.Info.Title = "Hurace API");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,19 +62,14 @@ namespace Hurace.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hurace API V1");
-            });
+            app.UseOpenApi();
+            app.UseSwaggerUi3(settings => settings.Path = "/swagger");
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
