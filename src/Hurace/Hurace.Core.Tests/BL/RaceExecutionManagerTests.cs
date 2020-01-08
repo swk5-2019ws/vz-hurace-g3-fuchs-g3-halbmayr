@@ -430,12 +430,13 @@ namespace Hurace.Core.Tests.BL
             var race = await informationManager
                 .GetRaceByIdAsync(
                     raceId,
+                    overallRaceStateLoadingType: Domain.Associated<Domain.RaceState>.LoadingType.None,
                     startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.None,
                     skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.None)
                 .ConfigureAwait(false);
 
             await Assert.ThrowsAsync<InvalidOperationException>(
-                    async () => await raceExecutionManager.StartTimeTracking(race, true, 2).ConfigureAwait(false))
+                    async () => await raceExecutionManager.StartTimeTrackingAsync(race, true, 2).ConfigureAwait(false))
                 .ConfigureAwait(false);
         }
 
@@ -1007,11 +1008,11 @@ namespace Hurace.Core.Tests.BL
 
             var raceExecutionManager = new Core.BL.RaceExecutionManager(informationManager);
 
-            var eventList = new List<(Domain.Race, Domain.Skier, Domain.TimeMeasurement)>();
+            var eventList = new List<(Domain.ProcessedTimeMeasurement, bool)>();
             raceExecutionManager.OnTimeMeasured +=
-                (race, skier, measurement) =>
+                (processedMeasurement, lastMeasurement) =>
                 {
-                    eventList.Add((race, skier, measurement));
+                    eventList.Add((processedMeasurement, lastMeasurement));
                 };
 
             var fakedRaceClock = A.Fake<Timer.IRaceClock>();
@@ -1024,7 +1025,7 @@ namespace Hurace.Core.Tests.BL
                     skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.None)
                 .ConfigureAwait(false);
 
-            await raceExecutionManager.StartTimeTracking(race, true, 1).ConfigureAwait(false);
+            await raceExecutionManager.StartTimeTrackingAsync(race, true, 1).ConfigureAwait(false);
 
             Assert.Equal(2, (int)raceDataChanges.GetType().GetProperty("RaceStateId").GetValue(raceDataChanges));
 
@@ -1043,9 +1044,13 @@ namespace Hurace.Core.Tests.BL
             fakedRaceClock.TimingTriggered +=
                 Raise.FreeForm.With(triggeredSensorId, startTime);
 
+            Func<int, string> SensorStringFormatter = sensorId => $"Sensor {sensorId}";
+
             Assert.Single(eventList);
-            Assert.Equal(0, eventList.First().Item3.Measurement);
-            Assert.Equal(triggeredSensorId, eventList.First().Item3.SensorId);
+            Assert.False(eventList.First().Item2);
+            Assert.Equal(0, eventList.First().Item1.Measurement.TotalMilliseconds);
+            Assert.Equal(0, eventList.First().Item1.BestDifference.TotalMilliseconds);
+            Assert.Equal(SensorStringFormatter(triggeredSensorId), eventList.First().Item1.SensorString);
 
             Assert.Single(createdTimeMeasurementEntSet);
             Assert.True(createdTimeMeasurementEntSet.First().IsValid);
@@ -1091,8 +1096,10 @@ namespace Hurace.Core.Tests.BL
                 Raise.FreeForm.With(triggeredSensorId, startTime.AddMilliseconds(addedMilliseconds));
 
             Assert.Equal(2, eventList.Count);
-            Assert.Equal(addedMilliseconds, eventList.Skip(1).First().Item3.Measurement);
-            Assert.Equal(triggeredSensorId, eventList.Skip(1).First().Item3.SensorId);
+            Assert.False(eventList.First().Item2);
+            Assert.Equal(addedMilliseconds, eventList.Skip(1).First().Item1.Measurement.TotalMilliseconds);
+            Assert.Equal(0, eventList.Skip(1).First().Item1.BestDifference.TotalMilliseconds);
+            Assert.Equal(SensorStringFormatter(triggeredSensorId), eventList.Skip(1).First().Item1.SensorString);
 
             Assert.Equal(4, createdTimeMeasurementEntSet.Count);
             Assert.True(createdTimeMeasurementEntSet.Skip(3).First().IsValid);
@@ -1123,8 +1130,10 @@ namespace Hurace.Core.Tests.BL
                 Raise.FreeForm.With(triggeredSensorId, startTime.AddMilliseconds(addedMilliseconds));
 
             Assert.Equal(3, eventList.Count);
-            Assert.Equal(addedMilliseconds, eventList.Skip(2).First().Item3.Measurement);
-            Assert.Equal(triggeredSensorId, eventList.Skip(2).First().Item3.SensorId);
+            Assert.False(eventList.First().Item2);
+            Assert.Equal(addedMilliseconds, eventList.Skip(2).First().Item1.Measurement.TotalMilliseconds);
+            Assert.Equal(0, eventList.Skip(2).First().Item1.BestDifference.TotalMilliseconds);
+            Assert.Equal(SensorStringFormatter(triggeredSensorId), eventList.Skip(2).First().Item1.SensorString);
 
             Assert.Equal(6, createdTimeMeasurementEntSet.Count);
             Assert.True(createdTimeMeasurementEntSet.Skip(5).First().IsValid);
@@ -1166,8 +1175,10 @@ namespace Hurace.Core.Tests.BL
                 Raise.FreeForm.With(triggeredSensorId, startTime.AddMilliseconds(addedMilliseconds));
 
             Assert.Equal(4, eventList.Count);
-            Assert.Equal(addedMilliseconds, eventList.Skip(3).First().Item3.Measurement);
-            Assert.Equal(triggeredSensorId, eventList.Skip(3).First().Item3.SensorId);
+            Assert.False(eventList.First().Item2);
+            Assert.Equal(addedMilliseconds, eventList.Skip(3).First().Item1.Measurement.TotalMilliseconds);
+            Assert.Equal(0, eventList.Skip(3).First().Item1.BestDifference.TotalMilliseconds);
+            Assert.Equal(SensorStringFormatter(triggeredSensorId), eventList.Skip(3).First().Item1.SensorString);
 
             Assert.Equal(8, createdTimeMeasurementEntSet.Count);
             Assert.True(createdTimeMeasurementEntSet.Skip(7).First().IsValid);
@@ -1205,8 +1216,10 @@ namespace Hurace.Core.Tests.BL
                 Raise.FreeForm.With(triggeredSensorId, startTime.AddMilliseconds(addedMilliseconds));
 
             Assert.Equal(5, eventList.Count);
-            Assert.Equal(addedMilliseconds, eventList.Skip(4).First().Item3.Measurement);
-            Assert.Equal(triggeredSensorId, eventList.Skip(4).First().Item3.SensorId);
+            Assert.True(eventList.First().Item2);
+            Assert.Equal(addedMilliseconds, eventList.Skip(4).First().Item1.Measurement.TotalMilliseconds);
+            Assert.Equal(0, eventList.Skip(4).First().Item1.BestDifference.TotalMilliseconds);
+            Assert.Equal(SensorStringFormatter(triggeredSensorId), eventList.Skip(1).First().Item1.SensorString);
 
             Assert.Equal(9, createdTimeMeasurementEntSet.Count);
             Assert.True(createdTimeMeasurementEntSet.Skip(8).First().IsValid);

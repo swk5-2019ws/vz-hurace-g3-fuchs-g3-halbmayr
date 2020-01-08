@@ -345,7 +345,7 @@ namespace Hurace.RaceControl.ViewModels
             Race.Skiers = tempSkiers;
             Race.GenderSpecificRaceId = genderSpecififcRaceId;
 
-            int raceId = await raceManager.CreateOrUpdateRace(Race)
+            int raceId = await raceManager.CreateOrUpdateRaceAsync(Race)
                 .ConfigureAwait(false);
 
             Application.Current.Dispatcher.Invoke(

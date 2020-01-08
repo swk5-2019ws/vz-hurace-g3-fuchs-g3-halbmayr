@@ -24,6 +24,7 @@ namespace Hurace.RaceControl.ViewModels
 
         private RaceDetailViewModel selectedRace;
         private CreateRaceViewModel createRaceViewModel;
+        private bool selectedRaceEditable;
 
         #endregion
         #region Dependencies
@@ -62,7 +63,8 @@ namespace Hurace.RaceControl.ViewModels
                 this.StopRaceExecution,
                 this.CanStopRaceExecution);
             this.DeleteRaceCommand = new AsyncDelegateCommand(
-                this.DeleteRace);
+                this.DeleteRace,
+                this.CanDeleteRace);
 
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
@@ -118,7 +120,8 @@ namespace Hurace.RaceControl.ViewModels
 
                     await this.CreateRaceViewModel.InitializeExistingRace(SelectedRace.Race)
                         .ConfigureAwait(false);
-                });
+                },
+                this.CanEditRace);
 
         }
 
@@ -165,8 +168,9 @@ namespace Hurace.RaceControl.ViewModels
         }
 
         public bool RaceNotCompleted =>
-            !this.ExecutionRunning &&
-            (this.SelectedRace?.Race.OverallRaceState.Reference.Id == 3 || this.SelectedRace?.Race.OverallRaceState.Reference.Id == 4);
+            this.ExecutionRunning ||
+            this.SelectedRace?.Race?.OverallRaceState?.Reference?.Id == 3 ||
+            this.SelectedRace?.Race?.OverallRaceState?.Reference?.Id == 4;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         public RaceDetailViewModel SelectedRace
@@ -201,13 +205,23 @@ namespace Hurace.RaceControl.ViewModels
 
         private async Task DeleteRace(object obj)
         {
-            await this.informationManager.DeleteRace(this.SelectedRace.Race.Id).ConfigureAwait(false);
+            await this.informationManager.DeleteRaceAsync(this.SelectedRace.Race.Id).ConfigureAwait(false);
             Application.Current.Dispatcher.Invoke(
                 () =>
                 {
                     this.RaceListItemViewModels.Remove(this.SelectedRace);
                     this.SelectedRace = null;
                 });
+        }
+
+        private bool CanDeleteRace(object obj)
+        {
+            return !this.ExecutionRunning;
+        }
+
+        private bool CanEditRace(object obj)
+        {
+            return !this.ExecutionRunning && this.RaceNotCompleted;
         }
 
         public bool CanStartRaceExecution(object argument)
@@ -231,6 +245,9 @@ namespace Hurace.RaceControl.ViewModels
         public async Task StartSimulatedRaceExecution(object argument)
         {
             var simulation = this.raceClockResolver(true) as Simulator.RaceClockSimulation;
+
+            simulation.MaxSensorIdValue = this.SelectedRace.Race.NumberOfSensors - 1;
+
             var simulatorConfigWindow = new Windows.SimulatorConfigWindow(simulation);
             simulatorConfigWindow.ShowDialog();
 
@@ -256,7 +273,7 @@ namespace Hurace.RaceControl.ViewModels
 
             var race = await informationManager.GetRaceByIdAsync(
                     this.SelectedRace.Race.Id,
-                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.None,
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
                     venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
                     seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference,
                     startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
@@ -265,11 +282,14 @@ namespace Hurace.RaceControl.ViewModels
                     skierCountryLoadingType: Domain.Associated<Domain.Country>.LoadingType.Reference)
                 .ConfigureAwait(false);
 
+            await this.SelectedRace.UpdateStartingSkiers()
+                .ConfigureAwait(false);
+
             Application.Current.Dispatcher.Invoke(
                 () =>
                 {
-                    this.ExecutionRunning = true;
                     this.SelectedRace.Race = race;
+                    this.ExecutionRunning = true;
                 });
         }
 
@@ -278,12 +298,12 @@ namespace Hurace.RaceControl.ViewModels
 
         internal async Task InitializeAsync()
         {
-            var raceListDetailViewModels =
-                (await this.informationManager.GetAllRacesAsync(
+            var raceListDetailViewModels = (await this.informationManager.GetAllRacesAsync(
                         raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
                         venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
                         seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
                     .ConfigureAwait(false))
+                .OrderBy(race => race.Date)
                 .Select(race => (this.serviceProvider.GetRequiredService<RaceDetailViewModel>(), race));
 
             foreach (var (raceDetailViewModel, race) in raceListDetailViewModels)
@@ -298,7 +318,7 @@ namespace Hurace.RaceControl.ViewModels
                 .ConfigureAwait(false);
         }
 
-        private async Task InitializeSelectedRace()
+        public async Task InitializeSelectedRace()
         {
             var race = await informationManager.GetRaceByIdAsync(
                     this.selectedRace.Race.Id,
@@ -312,19 +332,17 @@ namespace Hurace.RaceControl.ViewModels
                     Domain.Associated<Domain.Country>.LoadingType.Reference)
                 .ConfigureAwait(false);
 
-            if (race.OverallRaceState.Reference.Id != 3 && race.OverallRaceState.Reference.Id != 4)
+            if (race.OverallRaceState.Reference.Id != 3 &&
+                race.OverallRaceState.Reference.Id != 4 &&
+                race.Id == this.SelectedRace.Race.Id)
+            {
                 await this.SelectedRace.LoadRankList().ConfigureAwait(false);
+            }
 
             Application.Current.Dispatcher.Invoke(
                 () =>
                 {
                     this.SelectedRace.Race = race;
-
-                    foreach (var sp in race.FirstStartList)
-                    {
-                        this.selectedRace.StartList.Add(sp.Reference);
-                    }
-
                     base.NotifyPropertyChanged(nameof(RaceNotCompleted));
                 });
         }
