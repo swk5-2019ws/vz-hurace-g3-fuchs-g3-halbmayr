@@ -28,12 +28,14 @@ namespace Hurace.RaceControl.ViewModels.Shared
 
         public async Task ExecuteAsync(object parameter)
         {
-            await this.executeAsync(parameter);
+            await this.executeAsync(parameter)
+                .ConfigureAwait(false);
         }
 
         async void ICommand.Execute(object parameter)
         {
-            await this.ExecuteAsync(parameter);
+            await this.ExecuteAsync(parameter)
+                .ConfigureAwait(false);
         }
     }
 }

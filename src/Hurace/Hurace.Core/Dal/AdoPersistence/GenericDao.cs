@@ -31,30 +31,34 @@ namespace Hurace.Core.DAL.AdoPersistence
                 throw new ArgumentNullException(nameof(newInstance));
 
             (string createQuery, QueryParameter[] parameters) = SqlQueryGenerator.GenerateInsertQuery(newInstance);
-            int affectedRowCount = await template.ExecuteAsync(createQuery, parameters);
+            int affectedRowCount = await template.ExecuteAsync(createQuery, parameters)
+                .ConfigureAwait(false);
 
             if (affectedRowCount != 1)
                 throw new InvalidOperationException($"The INSERT Query affected {affectedRowCount} rows -> should only affect 1");
 
             string getLastGivenIdentityQuery = SqlQueryGenerator.GenerateGetLastIdentityQuery();
 
-            return await template.QuerySingleInt32Async(getLastGivenIdentityQuery);
+            return await template.QuerySingleInt32Async(getLastGivenIdentityQuery)
+                .ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<T>> GetAllConditionalAsync(IQueryCondition condition = null)
         {
             (var query, var queryParameters) = SqlQueryGenerator.GenerateSelectQuery(condition);
             return await template.QueryObjectSetAsync(
-                query,
-                RowMapper,
-                queryParameters);
+                    query,
+                    RowMapper,
+                    queryParameters)
+                .ConfigureAwait(false);
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateSelectQuery(id);
 
-            return await template.QuerySingleObjectAsync(query, RowMapper, parameters);
+            return await template.QuerySingleObjectAsync(query, RowMapper, parameters)
+                .ConfigureAwait(false);
         }
 
         public async Task<bool> UpdateAsync(T updatedInstance)
@@ -63,7 +67,10 @@ namespace Hurace.Core.DAL.AdoPersistence
                 throw new ArgumentNullException(nameof(updatedInstance));
 
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedInstance);
-            int affectedRows = await template.ExecuteAsync(query, parameters);
+
+            int affectedRows = await template.ExecuteAsync(query, parameters)
+                .ConfigureAwait(false);
+
             return affectedRows == 1;
         }
 
@@ -78,14 +85,17 @@ namespace Hurace.Core.DAL.AdoPersistence
                     $"Passed {nameof(updatedValues)} anonymous object does not contain any updated values");
 
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateUpdateQuery(updatedValues, condition);
-            return await template.ExecuteAsync(query, parameters);
+            return await template.ExecuteAsync(query, parameters)
+                .ConfigureAwait(false);
         }
 
         public async Task<bool> DeleteByIdAsync(int id)
         {
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteQuery(id);
 
-            int numberOfAffectedRows = await template.ExecuteAsync(query, parameters);
+            int numberOfAffectedRows = await template.ExecuteAsync(query, parameters)
+                .ConfigureAwait(false);
+
             return numberOfAffectedRows == 1;
         }
 
@@ -96,7 +106,8 @@ namespace Hurace.Core.DAL.AdoPersistence
 
             (string query, QueryParameter[] parameters) = SqlQueryGenerator.GenerateDeleteQuery(condition);
 
-            return await template.ExecuteAsync(query, parameters);
+            return await template.ExecuteAsync(query, parameters)
+                .ConfigureAwait(false);
         }
     }
 }

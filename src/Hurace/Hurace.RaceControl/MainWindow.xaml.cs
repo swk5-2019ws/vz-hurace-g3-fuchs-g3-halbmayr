@@ -12,7 +12,9 @@ namespace Hurace.RaceControl
             InitializeComponent();
 
             this.DataContext = mainViewModel;
-            this.Loaded += async (sender, eventArgs) => await mainViewModel.InitializeAsync();
+
+            this.Loaded +=
+                async (sender, eventArgs) => await mainViewModel.InitializeAsync().ConfigureAwait(false);
         }
     }
 }

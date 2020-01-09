@@ -365,7 +365,6 @@
     <Rule Id="CA1716" Action="None" />
     <Rule Id="CA1725" Action="Warning" />
     <Rule Id="CA1819" Action="None" />
-    <Rule Id="CA2007" Action="Info" />
     <Rule Id="CA2217" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.CSharp.Analyzers" RuleNamespace="Microsoft.CodeQuality.CSharp.Analyzers">

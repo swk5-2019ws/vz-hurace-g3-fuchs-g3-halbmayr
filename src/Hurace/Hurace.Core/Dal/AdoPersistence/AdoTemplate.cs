@@ -24,16 +24,18 @@ namespace Hurace.Core.DAL.AdoPersistence
             RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
         {
-            using var dbConnection = await connectionFactory.CreateConnectionAsync();
+            using var dbConnection = await connectionFactory.CreateConnectionAsync()
+                .ConfigureAwait(false);
+
             using var dbCommand = dbConnection.CreateCommand();
 
             dbCommand.CommandText = sqlQuery;
             dbCommand.AddParameters(queryParameters);
 
             var resultItems = new List<T>();
-            using (var dbDataReader = await dbCommand.ExecuteReaderAsync())
+            using (var dbDataReader = await dbCommand.ExecuteReaderAsync().ConfigureAwait(false))
             {
-                while (await dbDataReader.ReadAsync())
+                while (await dbDataReader.ReadAsync().ConfigureAwait(false))
                 {
                     resultItems.Add(rowMapper.Map(dbDataReader));
                 }
@@ -47,7 +49,8 @@ namespace Hurace.Core.DAL.AdoPersistence
             RowMapper<T> rowMapper,
             params QueryParameter[] queryParameters) where T : new()
         {
-            var resultingSet = await this.QueryObjectSetAsync(sqlQuery, rowMapper, queryParameters);
+            var resultingSet = await this.QueryObjectSetAsync(sqlQuery, rowMapper, queryParameters)
+                .ConfigureAwait(false);
 
             return resultingSet.Count() == 1 ? resultingSet.First() : (default);
         }
@@ -56,15 +59,17 @@ namespace Hurace.Core.DAL.AdoPersistence
             string sqlQuery,
             params QueryParameter[] queryParameters)
         {
-            using var dbConnection = await connectionFactory.CreateConnectionAsync();
+            using var dbConnection = await connectionFactory.CreateConnectionAsync()
+                .ConfigureAwait(false);
+
             using var dbCommand = dbConnection.CreateCommand();
 
             dbCommand.CommandText = sqlQuery;
             dbCommand.AddParameters(queryParameters);
 
-            using var dbDataReader = await dbCommand.ExecuteReaderAsync();
+            using var dbDataReader = await dbCommand.ExecuteReaderAsync().ConfigureAwait(false);
 
-            await dbDataReader.ReadAsync();
+            await dbDataReader.ReadAsync().ConfigureAwait(false);
             return Convert.ToInt32(dbDataReader.GetValue(0));
         }
 
@@ -72,13 +77,16 @@ namespace Hurace.Core.DAL.AdoPersistence
             string sqlQuery,
             params QueryParameter[] queryParameters)
         {
-            using var dbConnection = await connectionFactory.CreateConnectionAsync();
+            using var dbConnection = await connectionFactory.CreateConnectionAsync()
+                .ConfigureAwait(false);
+
             using var dbCommand = dbConnection.CreateCommand();
 
             dbCommand.CommandText = sqlQuery;
             dbCommand.AddParameters(queryParameters);
 
-            return await dbCommand.ExecuteNonQueryAsync();
+            return await dbCommand.ExecuteNonQueryAsync()
+                .ConfigureAwait(false);
         }
     }
 }

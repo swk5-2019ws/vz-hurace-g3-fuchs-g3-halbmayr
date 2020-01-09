@@ -274,11 +274,12 @@ namespace Hurace.Core.Db.Utilities
 
             foreach (var currentProperty in valueContainer.GetType().GetProperties())
             {
-                if (currentProperty.Name != "Id")
+                var value = currentProperty.GetValue(valueContainer);
+                if (currentProperty.Name != "Id" && value != null)
                 {
                     var queryParameter = queryParameters.AddQueryParameter(
                         currentProperty.Name,
-                        currentProperty.GetValue(valueContainer));
+                        value);
 
                     queryStringBuilder.Append($"{(firstProperty ? "" : ",")} [{currentProperty.Name}] = @{queryParameter.ParameterName}");
 

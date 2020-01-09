@@ -1,19 +1,22 @@
-﻿using Hurace.Timer;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Hurace.Core.BL
 {
-    public delegate void OnTimeMeasured(Domain.Race race, Domain.Skier skier, Domain.TimeMeasurement measurement);
+    public delegate Task OnTimeMeasured(Domain.ProcessedTimeMeasurement processedMeasurement, bool lastMeasurement);
 
     public interface IRaceExecutionManager
     {
         event OnTimeMeasured OnTimeMeasured;
 
-        Domain.Race TrackedRace { get; }
-        Domain.Skier TrackedSkier { get; }
-        IRaceClock RaceClock { get; set; }
+        Timer.IRaceClock RaceClock { get; set; }
 
         Task<bool> IsRaceStartable(int raceId);
-        void StartTimeTracking(IRaceClock raceClock, Domain.Race race, Domain.Skier skier);
+        Task StartTimeTrackingAsync(
+            Domain.Race race,
+            bool firstStartList,
+            int position);
+        Task StopTimeTrackingAsync(
+            Domain.RaceState reason);
+        Task GenerateSecondStartListIfNeeded();
     }
 }

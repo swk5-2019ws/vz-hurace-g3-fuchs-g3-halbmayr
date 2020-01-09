@@ -14,16 +14,21 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
-        Height="550" MinHeight="450"
-        Width="900" MinWidth="900">
+        Height="600" MinHeight="600"
+        Width="1000" MinWidth="1000">
+
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
+        <converters:ValueConverterCollection x:Key="InvertedVisibilityConverter">
+            <converters:InvertedBoolConverter/>
+            <converters:BoolToVisibilityConverter/>
+        </converters:ValueConverterCollection>
     </Window.Resources>
     
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260" MinWidth="180" MaxWidth="260"/>
-            <ColumnDefinition MinWidth="500"/>
+            <ColumnDefinition MinWidth="500" Width="*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
@@ -36,6 +41,7 @@
                         <controls:RaceListItemControl/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+                
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Margin="0,0,0,50"/>
@@ -69,29 +75,127 @@
                 <Button Content="Abbruch"
                         Grid.Column="0"
                         Margin="5,5,2.5,5"/>
+                
                 <Button Content="Erstellen"
-                        Command="{Binding CreateRaceCommand}"
+                        Visibility="{Binding CreateRaceButtonVisible, Converter={StaticResource VisibilityConverter}}"
+                        Command="{Binding CreateOrUpdateRaceCommand}"
                         Grid.Column="1"
                         Margin="2.5,5,5,5"/>
+                
+                <Button Content="Aktualisieren"
+                        Visibility="{Binding CreateRaceButtonVisible, Converter={StaticResource InvertedVisibilityConverter}}"
+                        Command="{Binding CreateOrUpdateRaceCommand}"
+                        Grid.Column="1"
+                        Margin="2.5,5,5,5"/> 
             </Grid>
         </DockPanel>
 
         <Grid Grid.Column="1"
               Visibility="{Binding RaceDetailControlVisible, Converter={StaticResource VisibilityConverter}}">
-            <Canvas>
-                <controls:RaceDetailControl 
-                    DataContext="{Binding SelectedRace}"
-                    Canvas.Left="0"
-                    Canvas.Top="0"/>
+            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1"
+                                 Margin="15"
+                                 Background="{DynamicResource MaterialDesignPaper}">
+                <Grid Margin="7">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <controls:RaceHeaderControl DataContext="{Binding SelectedRace}"
+                                                Grid.Row="0"
+                                                Grid.Column="0"/>
 
-                <Button Margin="2,0"
-                        Foreground="White"
-                        ToolTip="Bearbeiten"
-                        Canvas.Top="30"
-                        Canvas.Right="30">
-                    <materialDesign:PackIcon Kind="Pencil"/>
-                </Button>
-            </Canvas>
+                    <Grid Grid.Row="0"
+                          Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Command="{Binding StartRaceExecutionCommand}"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="5,0"
+                                Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                                Foreground="White"
+                                ToolTip="Starte das Rennen"
+                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
+
+                            <materialDesign:PackIcon Kind="PlayCircleOutline"/>
+                        </Button>
+
+                        <Button Command="{Binding StartSimulatedRaceExecutionCommand}"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="5,0"
+                                Style="{StaticResource MaterialDesignRaisedLightButton}"
+                                Foreground="White"
+                                ToolTip="Starte die Simulation"
+                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
+                            
+                            <materialDesign:PackIcon Kind="PlaySpeed"/>
+                        </Button>
+
+                        <Button Command="{Binding StopRaceExecutionCommand}"
+                                Grid.Row="0"
+                                Grid.Column="1" 
+                                Margin="5,0"
+                                Background="Red"
+                                BorderThickness="0"
+                                ToolTip="Rennen beenden"
+                                Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
+
+                            <materialDesign:PackIcon Kind="Stop"/>
+                        </Button>
+
+                        <Button Command="{Binding OpenEditRaceCommand}"
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Margin="5,0"
+                                Foreground="White"
+                                ToolTip="Rennen bearbeiten">
+
+                            <materialDesign:PackIcon Kind="Pencil"/>
+                        </Button>
+
+                        <Button Command="{Binding DeleteRaceCommand}"
+                                Grid.Row="0"
+                                Grid.Column="3"
+                                Margin="5,0"
+                                Foreground="White"
+                                Background="OrangeRed"
+                                BorderThickness="0"
+                                ToolTip="Rennen entfernen">
+
+                            <materialDesign:PackIcon Kind="Delete"/>
+                        </Button>
+                    </Grid>
+
+                    <DockPanel Grid.Row="1"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               LastChildFill="False"
+                               Visibility="{Binding RaceNotCompleted, Converter={StaticResource InvertedVisibilityConverter}}">
+
+                        <controls:RankListControl DataContext="{Binding SelectedRace}"/>
+                    </DockPanel>
+
+                    <DockPanel Grid.Row="1"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               LastChildFill="False"
+                               Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
+
+                        <controls:RaceExecutionControl DataContext="{Binding SelectedRace}"/>
+                    </DockPanel>
+                </Grid>
+            </materialDesign:Card>
         </Grid>
     </Grid>
 </Window>

@@ -15,10 +15,15 @@
              d:DesignHeight="550" d:DesignWidth="500">
 
     <UserControl.Resources>
-        <converters:InvertedBoolConverter x:Key="VisibilityConverter"/>
+        <converters:ValueConverterCollection x:Key="InvertedVisibilityConverter">
+            <converters:InvertedBoolConverter/>
+            <converters:BoolToVisibilityConverter/>
+        </converters:ValueConverterCollection>
     </UserControl.Resources>
-   <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10">
-        <Grid Margin="7">
+
+    <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="0" Margin="10" >
+        <Grid Margin="7"
+              Visibility="{Binding Loading, Converter={StaticResource InvertedVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -26,15 +31,15 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Neues Rennen erstellen"
-                     Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                     Grid.Row="0"
-                     Margin="10"/>
+            <TextBlock Text="{Binding CreateRaceHeader}"
+                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                       Grid.Row="0"
+                       Margin="10"/>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="15"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -44,22 +49,28 @@
                 </Grid.RowDefinitions>
 
                 <DockPanel Grid.Row="0"
-                           Grid.Column="0">
+                           Grid.Column="0"
+                           Margin="5">
                     
                     <TextBlock Text="Datum:"
                                Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                               DockPanel.Dock="Left"/>
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
 
                     <DatePicker SelectedDate="{Binding SelectedDate}"
                                 DockPanel.Dock="Right"/>
                 </DockPanel>
 
                 <DockPanel Grid.Row="0"
-                           Grid.Column="2">
+                           Grid.Column="2"
+                           Margin="5">
 
                     <TextBlock Text="Sensorzahl:"
                                Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                               DockPanel.Dock="Left"/>
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
 
                     <ComboBox SelectedItem="{Binding SelectedNumberOfSensors}"
                               DockPanel.Dock="Right">
@@ -79,11 +90,14 @@
                 </DockPanel>
 
                 <DockPanel Grid.Column="0"
-                           Grid.Row="1">
+                           Grid.Row="1"
+                           Margin="5">
 
                     <TextBlock Text="Ort:"
                                Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                               DockPanel.Dock="Left"/>
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
 
                     <ComboBox ItemsSource="{Binding Venues}"
                               SelectedItem="{Binding SelectedVenue}"
@@ -101,11 +115,14 @@
                 </DockPanel>
 
                 <DockPanel Grid.Column="2"
-                           Grid.Row="1">
+                           Grid.Row="1"
+                           Margin="5">
 
                     <TextBlock Text="Renntyp:"
                                Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                               DockPanel.Dock="Left"/>
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
 
                     <ComboBox ItemsSource="{Binding RaceTypes}"
                               SelectedItem="{Binding SelectedRaceType}"
@@ -119,10 +136,14 @@
                 </DockPanel>
 
                 <DockPanel Grid.Column="0" 
-                           Grid.Row="2">
+                           Grid.Row="2"
+                           Margin="5">
+
                     <TextBlock Text="Saison:"
                                Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                               DockPanel.Dock="Left"/>
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
 
                     <ComboBox ItemsSource="{Binding Seasons}"
                               SelectedItem="{Binding SelectedSeason}"
@@ -136,10 +157,14 @@
                 </DockPanel>
             </Grid>
 
-            <StackPanel Orientation="Vertical" Grid.Row="2">
+            <StackPanel Orientation="Vertical"
+                        Grid.Row="2"
+                        Margin="5">
 
                 <TextBlock Text="Beschreibung:"
-                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                           VerticalAlignment="Center"
+                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                           Margin="0,0,0,10"/>
 
                 <TextBox Height="60"
                          Text="{Binding Description}"
@@ -147,24 +172,28 @@
                          AcceptsReturn="True"/>
             </StackPanel>
 
-            <Grid Grid.Row="3" Visibility="{Binding Loading, Converter={StaticResource VisibilityConverter}}">
+            <Grid Grid.Row="3"
+                  Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="15"/>
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="130"/>
-                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <ListBox ItemsSource="{Binding Skiers}"
-                     SelectedItem="{Binding SelectedSkier}"
-                     SelectionMode="Single"
-                     BorderThickness="0"
-                     Grid.Column="0"
-                     Grid.Row="0"    
-                     ScrollViewer.VerticalScrollBarVisibility="Visible">
+                         SelectedItem="{Binding SelectedSkier}"
+                         SelectionMode="Single"
+                         BorderThickness="0"
+                         Grid.Column="0"
+                         Grid.Row="0"    
+                         ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -174,6 +203,7 @@
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Margin="0,0,0,50"/>
@@ -181,28 +211,38 @@
                     </ListBox.ItemsPanel>
                 </ListBox>
 
-                <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="0">
+                <Grid Grid.Column="2"
+                      Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    
                     <Button Command="{Binding AddRacerToStartListCommand}"
-                        Margin="2,0"
-                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                        Foreground="White">
+                            Margin="2,0"
+                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                            Foreground="White"
+                            Grid.Row="0">
                         <materialDesign:PackIcon Kind="ArrowRightBoldCircle"/>
                     </Button>
+                    
                     <Button Command="{Binding RemoveRacerFromStartListCommand}"
-                        Margin="2,0"
-                        Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                        Foreground="White">
+                            Margin="2,0"
+                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                            Foreground="White"
+                            Grid.Row="1">
                         <materialDesign:PackIcon Kind="ArrowLeftBoldCircle"/>
                     </Button>
-                </StackPanel>
+                    
+                </Grid>
 
                 <ListBox ItemsSource="{Binding StartPositions}"
-                     SelectedItem="{Binding SelectedStartPosition}"
-                     SelectionMode="Single"
-                     BorderThickness="0"
-                     Grid.Row="0"
-                     Grid.Column="2"
-                     ScrollViewer.VerticalScrollBarVisibility="Visible">
+                         SelectedItem="{Binding SelectedStartPosition}"
+                         SelectionMode="Single"
+                         BorderThickness="0"
+                         Grid.Row="0"
+                         Grid.Column="4"
+                         ScrollViewer.VerticalScrollBarVisibility="Visible">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -214,6 +254,7 @@
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Margin="0,0,0,50"/>
@@ -221,35 +262,53 @@
                     </ListBox.ItemsPanel>
                 </ListBox>
 
-                <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="1">
-                    <Button Command="{Binding SelectMenListCommand}"
-                        Margin="2,0"
-                        Style="{StaticResource MaterialDesignRaisedDarkButton}"
-                        Foreground="White"
-                        Button.Content="Männer">
-                    </Button>
-                    <Button Command="{Binding SelectWomenListCommand}"
-                        Margin="2,0"
-                        Style="{StaticResource MaterialDesignRaisedDarkButton}"
-                        Foreground="White"
-                        Button.Content="Frauen">
-                    </Button>
-                </StackPanel>
+                <Grid Grid.Row="2"
+                      Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="1">
+                    <Button Command="{Binding SelectMenListCommand}"
+                            Margin="2"
+                            Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                            Foreground="White"
+                            Content="Männer"
+                            Grid.Column="0"/>
+
+                    <Button Command="{Binding SelectWomenListCommand}"
+                            Margin="2"
+                            Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                            Foreground="White"
+                            Content="Frauen"
+                            Grid.Column="1"/>
+
+                </Grid>
+
+                <Grid Grid.Row="2"
+                      Grid.Column="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
                     <Button Command="{Binding MoveSelectedStartPositionUpCommand}"
-                        Margin="2,0"
-                        Style="{StaticResource MaterialDesignRaisedLightButton}"
-                        Foreground="White">
+                            Margin="2"
+                            Style="{StaticResource MaterialDesignRaisedLightButton}"
+                            Foreground="White"
+                            Grid.Column="0">
                         <materialDesign:PackIcon Kind="ArrowUpBoldCircle"/>
                     </Button>
+                    
                     <Button Command="{Binding MoveSelectedStartPositionDownCommand}"
-                        Margin="2,0"
-                        Style="{StaticResource MaterialDesignRaisedLightButton}"
-                        Foreground="White">
+                            Margin="2"
+                            Style="{StaticResource MaterialDesignRaisedLightButton}"
+                            Foreground="White"
+                            Grid.Column="1">
                         <materialDesign:PackIcon Kind="ArrowDownBoldCircle"/>
                     </Button>
-                </StackPanel>
+                    
+                </Grid>
             </Grid>
         </Grid>
     </materialDesign:Card>

@@ -26,9 +26,10 @@ namespace Hurace.Api.Controllers
             logger.LogInformation($"this is a log info");
 
             return Ok(await raceManager.GetAllRacesAsync(
-                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
-                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None));
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                .ConfigureAwait(false));
         }
     }
 }

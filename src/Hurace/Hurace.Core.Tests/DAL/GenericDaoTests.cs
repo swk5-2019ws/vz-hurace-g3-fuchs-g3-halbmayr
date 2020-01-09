@@ -265,15 +265,18 @@ namespace Hurace.Core.Tests.DAL
                 EndDate = DateTime.Now.Date
             };
 
-            var actualDomainObjectId = await seasonDao.CreateAsync(expectedDomainObject);
-            var actualDomainObject = await seasonDao.GetByIdAsync(actualDomainObjectId);
+            var actualDomainObjectId = await seasonDao.CreateAsync(expectedDomainObject)
+                .ConfigureAwait(false);
+
+            var actualDomainObject = await seasonDao.GetByIdAsync(actualDomainObjectId)
+                .ConfigureAwait(false);
 
             Assert.Equal(expectedDomainObject.Name, actualDomainObject.Name);
             Assert.Equal(expectedDomainObject.StartDate, actualDomainObject.StartDate);
             Assert.Equal(expectedDomainObject.EndDate, actualDomainObject.EndDate);
 
             var sexDao = new GenericDao<Entities.Sex>(connectionFactory);
-            Assert.Equal(2, (await sexDao.GetAllConditionalAsync()).Count());
+            Assert.Equal(2, (await sexDao.GetAllConditionalAsync().ConfigureAwait(false)).Count());
         }
 
         [Theory]
@@ -364,11 +367,11 @@ namespace Hurace.Core.Tests.DAL
                 .Build();
 
             var expectedNumberOfSensors = 10;
-            var expectedDate = DateTime.Now.Date;
+            var expectedDate = DateTime.Now.Date.AddYears(1);
 
             foreach (var raceId in comparisonRaceIds)
             {
-                var raceEntity = await raceDao.GetByIdAsync(raceId);
+                var raceEntity = await raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
                 Assert.NotEqual(expectedNumberOfSensors, raceEntity.NumberOfSensors);
                 Assert.NotEqual(expectedDate, raceEntity.Date);
             }
@@ -379,13 +382,13 @@ namespace Hurace.Core.Tests.DAL
                 Date = expectedDate
             };
 
-            var affectedRows = await raceDao.UpdateAsync(updateColumns, updateCondition);
+            var affectedRows = await raceDao.UpdateAsync(updateColumns, updateCondition).ConfigureAwait(false);
 
             Assert.Equal(comparisonRaceIds.Length, affectedRows);
 
             foreach (var raceId in comparisonRaceIds)
             {
-                var raceEntity = await raceDao.GetByIdAsync(raceId);
+                var raceEntity = await raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
                 Assert.Equal(expectedNumberOfSensors, raceEntity.NumberOfSensors);
                 Assert.Equal(expectedDate, raceEntity.Date);
             }
@@ -472,7 +475,8 @@ namespace Hurace.Core.Tests.DAL
             };
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList));
+                    () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList))
+                .ConfigureAwait(false);
         }
 
         [Theory]
@@ -506,7 +510,8 @@ namespace Hurace.Core.Tests.DAL
             };
 
             await Assert.ThrowsAsync<InvalidOperationException>(
-                () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList));
+                    () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList))
+                .ConfigureAwait(false);
         }
 
         public static IEnumerable<object[]> UpdateWithInvalidUpdatedValuesTests3TestData
@@ -545,7 +550,8 @@ namespace Hurace.Core.Tests.DAL
             var parameterList = new object[] { updateObject, condition };
 
             await Assert.ThrowsAsync<InvalidOperationException>(
-                () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList));
+                    () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList))
+                .ConfigureAwait(false);
         }
 
         [Theory]
@@ -577,7 +583,8 @@ namespace Hurace.Core.Tests.DAL
             var parameterList = new object[] { new { Id = 0 }, condition };
 
             await Assert.ThrowsAsync<InvalidOperationException>(
-                () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList));
+                    () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList))
+                .ConfigureAwait(false);
         }
 
         [Theory]
@@ -605,7 +612,8 @@ namespace Hurace.Core.Tests.DAL
             var parameterList = new object[] { new object { }, null };
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList));
+                    () => (dynamic)updateMethod.Invoke(adoDaoInstance, parameterList))
+                .ConfigureAwait(false);
         }
 
         [Theory]
@@ -646,7 +654,8 @@ namespace Hurace.Core.Tests.DAL
             else
             {
                 await Assert.ThrowsAsync<SqlException>(
-                    () => (dynamic)daoDeleteByIdMethod.Invoke(adoDaoInstance, paramList));
+                        () => (dynamic)daoDeleteByIdMethod.Invoke(adoDaoInstance, paramList))
+                    .ConfigureAwait(false);
             }
         }
 
@@ -724,7 +733,8 @@ namespace Hurace.Core.Tests.DAL
             else
             {
                 await Assert.ThrowsAsync<SqlException>(
-                    () => (dynamic)deleteMethod.Invoke(adoDaoInstance, parameterList));
+                        () => (dynamic)deleteMethod.Invoke(adoDaoInstance, parameterList))
+                    .ConfigureAwait(false);
             }
         }
 
@@ -796,7 +806,8 @@ namespace Hurace.Core.Tests.DAL
             var parameterList = new object[] { null };
 
             await Assert.ThrowsAsync<ArgumentNullException>(
-                () => (dynamic)deleteMethod.Invoke(adoDaoInstance, parameterList));
+                    () => (dynamic)deleteMethod.Invoke(adoDaoInstance, parameterList))
+                .ConfigureAwait(false);
         }
 
         #region Helper Methods

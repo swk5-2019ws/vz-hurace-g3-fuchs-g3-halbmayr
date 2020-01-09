@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hurace.Simulator\Hurace.Simulator.csproj" />
-    <ProjectReference Include="..\Hurace.Timer\Hurace.Timer.csproj" />
+    <ProjectReference Include="..\Hurace.Core.Statistics\Hurace.Core.Statistics.csproj" />
   </ItemGroup>
 
 </Project>
