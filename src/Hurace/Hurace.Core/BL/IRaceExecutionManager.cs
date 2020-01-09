@@ -2,7 +2,7 @@
 
 namespace Hurace.Core.BL
 {
-    public delegate void OnTimeMeasured(Domain.Race race, Domain.Skier skier, Domain.TimeMeasurement measurement);
+    public delegate Task OnTimeMeasured(Domain.ProcessedTimeMeasurement processedMeasurement, bool lastMeasurement);
 
     public interface IRaceExecutionManager
     {
@@ -11,9 +11,12 @@ namespace Hurace.Core.BL
         Timer.IRaceClock RaceClock { get; set; }
 
         Task<bool> IsRaceStartable(int raceId);
-        Task StartTimeTracking(
+        Task StartTimeTrackingAsync(
             Domain.Race race,
             bool firstStartList,
             int position);
+        Task StopTimeTrackingAsync(
+            Domain.RaceState reason);
+        Task GenerateSecondStartListIfNeeded();
     }
 }

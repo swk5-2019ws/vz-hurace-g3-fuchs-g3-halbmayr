@@ -22,7 +22,7 @@ namespace Hurace.Simulator.Tests
             };
             simulation.TimingTriggered += (sensorId, time) => counter++;
 
-            Thread.Sleep(110);
+            Thread.Sleep(140);
 
             Assert.Equal(2, counter);
         }

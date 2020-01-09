@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:converters="clr-namespace:Hurace.RaceControl.Converters"
+             xmlns:controls="clr-namespace:Hurace.RaceControl.Controls"
              mc:Ignorable="d"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -11,90 +12,106 @@
              TextElement.FontWeight="Medium"
              TextElement.FontSize="14"
              FontFamily="{materialDesign:MaterialDesignFont}"
-             d:DesignHeight="550" d:DesignWidth="500">
+             d:DesignHeight="550" d:DesignWidth="740">
 
     <UserControl.Resources>
+        <converters:SignedTimeSpanConverter x:Key="SignedTimeSpanVisualizer"/>
+        <converters:UnsignedTimeSpanConverter x:Key="UnsignedTimeSpanVisualizer"/>
+        <converters:ReferenceToBoolConverter x:Key="RefToBoolConverter"/>
         <converters:BoolToVisibilityConverter x:Key="VisibilityConverter"/>
         <converters:ValueConverterCollection x:Key="InvertedVisibilityConverter">
             <converters:InvertedBoolConverter/>
+            <converters:BoolToVisibilityConverter/>
+        </converters:ValueConverterCollection>
+        <converters:ValueConverterCollection x:Key="RefToVisibilityConverter">
+            <converters:ReferenceToBoolConverter/>
             <converters:BoolToVisibilityConverter/>
         </converters:ValueConverterCollection>
     </UserControl.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Row="0"
+              Grid.Column="0"
+              VerticalAlignment="Center">
 
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <ListBox ItemsSource="{Binding StartList}"
-                 SelectedItem="{Binding SelectedStartList}"
-                 SelectionMode="Single"
-                 BorderThickness="0"
-                 Grid.Column="0"
-                 Grid.Row="0"
-                 ScrollViewer.VerticalScrollBarVisibility="Visible"
-                 MaxHeight="300">
-            
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding StartPosition.Position}"/>
-                        <TextBlock Text=" "/>
-                        <TextBlock Text="{Binding StartPosition.Skier.Reference.FirstName}"/>
-                        <TextBlock Text=" "/>
-                        <TextBlock Text="{Binding StartPosition.Skier.Reference.LastName}"/>
-                        <TextBlock Visibility="{Binding IsNext, Converter={StaticResource VisibilityConverter}}" Text="Nächster"/>
-                        <TextBlock Visibility="{Binding IsRunning, Converter={StaticResource VisibilityConverter}}" Text="Fährt"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Margin="0,0,0,50"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            
-        </ListBox>
+            <controls:SkierSummaryListItem DataContext="{Binding AfterNextStartingSkier}"
+                                           Grid.Row="0"
+                                           Grid.Column="0"
+                                           Visibility="{Binding AfterNextStartingSkier, Converter={StaticResource RefToVisibilityConverter}}"
+                                           Opacity="0.3"/>
 
-        <ListBox ItemsSource="{Binding SkierTimeResults.Measurments}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding SensorId}"/>
-                        <TextBlock Text=": "/>
-                        <TextBlock Text="{Binding Measurment}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            
-        </ListBox>
+            <controls:SkierSummaryListItem DataContext="{Binding NextStartingSkier}"
+                                           Grid.Row="1"
+                                           Grid.Column="0"
+                                           Visibility="{Binding NextStartingSkier, Converter={StaticResource RefToVisibilityConverter}}"
+                                           Opacity="0.6"/>
 
-        <DockPanel Grid.Row="1"
-                   Grid.Column="1">
-            <Button Command="{Binding AbortRaceCommand}"
-                            Margin="2,0"
-                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                            Foreground="White"
-                            Content="Abbruch"/>
+            <controls:SkierSummaryListItem DataContext="{Binding CurrentStartingSkier}"
+                                           Grid.Row="2"
+                                           Grid.Column="0"
+                                           Visibility="{Binding CurrentStartingSkier, Converter={StaticResource RefToVisibilityConverter}}"/>
+        </Grid>
 
-            <Button Command="{Binding DisqualifyRacerCommand}"
-                            Margin="2,0"
-                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                            Foreground="White"
-                            Content="Disqualifizieren"/>
-            
-            <Button Command="{Binding StartReleaseCommand}"
-                            Margin="2,0"
-                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
-                            Foreground="White"
-                            Content="Freigabe"/>
-        </DockPanel>
+        <Grid Grid.Row="0"
+              Grid.Column="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <ListView ItemsSource="{Binding Measurements, UpdateSourceTrigger=PropertyChanged}"
+                      VerticalAlignment="Center"
+                      Grid.Row="0"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="3">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Sensor"
+                                        DisplayMemberBinding="{Binding SensorString}"/>
+
+                        <GridViewColumn Header="Messung"
+                                        DisplayMemberBinding="{Binding Measurement, Converter={StaticResource UnsignedTimeSpanVisualizer}}"/>
+
+                        <GridViewColumn Header="Differenz zu Bestzeit"
+                                        DisplayMemberBinding="{Binding BestDifference, Converter={StaticResource SignedTimeSpanVisualizer}}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <Button Command="{Binding RegisterFailureCommand}"
+                    Content="Ausfall registrieren"
+                    Margin="5,5,2.5,5"
+                    Grid.Row="1"
+                    Grid.Column="0"/>
+
+            <Button Command="{Binding DisqualifyCommand}"
+                    Content="Diqualifizieren"
+                    Margin="2.5,5"
+                    Grid.Row="1"
+                    Grid.Column="1"/>
+
+            <Button Command="{Binding ReleaseStartCommand}"
+                    Content="Freigeben"
+                    Margin="2.5,5,5,5"
+                    Grid.Row="1"
+                    Grid.Column="2"/>
+        </Grid>
     </Grid>
 </UserControl>

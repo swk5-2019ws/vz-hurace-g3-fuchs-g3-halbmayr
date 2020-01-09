@@ -62,7 +62,7 @@ namespace Hurace.RaceControl
             services.AddScoped<IRaceExecutionManager, RaceExecutionManager>();
 
             services.AddTransient<ViewModels.RaceDetailViewModel>();
-            services.AddTransient<ViewModels.MainViewModel>();
+            services.AddSingleton<ViewModels.MainViewModel>();
 
             services.AddTransient<MainWindow>();
         }

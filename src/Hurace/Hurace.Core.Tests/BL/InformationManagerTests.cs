@@ -1643,6 +1643,7 @@ namespace Hurace.Core.Tests.BL
 
             var race = await informationManager.GetRaceByIdAsync(
                     0,
+                    overallRaceStateLoadingType: Domain.Associated<Domain.RaceState>.LoadingType.None,
                     startListLoadingType: Domain.Associated<Domain.StartPosition>.LoadingType.Reference,
                     skierLoadingType: Domain.Associated<Domain.Skier>.LoadingType.Reference)
                 .ConfigureAwait(false);

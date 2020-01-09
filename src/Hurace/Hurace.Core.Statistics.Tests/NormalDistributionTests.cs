@@ -145,5 +145,15 @@ namespace Hurace.Core.Statistics.Tests
             Assert.Equal(expectedLowerBoundary, actualLowerBoundary);
             Assert.Equal(expectedUpperBoundary, actualUpperBoundardy);
         }
+
+        [Fact]
+        public void CalculateLowerBoundaryTest()
+        {
+            var expectedLowerBoundary = -1.96;
+
+            var actualLowerBoundary = NormalDistribution.CalculateLowerBoundary(0, 1, 0.975);
+
+            Assert.Equal(expectedLowerBoundary, Math.Round(actualLowerBoundary, 2));
+        }
     }
 }
