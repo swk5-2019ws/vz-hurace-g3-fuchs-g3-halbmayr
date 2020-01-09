@@ -79,11 +79,13 @@ namespace Hurace.Core.BL
         {
             var countryEntity = await countryDao.GetByIdAsync(id).ConfigureAwait(false);
 
-            return new Domain.Country
-            {
-                Id = countryEntity.Id,
-                Name = countryEntity.Name
-            };
+            return countryEntity != null
+                ? new Domain.Country
+                {
+                    Id = countryEntity.Id,
+                    Name = countryEntity.Name
+                }
+                : null;
         }
 
         #endregion
@@ -491,6 +493,8 @@ namespace Hurace.Core.BL
         public async Task<IEnumerable<Domain.RankedSkier>> GetRankedSkiersOfRace(int raceId)
         {
             var raceEntity = await raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
+
+            if (raceEntity == null) return null;
 
             var firstStartListCondition = new QueryConditionBuilder()
                 .DeclareCondition(nameof(Entities.StartPosition.StartListId), QueryConditionType.Equals, raceEntity.FirstStartListId)
