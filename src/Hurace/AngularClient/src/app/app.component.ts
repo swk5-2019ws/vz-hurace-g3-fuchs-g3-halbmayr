@@ -1,5 +1,6 @@
 import { ApiService, Race} from './common/services/api-service.client';
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -7,19 +8,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
-  title = 'AngularClient';
-  racesLoading: boolean;
-  races: Race[] = [];
 
-  constructor(private converterClient: ApiService) {
-    this.racesLoading = true;
+  constructor(translate: TranslateService) {
+    translate.setDefaultLang('de');
+
+    translate.use('de');
   }
 
   ngOnInit(): void {
-    this.converterClient.race_GetAllRaces()
-      .subscribe(raceList => {
-        this.races = raceList;
-        this.racesLoading = false;
-      });
   }
 }
