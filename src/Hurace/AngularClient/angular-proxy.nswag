@@ -1,5 +1,5 @@
 ﻿{
-  "runtime": "NetCore30",
+  "runtime": "NetCore31",
   "defaultVariables": null,
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
@@ -56,7 +56,7 @@
   },
   "codeGenerators": {
     "openApiToTypeScriptClient": {
-      "className": "ConverterClient",
+      "className": "ApiService",
       "moduleName": "",
       "namespace": "",
       "typeScriptVersion": 2.7,
@@ -85,7 +85,7 @@
       "useTransformOptionsMethod": false,
       "useTransformResultMethod": false,
       "generateDtoTypes": true,
-      "operationGenerationMode": "MultipleClientsFromOperationId",
+      "operationGenerationMode": "SingleClientFromOperationId",
       "markOptionalProperties": true,
       "generateCloneMethod": false,
       "typeStyle": "Interface",
@@ -110,7 +110,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "src/app/converter.client.ts"
+      "output": "src/app/common/services/apiService.client.ts"
     }
   }
 }
