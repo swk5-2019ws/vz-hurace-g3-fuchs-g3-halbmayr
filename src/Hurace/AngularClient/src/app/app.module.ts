@@ -1,7 +1,7 @@
 import { environment } from './../environments/environment.prod';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ConverterClient, HURACE_SERVICE_BASE_URL } from './converter.client';
+import { ApiService, HURACE_SERVICE_BASE_URL } from './common/services/api-service.client';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
@@ -17,10 +17,10 @@ import { AppComponent } from './app.component';
     FormsModule
   ],
   providers: [
-    ConverterClient,
+    ApiService,
     {
-    provide: HURACE_SERVICE_BASE_URL,
-    useValue: environment.huraceServiceBaseUrl
+      provide: HURACE_SERVICE_BASE_URL,
+      useValue: environment.huraceServiceBaseUrl
     }
   ],
   bootstrap: [AppComponent]

@@ -1,4 +1,4 @@
-import { ConverterClient, Race} from './converter.client';
+import { ApiService, Race} from './common/services/api-service.client';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -10,10 +10,10 @@ export class AppComponent implements OnInit{
   title = 'AngularClient';
   races: Race[] = [];
 
-  constructor(private converterClient: ConverterClient) {}
+  constructor(private converterClient: ApiService) {}
 
   ngOnInit(): void {
-    this.converterClient.getAllRaces()
+    this.converterClient.race_GetAllRaces()
       .subscribe(raceList => {
         this.races = raceList;
       });
