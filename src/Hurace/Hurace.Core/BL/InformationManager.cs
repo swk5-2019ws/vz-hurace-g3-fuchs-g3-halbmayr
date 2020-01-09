@@ -917,7 +917,8 @@ namespace Hurace.Core.BL
         {
             if (raceData is null)
             {
-                //load raceData
+                //todo: load raceData when a untracked racer skips race execution
+                throw new ArgumentNullException(nameof(raceData));
             }
 
             var raceDataEnt = await this.raceDataDao.GetByIdAsync(raceData.Id).ConfigureAwait(false);
