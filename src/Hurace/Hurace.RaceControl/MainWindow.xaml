@@ -142,13 +142,24 @@
                             <materialDesign:PackIcon Kind="PlaySpeed"/>
                         </Button>
 
+                        <Button Command="{Binding StopRaceExecutionCommand}"
+                                Grid.Row="0"
+                                Grid.Column="1" 
+                                Margin="5,0"
+                                Background="Red"
+                                BorderThickness="0"
+                                ToolTip="Rennen beenden"
+                                Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
+
+                            <materialDesign:PackIcon Kind="Stop"/>
+                        </Button>
+
                         <Button Command="{Binding OpenEditRaceCommand}"
                                 Grid.Row="0"
                                 Grid.Column="2"
                                 Margin="5,0"
                                 Foreground="White"
-                                ToolTip="Rennen bearbeiten"
-                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
+                                ToolTip="Rennen bearbeiten">
 
                             <materialDesign:PackIcon Kind="Pencil"/>
                         </Button>
@@ -160,22 +171,9 @@
                                 Foreground="White"
                                 Background="OrangeRed"
                                 BorderThickness="0"
-                                ToolTip="Rennen entfernen"
-                                Visibility="{Binding ExecutionRunning, Converter={StaticResource InvertedVisibilityConverter}}">
+                                ToolTip="Rennen entfernen">
 
                             <materialDesign:PackIcon Kind="Delete"/>
-                        </Button>
-
-                        <Button Command="{Binding StopRaceExecutionCommand}"
-                                Grid.Row="0"
-                                Grid.Column="3" 
-                                Margin="5,0"
-                                Background="Red"
-                                BorderThickness="0"
-                                ToolTip="Rennen beenden"
-                                Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
-
-                            <materialDesign:PackIcon Kind="Stop"/>
                         </Button>
                     </Grid>
 

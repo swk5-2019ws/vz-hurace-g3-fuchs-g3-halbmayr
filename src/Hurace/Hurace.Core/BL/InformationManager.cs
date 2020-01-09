@@ -89,7 +89,7 @@ namespace Hurace.Core.BL
         #endregion
         #region Race-Methods
 
-        public async Task<int> CreateOrUpdateRace(Domain.Race race)
+        public async Task<int> CreateOrUpdateRaceAsync(Domain.Race race)
         {
             if (race == null) throw new ArgumentNullException(nameof(race));
             if (race.Id == -1)
@@ -361,7 +361,7 @@ namespace Hurace.Core.BL
             return race;
         }
 
-        public async Task DeleteRace(int raceId)
+        public async Task DeleteRaceAsync(int raceId)
         {
             var raceEntity = await this.raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
 
@@ -421,10 +421,42 @@ namespace Hurace.Core.BL
             await startListDao.DeleteAsync(startListRemoveCondition).ConfigureAwait(false);
         }
 
+        public async Task GenerateSecondStartList(int raceId)
+        {
+            var raceEnt = await this.raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
+
+            var ranks = (await this.GetRankedSkiersOfRaceAsync(raceId).ConfigureAwait(false))
+                .OrderBy(r => r.Rank)
+                .Take(30)
+                .OrderByDescending(r => r.Rank);
+
+            var raceStateEntSet = await this.raceStateDao.GetAllConditionalAsync().ConfigureAwait(false);
+
+            var startPositionCounter = 1;
+            foreach (var rank in ranks)
+            {
+                var startPositionEnt = new Entities.StartPosition
+                {
+                    Position = startPositionCounter++,
+                    SkierId = rank.Id,
+                    StartListId = raceEnt.SecondStartListId
+                };
+                await this.startPositionDao.CreateAsync(startPositionEnt).ConfigureAwait(false);
+
+                var raceDataEnt = new Entities.RaceData
+                {
+                    RaceStateId = raceStateEntSet.First(rs => rs.Label == "Startbereit").Id,
+                    SkierId = rank.Id,
+                    StartListId = raceEnt.SecondStartListId
+                };
+                await this.raceDataDao.CreateAsync(raceDataEnt).ConfigureAwait(false);
+            }
+        }
+
         #endregion
         #region RaceData-Methods
 
-        public async Task<Domain.RaceData> GetRaceDataByRaceAndStartlistAndPosition(
+        public async Task<Domain.RaceData> GetRaceDataByRaceAndStartlistAndPositionAsync(
             Domain.Race race,
             bool firstStartList,
             int position,
@@ -435,7 +467,7 @@ namespace Hurace.Core.BL
 
             var raceEnt = await raceDao.GetByIdAsync(race.Id).ConfigureAwait(false);
             var startListId = firstStartList ? raceEnt.FirstStartListId : raceEnt.SecondStartListId;
-            var skier = await GetSkierByRaceAndStartlistAndPosition(race, firstStartList, position).ConfigureAwait(false);
+            var skier = await GetSkierByRaceAndStartlistAndPositionAsync(race, firstStartList, position).ConfigureAwait(false);
 
             var raceDataCondition = new QueryConditionBuilder()
                 .DeclareConditionNode(
@@ -466,20 +498,14 @@ namespace Hurace.Core.BL
             };
         }
 
-        public async Task<bool> UpdateRaceData(Domain.RaceData raceData)
+        public async Task<bool> UpdateRaceStateOfRaceDataAsync(Domain.RaceData raceData)
         {
             if (raceData is null)
                 throw new ArgumentNullException(nameof(raceData));
 
-            int? raceStateId = null;
-            if (raceData.RaceState.Initialised)
-            {
-                raceStateId = raceData.RaceState.ForeignKey ?? raceData.RaceState.Reference.Id;
-            }
-
             var updatedColumns = new
             {
-                RaceStateId = raceStateId ?? null
+                RaceStateId = raceData.RaceState.ForeignKey ?? raceData.RaceState.Reference.Id
             };
             var updateCondition = new QueryConditionBuilder()
                 .DeclareCondition(nameof(Entities.RaceData.Id), QueryConditionType.Equals, raceData.Id)
@@ -488,7 +514,7 @@ namespace Hurace.Core.BL
                 == 1;
         }
 
-        public async Task<IEnumerable<Domain.RankedSkier>> GetRankedSkiersOfRace(int raceId)
+        public async Task<IEnumerable<Domain.RankedSkier>> GetRankedSkiersOfRaceAsync(int raceId)
         {
             var raceEntity = await raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
 
@@ -530,20 +556,29 @@ namespace Hurace.Core.BL
                     raceDataConditionGenerator(raceEntity.SecondStartListId))
                 .ConfigureAwait(false);
 
-            var timeMeasurementCondition = new QueryConditionBuilder()
-                .DeclareConditionNode(
-                    QueryConditionNodeType.Or,
-                    () => new QueryConditionBuilder()
-                        .DeclareConditionFromBuilderSet(
-                            QueryConditionNodeType.Or,
-                            firstRaceDataSet.Select(rd => new QueryConditionBuilder()
-                                .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, rd.Id))),
-                    () => new QueryConditionBuilder()
-                        .DeclareConditionFromBuilderSet(
-                            QueryConditionNodeType.Or,
-                            secondRaceDataSet.Select(rd => new QueryConditionBuilder()
-                                .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, rd.Id))))
-                .Build();
+            if (!firstRaceDataSet.Any())
+                throw new InvalidOperationException("no results yet to this race");
+
+            var timeMeasurementConditionBuilder = new QueryConditionBuilder()
+                            .DeclareConditionFromBuilderSet(
+                                QueryConditionNodeType.Or,
+                                firstRaceDataSet.Select(rd => new QueryConditionBuilder()
+                                    .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, rd.Id)));
+
+            if (secondRaceDataSet.Any())
+            {
+                timeMeasurementConditionBuilder = new QueryConditionBuilder()
+                    .DeclareConditionNode(
+                        QueryConditionNodeType.Or,
+                        () => timeMeasurementConditionBuilder,
+                        () => new QueryConditionBuilder()
+                            .DeclareConditionFromBuilderSet(
+                                QueryConditionNodeType.Or,
+                                secondRaceDataSet.Select(rd => new QueryConditionBuilder()
+                                    .DeclareCondition(nameof(Entities.TimeMeasurement.RaceDataId), QueryConditionType.Equals, rd.Id))));
+            }
+
+            var timeMeasurementCondition = timeMeasurementConditionBuilder.Build();
             var timeMeasurementSet = await timeMeasurementDao.GetAllConditionalAsync(timeMeasurementCondition)
                 .ConfigureAwait(false);
 
@@ -556,6 +591,7 @@ namespace Hurace.Core.BL
 
                 var rankedSkier = new Domain.RankedSkier()
                 {
+                    Id = skierEnt.Id,
                     DateOfBirth = skierEnt.DateOfBirth,
                     FirstName = skierEnt.FirstName,
                     LastName = skierEnt.LastName,
@@ -586,12 +622,12 @@ namespace Hurace.Core.BL
                     rankedSkier.ElapsedTimeInSecondRun = secondFinalMeasurement != null
                         ? TimeSpan.FromMilliseconds(secondFinalMeasurement.Measurement)
                         : TimeSpan.MaxValue;
-
-                    rankedSkier.ElapsedTotalTime =
-                        rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue && rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue
-                            ? rankedSkier.ElapsedTimeInFirstRun + rankedSkier.ElapsedTimeInSecondRun
-                            : TimeSpan.MaxValue;
                 }
+
+                rankedSkier.ElapsedTotalTime =
+                    rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue && rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue
+                        ? rankedSkier.ElapsedTimeInFirstRun + rankedSkier.ElapsedTimeInSecondRun
+                        : TimeSpan.MaxValue;
 
                 rankedSkierSet.Add(rankedSkier);
             }
@@ -617,7 +653,7 @@ namespace Hurace.Core.BL
         #endregion
         #region RaceState-Methods
 
-        public async Task<IEnumerable<Domain.RaceState>> GetAllRaceStates()
+        public async Task<IEnumerable<Domain.RaceState>> GetAllRaceStatesAsync()
         {
             return (await raceStateDao.GetAllConditionalAsync().ConfigureAwait(false))
                 .Select(raceStateEntity => new Domain.RaceState
@@ -833,7 +869,7 @@ namespace Hurace.Core.BL
             };
         }
 
-        public async Task<Domain.Skier> GetSkierByRaceAndStartlistAndPosition(Domain.Race race, bool firstStartList, int position)
+        public async Task<Domain.Skier> GetSkierByRaceAndStartlistAndPositionAsync(Domain.Race race, bool firstStartList, int position)
         {
             if (race is null)
                 throw new ArgumentNullException(nameof(race));
@@ -861,8 +897,107 @@ namespace Hurace.Core.BL
             return await GetSkierByIdAsync(startPosition.SkierId).ConfigureAwait(false);
         }
 
+        public async Task<Domain.Skier> GetSkierByStartPositionAsync(int startPositionId)
+        {
+            var startPositionEnt = await this.startPositionDao.GetByIdAsync(startPositionId).ConfigureAwait(false);
+
+            return await this.GetSkierByIdAsync(
+                    startPositionEnt.SkierId,
+                    Domain.Associated<Domain.Sex>.LoadingType.Reference,
+                    Domain.Associated<Domain.Country>.LoadingType.Reference,
+                    Domain.Associated<Domain.StartPosition>.LoadingType.None)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<bool> IsLastSkierOfStartList(Domain.RaceData raceData)
+        {
+            if (raceData is null)
+            {
+                //load raceData
+            }
+
+            var raceDataEnt = await this.raceDataDao.GetByIdAsync(raceData.Id).ConfigureAwait(false);
+
+            var startPositionCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.StartPosition.StartListId), QueryConditionType.Equals, raceDataEnt.StartListId)
+                .Build();
+            var startPositionEntSet = await this.startPositionDao.GetAllConditionalAsync(startPositionCondition)
+                .ConfigureAwait(false);
+
+            var startPositionEnt = startPositionEntSet.First(sp => sp.SkierId == raceDataEnt.SkierId &&
+                                                                sp.StartListId == raceDataEnt.StartListId);
+
+            var raceDataCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.RaceData.StartListId), QueryConditionType.Equals, raceDataEnt.StartListId)
+                .Build();
+            var raceDataEntSet = await this.raceDataDao.GetAllConditionalAsync(raceDataCondition)
+                .ConfigureAwait(false);
+
+            var remainingStartPositions = raceDataEntSet
+                .Select(rd => new
+                {
+                    RaceData = rd,
+                    StartPosition = startPositionEntSet.First(sp => sp.StartListId == rd.StartListId &&
+                                                                 sp.SkierId == rd.SkierId)
+                })
+                .Where(item => item.StartPosition.Position > startPositionEnt.Position);
+
+            return !remainingStartPositions.Any();
+        }
+
         #endregion
         #region StartPosition-Methods
+
+        public async Task<IEnumerable<Domain.StartPosition>> GetStartPositionListAsync(int raceId, bool firstStartList)
+        {
+            var raceEnt = await this.raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
+
+            var startPositionCondition = new QueryConditionBuilder()
+                .DeclareCondition(
+                    nameof(Entities.StartPosition.StartListId),
+                    QueryConditionType.Equals,
+                    firstStartList ? raceEnt.FirstStartListId : raceEnt.SecondStartListId)
+                .Build();
+
+            var startPositionEntSet = await startPositionDao.GetAllConditionalAsync(startPositionCondition)
+                .ConfigureAwait(false);
+
+            var skierCondition = new QueryConditionBuilder()
+                .DeclareConditionFromBuilderSet(
+                    QueryConditionNodeType.Or,
+                    startPositionEntSet.Select(sp => new QueryConditionBuilder()
+                        .DeclareCondition(nameof(Entities.Skier.Id), QueryConditionType.Equals, sp.SkierId)))
+                .Build();
+            var skierEntSet = await this.skierDao.GetAllConditionalAsync(skierCondition).ConfigureAwait(false);
+
+            var countrySet = await this.GetAllCountriesAsync().ConfigureAwait(false);
+
+            var startPositionSet = new List<Domain.StartPosition>();
+            foreach (var startPositionEnt in startPositionEntSet)
+            {
+                var skierEnt = skierEntSet.First(s => s.Id == startPositionEnt.SkierId);
+
+                var startPosition = new Domain.StartPosition()
+                {
+                    Id = startPositionEnt.Id,
+                    Position = startPositionEnt.Position,
+                    Skier = new Domain.Associated<Domain.Skier>(new Domain.Skier
+                    {
+                        Id = skierEnt.Id,
+                        FirstName = skierEnt.FirstName,
+                        LastName = skierEnt.LastName,
+                        DateOfBirth = skierEnt.DateOfBirth,
+                        ImageUrl = skierEnt.ImageUrl,
+                        IsRemoved = skierEnt.IsRemoved,
+                        Country = new Domain.Associated<Domain.Country>(countrySet.First(c => c.Id == skierEnt.CountryId))
+                    })
+                };
+
+                startPositionSet.Add(startPosition);
+            }
+
+            return startPositionSet;
+        }
 
         public async Task<IEnumerable<Domain.StartPosition>> GetAllStartPositionsOfStartList(
             int startListId,
@@ -893,7 +1028,7 @@ namespace Hurace.Core.BL
                 .ConfigureAwait(false);
         }
 
-        public async Task<bool> IsNextStartposition(Domain.Race race, bool firstStartlist, int position)
+        public async Task<bool> IsNextStartPositionAsync(Domain.Race race, bool firstStartlist, int position)
         {
             if (race is null)
                 throw new ArgumentNullException(nameof(race));
@@ -923,10 +1058,6 @@ namespace Hurace.Core.BL
                 .Build();
 
             var raceDataSet = (await raceDataDao.GetAllConditionalAsync(raceDataCondition).ConfigureAwait(false))
-                .OrderBy(rd => startPositionEntities
-                                   .First(sp => sp.SkierId == rd.SkierId &&
-                                                sp.StartListId == rd.StartListId)
-                                   .Position)
                 .Select(rd => (
                     RaceData: rd,
                     StartPosition: startPositionEntities.First(sp => sp.SkierId == rd.SkierId && sp.StartListId == rd.StartListId)
@@ -934,7 +1065,14 @@ namespace Hurace.Core.BL
             var raceStateSet = await raceStateDao.GetAllConditionalAsync().ConfigureAwait(false);
 
             var startableRaceState = raceStateSet.First(rs => rs.Label == "Startbereit");
-            var startableRaceDataSet = raceDataSet.Where(rd => rd.RaceData.RaceStateId == startableRaceState.Id);
+            var runningRaceState = raceStateSet.First(rs => rs.Label == "Laufend");
+            var startableRaceDataSet = raceDataSet
+                .Where(rd => rd.RaceData.RaceStateId == startableRaceState.Id ||
+                             rd.RaceData.RaceStateId == runningRaceState.Id)
+                .OrderBy(rd => startPositionEntities
+                                   .First(sp => sp.SkierId == rd.RaceData.SkierId &&
+                                                sp.StartListId == rd.RaceData.StartListId)
+                                   .Position);
 
             return startableRaceDataSet.Any() &&
                 startableRaceDataSet.First().StartPosition.Position == position;
@@ -943,7 +1081,7 @@ namespace Hurace.Core.BL
         #endregion
         #region TimeMeasurement-Methods
 
-        public async Task<Domain.TimeMeasurement> CreateTimemeasurement(int measurement, int sensorId, int raceDataId, bool isValid)
+        public async Task<Domain.TimeMeasurement> CreateTimeMeasurementAsync(int measurement, int sensorId, int raceDataId, bool isValid)
         {
             var timeMeasurement = new Entities.TimeMeasurement
             {
@@ -963,7 +1101,7 @@ namespace Hurace.Core.BL
             };
         }
 
-        public async Task<Dictionary<int, (double mean, double standardDeviation)>> CalculateNormalDistributionOfMeasumentsPerSensor(
+        public async Task<Dictionary<int, (double mean, double standardDeviation)>> CalculateNormalDistributionOfMeasumentsPerSensorAsync(
                 int venueId, int raceTypeId)
         {
             var raceCondition = new QueryConditionBuilder()
@@ -1018,7 +1156,7 @@ namespace Hurace.Core.BL
                     distribution => (distribution.Mean, distribution.StdDev));
         }
 
-        public async Task<Domain.TimeMeasurement> GetTimeMeasurementByRaceDataAndSensorId(int raceDataId, int sensorId)
+        public async Task<Domain.TimeMeasurement> GetTimeMeasurementByRaceDataAndSensorIdAsync(int raceDataId, int sensorId)
         {
             var measurementConditionBuilders = new List<QueryConditionBuilder>
             {

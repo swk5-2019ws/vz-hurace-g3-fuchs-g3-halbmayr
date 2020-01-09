@@ -14,7 +14,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
-        <converters:TimeSpanConverter x:Key="TimeSpanVisualizer"/>
+        <converters:SignedTimeSpanConverter x:Key="TimeSpanVisualizer"/>
     </UserControl.Resources>
 
     <Grid>

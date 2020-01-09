@@ -86,5 +86,31 @@ namespace Hurace.Core.Statistics
                 distribution.InverseDistributionFunction(lowerBoundaryPercentage),
                 distribution.InverseDistributionFunction(upperBoundaryPercentage));
         }
+
+        /// <summary>
+        /// Calculates the x-value lower boundary of the area that covers a certain amount 
+        /// of cumulative density function of the passed normal-distribution.
+        /// </summary>
+        /// <param name="mean">mean of the passed normal-distribution</param>
+        /// <param name="stdDev">standard-deviation of the passed normal-distribution</param>
+        /// <param name="areaCoverage">describes the percentage of area that should be covered below
+        /// the normal-distribution function. This percentage has to be in the interval ]0,1[</param>
+        /// <returns>the double describing which lower boundary for the passed normal-distribution
+        /// describes the amount of passed area-coverage.</returns>
+        public static double CalculateLowerBoundary(double mean, double stdDev, double areaCoverage)
+        {
+            if (areaCoverage <= 0 || areaCoverage >= 1)
+                throw new InvalidOperationException($"{nameof(areaCoverage)} has to be in boundary ]0,1[ but is {areaCoverage}");
+            else if (double.IsNaN(mean) || double.IsNaN(stdDev))
+                return double.NegativeInfinity;
+            else if (stdDev == 0)
+                return mean;
+
+            var distribution = new Accord.Statistics.Distributions.Univariate.NormalDistribution(mean, stdDev);
+
+            var lowerBoundaryPercentage = 1 - areaCoverage;
+
+            return distribution.InverseDistributionFunction(lowerBoundaryPercentage);
+        }
     }
 }
