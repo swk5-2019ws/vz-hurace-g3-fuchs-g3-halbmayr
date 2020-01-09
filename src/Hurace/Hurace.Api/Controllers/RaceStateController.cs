@@ -27,7 +27,7 @@ namespace Hurace.Api.Controllers
         {
             logger.LogInformation($"this is a log info");
 
-            return Ok(await informationManager.GetAllRaceStates()
+            return Ok(await informationManager.GetAllRaceStatesAsync()
                 .ConfigureAwait(false));
         }
     }
