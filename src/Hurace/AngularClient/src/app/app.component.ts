@@ -8,14 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit{
   title = 'AngularClient';
+  racesLoading: boolean;
   races: Race[] = [];
 
-  constructor(private converterClient: ApiService) {}
+  constructor(private converterClient: ApiService) {
+    this.racesLoading = true;
+  }
 
   ngOnInit(): void {
     this.converterClient.race_GetAllRaces()
       .subscribe(raceList => {
         this.races = raceList;
+        this.racesLoading = false;
       });
   }
 }

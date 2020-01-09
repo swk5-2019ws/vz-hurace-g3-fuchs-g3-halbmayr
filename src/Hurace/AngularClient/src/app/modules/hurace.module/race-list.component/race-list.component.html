@@ -1,0 +1,9 @@
+<loading-spinner *ngIf="racesLoading"></loading-spinner>
+
+<div class="card-body">
+  <ul class="races">
+  <li *ngFor="let race of races">
+    <span class="badge">{{race.id}}</span> {{race.venue.reference.name}}
+  </li>
+  </ul>
+</div>
