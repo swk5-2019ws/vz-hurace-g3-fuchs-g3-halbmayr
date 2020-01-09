@@ -79,11 +79,13 @@ namespace Hurace.Core.BL
         {
             var countryEntity = await countryDao.GetByIdAsync(id).ConfigureAwait(false);
 
-            return new Domain.Country
-            {
-                Id = countryEntity.Id,
-                Name = countryEntity.Name
-            };
+            return countryEntity != null
+                ? new Domain.Country
+                {
+                    Id = countryEntity.Id,
+                    Name = countryEntity.Name
+                }
+                : null;
         }
 
         #endregion
@@ -518,6 +520,8 @@ namespace Hurace.Core.BL
         {
             var raceEntity = await raceDao.GetByIdAsync(raceId).ConfigureAwait(false);
 
+            if (raceEntity == null) return null;
+
             var firstStartListCondition = new QueryConditionBuilder()
                 .DeclareCondition(nameof(Entities.StartPosition.StartListId), QueryConditionType.Equals, raceEntity.FirstStartListId)
                 .Build();
@@ -913,7 +917,8 @@ namespace Hurace.Core.BL
         {
             if (raceData is null)
             {
-                //load raceData
+                //todo: load raceData when a untracked racer skips race execution
+                throw new ArgumentNullException(nameof(raceData));
             }
 
             var raceDataEnt = await this.raceDataDao.GetByIdAsync(raceData.Id).ConfigureAwait(false);

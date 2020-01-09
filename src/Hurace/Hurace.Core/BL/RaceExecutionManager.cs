@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+#pragma warning disable CA1502 // Avoid excessive complexity
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 namespace Hurace.Core.BL
 {
     public class RaceExecutionManager : IRaceExecutionManager
@@ -134,6 +136,7 @@ namespace Hurace.Core.BL
             return race.Date == DateTime.Now.Date &&
                 race.FirstStartList.Any();
         }
+
         private async void OnRaceSensorTriggered(int sensorId, DateTime measuredTime)
         {
             triggerHandlerSem.WaitOne();
