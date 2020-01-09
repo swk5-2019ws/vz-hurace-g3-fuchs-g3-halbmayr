@@ -1013,6 +1013,7 @@ namespace Hurace.Core.Tests.BL
                 (processedMeasurement, lastMeasurement) =>
                 {
                     eventList.Add((processedMeasurement, lastMeasurement));
+                    return Task.CompletedTask;
                 };
 
             var fakedRaceClock = A.Fake<Timer.IRaceClock>();

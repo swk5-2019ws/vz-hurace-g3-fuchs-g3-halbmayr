@@ -62,8 +62,7 @@ namespace Hurace.Simulator
 
                     if (randomizer.NextDouble() > this.TimerFailureChance)
                     {
-
-                        this.TimingTriggered?.Invoke(currentSensorId, DateTime.Now);
+                        ThreadPool.QueueUserWorkItem(_ => this.TimingTriggered?.Invoke(currentSensorId, DateTime.Now));
 
 #if DEBUG
                         Debug.WriteLine($"{nameof(RaceClockSimulation)} ({DateTime.Now.ToString(TimeFormat)}): " +

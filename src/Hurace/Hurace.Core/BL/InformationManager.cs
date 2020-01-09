@@ -912,7 +912,9 @@ namespace Hurace.Core.BL
         public async Task<bool> IsLastSkierOfStartList(Domain.RaceData raceData)
         {
             if (raceData is null)
-                throw new ArgumentNullException(nameof(raceData));
+            {
+                //load raceData
+            }
 
             var raceDataEnt = await this.raceDataDao.GetByIdAsync(raceData.Id).ConfigureAwait(false);
 
