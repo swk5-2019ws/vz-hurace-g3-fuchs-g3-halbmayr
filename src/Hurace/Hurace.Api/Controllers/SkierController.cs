@@ -44,7 +44,7 @@ namespace Hurace.Api.Controllers
         {
             logger.LogInformation($"this is a log info");
 
-            var skierList = await informationManager.GetRankedSkiersOfRace(raceId)
+            var skierList = await informationManager.GetRankedSkiersOfRaceAsync(raceId)
                 .ConfigureAwait(false);
 
             return skierList == null
