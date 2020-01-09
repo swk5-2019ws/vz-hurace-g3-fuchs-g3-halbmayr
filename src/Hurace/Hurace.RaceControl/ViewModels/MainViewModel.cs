@@ -24,7 +24,6 @@ namespace Hurace.RaceControl.ViewModels
 
         private RaceDetailViewModel selectedRace;
         private CreateRaceViewModel createRaceViewModel;
-        private bool selectedRaceEditable;
 
         #endregion
         #region Dependencies
