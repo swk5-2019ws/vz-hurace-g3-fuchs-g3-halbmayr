@@ -39,7 +39,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         [OpenApiOperation("Returns race for the given raceId")]
-        public async Task<ActionResult<Domain.Race>> GetCountryById(int raceId)
+        public async Task<ActionResult<Domain.Race>> GetRaceById(int raceId)
         {
             logger.LogInformation($"this is a log info");
 
