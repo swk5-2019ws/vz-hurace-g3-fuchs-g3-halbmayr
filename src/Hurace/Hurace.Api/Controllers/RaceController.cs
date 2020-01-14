@@ -24,6 +24,9 @@ namespace Hurace.Api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Returns all races")]
         public async Task<ActionResult<IEnumerable<Domain.Race>>> GetAllRaces()
         {
 #if DEBUG
@@ -76,6 +79,17 @@ namespace Hurace.Api.Controllers
             {
                 return NotFound($"RaceId '{raceId}' not found");
             }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<IEnumerable<Domain.Race>>> GetRacesByFilter(Models.RaceFilter raceFilter)
+        {
+#if DEBUG
+            logger.LogCall(new { raceFilter?.RaceTypeIds, raceFilter?.SeasonIds });
+#endif
+
+            return Ok(await informationManager.GetAllRacesOfRaceTypesAndSeasonsAsync(raceFilter?.RaceTypeIds, raceFilter?.SeasonIds)
+                .ConfigureAwait(false));
         }
     }
 }

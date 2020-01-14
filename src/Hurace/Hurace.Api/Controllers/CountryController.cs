@@ -25,6 +25,9 @@ namespace Hurace.Api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Returns all countries")]
         public async Task<ActionResult<IEnumerable<Domain.Country>>> GetAllCountries()
         {
 #if DEBUG
@@ -39,7 +42,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns Country for the country Id")]
+        [OpenApiOperation("Returns country for a passed country Id")]
         public async Task<ActionResult<Domain.Country>> GetCountryById(int countryId)
         {
 #if DEBUG
