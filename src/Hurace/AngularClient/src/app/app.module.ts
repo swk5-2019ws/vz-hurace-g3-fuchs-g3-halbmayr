@@ -10,7 +10,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app.component';
 import { SpinnerComponent } from './common/components/spinner.component/spinner.component';
 import { NavbarComponent } from './common/components/navbar.component/navbar.component';
-import { RaceListComponent } from './modules/hurace.module/race-list.component/race-list.component';
+import { OverviewComponent } from './modules/hurace.module/overview.component/overview.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AdminstrationComponent } from './modules/hurace.module/adminstration.component/adminstration.component';
 import { AnalysationComponent } from './modules/hurace.module/analysation.component/analysation.component';
@@ -58,7 +58,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     SpinnerComponent,
     NavbarComponent,
-    RaceListComponent,
+    OverviewComponent,
     AdminstrationComponent,
     AnalysationComponent
   ],

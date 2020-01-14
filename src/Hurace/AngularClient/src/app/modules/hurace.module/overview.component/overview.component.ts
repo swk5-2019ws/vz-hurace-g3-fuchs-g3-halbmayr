@@ -4,11 +4,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSelectionList } from '@angular/material';
 
 @Component({
-  selector: 'race-list',
-  templateUrl: './race-list.component.html',
-  styleUrls: ['./race-list.component.css']
+  selector: 'overview',
+  templateUrl: './overview.component.html',
+  styleUrls: ['./overview.component.css']
 })
-export class RaceListComponent implements OnInit {
+export class OverviewComponent implements OnInit {
   racesLoading: boolean = true;
   raceTypesLoading: boolean = true;
   seasonsLoading: boolean = true;
