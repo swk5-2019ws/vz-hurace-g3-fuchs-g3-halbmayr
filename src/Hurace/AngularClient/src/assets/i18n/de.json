@@ -2,6 +2,12 @@
     "navbar": {
         "overview": "Übersicht",
         "analysation": "Analysation",
+        "language": "Sprache",
         "administration": "Administration"
+    },
+    "overview": {
+        "raceTypesHeader": "Renntypen",
+        "seasonsHeader": "Saisonen",
+        "racesHeader": "Rennen"
     }
 }

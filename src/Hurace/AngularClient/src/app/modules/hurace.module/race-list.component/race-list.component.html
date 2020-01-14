@@ -1,9 +1,49 @@
-<loading-spinner *ngIf="racesLoading"></loading-spinner>
-
-<div class="card-body">
-  <ul class="races">
-  <li *ngFor="let race of races">
-    <span class="badge">{{race.id}}</span> {{race.venue.reference.name}}
-  </li>
-  </ul>
+<div class="row">
+  <div class="col-md-5">
+    <div class="row">
+      <mat-card class="raceFilterContainer">
+        <mat-card-title>{{ 'overview.raceTypesHeader' | translate }}</mat-card-title>
+        <mat-card-content>
+          <mat-progress-spinner mode="indeterminate" *ngIf="raceTypesLoading"></mat-progress-spinner>
+          <mat-selection-list #raceTypes *ngFor="let raceType of raceTypes">
+            <mat-list-option>{{ raceType.label }}</mat-list-option>
+          </mat-selection-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="row mt-2">
+      <mat-card class="raceFilterContainer">
+        <mat-card-title>{{ 'overview.seasonsHeader' | translate }}</mat-card-title>
+        <mat-card-content>
+          <mat-progress-spinner mode="indeterminate" *ngIf="seasonsLoading"></mat-progress-spinner>
+          <mat-selection-list #raceTypes *ngFor="let season of seasons">
+            <mat-list-option>{{ season.name }}</mat-list-option>
+          </mat-selection-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  
+  <div class="col-md-7">
+    <mat-card>
+      <mat-card-title>{{ 'overview.racesHeader' | translate }}</mat-card-title>
+      <mat-card-content>
+        <mat-progress-spinner mode="indeterminate" *ngIf="racesLoading"></mat-progress-spinner>
+        <mat-selection-list #races *ngFor="let race of races">
+          <mat-list-item>
+            <div matLine class="d-flex justify-content-between">
+              <h5>{{ race.venue.reference.name }}</h5>
+              <mat-chip-list>
+                <mat-chip>{{ race.raceType.reference.label }}</mat-chip>
+              </mat-chip-list>
+            </div>
+            <div matLine class="d-flex justify-content-between mt-2">
+              <span>{{ race.season.reference.name }}</span>
+              <span>{{ race.date | date:'dd.MM.yyyy' }}</span>
+            </div>
+          </mat-list-item>
+        </mat-selection-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>
