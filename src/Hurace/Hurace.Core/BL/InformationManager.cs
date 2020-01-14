@@ -310,17 +310,14 @@ namespace Hurace.Core.BL
 
             var raceEntSet = await this.raceDao.GetAllConditionalAsync(raceCondition).ConfigureAwait(false);
 
-            return await Task.WhenAll(raceEntSet.Select(
-                    async raceEnt => new Domain.Race
-                    {
-                        Date = raceEnt.Date,
-                        Description = raceEnt.Description,
-                        GenderSpecificRaceId = raceEnt.GenderSpecificRaceId,
-                        Id = raceEnt.Id,
-                        NumberOfSensors = raceEnt.NumberOfSensors,
-                        OverallRaceState = new Domain.Associated<Domain.RaceState>(
-                                    await LoadOverallRaceStateOfRace(raceEnt.Id).ConfigureAwait(false))
-                    }))
+            return await Task.WhenAll(
+                    raceEntSet.Select(async raceEnt => await this.GetRaceByIdAsync(
+                            raceEnt.Id,
+                            overallRaceStateLoadingType: Domain.Associated<Domain.RaceState>.LoadingType.Reference,
+                            raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                            venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                            seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
+                        .ConfigureAwait(false)))
                 .ConfigureAwait(false);
         }
 
