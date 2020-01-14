@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Hurace.Core.BL;
+using Hurace.Core.Logging.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hurace.Core.BL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,32 +25,21 @@ namespace Hurace.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Domain.Skier>>> GetAllRaces()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Returns all skiers")]
+        public async Task<ActionResult<IEnumerable<Domain.Skier>>> GetAllSkiers()
         {
-            logger.LogInformation($"this is a log info");
+#if DEBUG
+            logger.LogCall();
+#endif
 
             return Ok(await informationManager.GetAllSkiersAsync(
                 Domain.Associated<Domain.Sex>.LoadingType.Reference,
                 Domain.Associated<Domain.Country>.LoadingType.Reference,
                 Domain.Associated<Domain.StartPosition>.LoadingType.None)
                 .ConfigureAwait(false));
-        }
-
-        [HttpGet("{raceId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns skiers for the given raceId")]
-        public async Task<ActionResult<IEnumerable<Domain.Skier>>> GetRankedSkiersOfRace(int raceId)
-        {
-            logger.LogInformation($"this is a log info");
-
-            var skierList = await informationManager.GetRankedSkiersOfRaceAsync(raceId)
-                .ConfigureAwait(false);
-
-            return skierList == null
-                ? NotFound($"Invalid raceId: {raceId}")
-                : (ActionResult<IEnumerable<Domain.Skier>>)Ok(skierList);
         }
     }
 }
