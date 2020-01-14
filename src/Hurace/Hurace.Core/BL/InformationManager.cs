@@ -252,6 +252,78 @@ namespace Hurace.Core.BL
                 .ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<Domain.Race>> GetAllRacesOfRaceTypesAndSeasonsAsync(
+            IEnumerable<int> raceTypeIdSet,
+            IEnumerable<int> seasonIdSet)
+        {
+            var raceTypeConditionBuilder = raceTypeIdSet is null || !raceTypeIdSet.Any()
+                ? new QueryConditionBuilder()
+                    .DeclareTautologyCondition()
+                : new QueryConditionBuilder()
+                    .DeclareConditionFromBuilderSet(
+                        QueryConditionNodeType.Or,
+                        raceTypeIdSet.Select(raceTypeId => new QueryConditionBuilder()
+                            .DeclareCondition(nameof(Entities.Race.RaceTypeId), QueryConditionType.Equals, raceTypeId)));
+
+            QueryConditionBuilder seasonConditionBuilder;
+            if (seasonIdSet is null || !seasonIdSet.Any())
+                seasonConditionBuilder = new QueryConditionBuilder()
+                    .DeclareTautologyCondition();
+            else
+            {
+                var seasonEntSet = await seasonDao.GetAllConditionalAsync().ConfigureAwait(false);
+                var seasonPlanEntSet = (await seasonPlanDao.GetAllConditionalAsync().ConfigureAwait(false))
+                    .Where(sp => seasonIdSet.Any(seasonId => seasonId == sp.SeasonId));
+
+                seasonConditionBuilder = !seasonPlanEntSet.Any()
+                    ? new QueryConditionBuilder()
+                        .DeclareContradictingCondition()
+                    : seasonConditionBuilder = new QueryConditionBuilder()
+                        .DeclareConditionFromBuilderSet(
+                            QueryConditionNodeType.Or,
+                            seasonPlanEntSet.Select(sp => new QueryConditionBuilder()
+                                .DeclareConditionNode(
+                                    QueryConditionNodeType.And,
+                                    () => new QueryConditionBuilder()
+                                        .DeclareCondition(nameof(Entities.Race.VenueId), QueryConditionType.Equals, sp.VenueId),
+                                    () => new QueryConditionBuilder()
+                                        .DeclareConditionNode(
+                                            QueryConditionNodeType.And,
+                                            () => new QueryConditionBuilder()
+                                                .DeclareCondition(
+                                                    nameof(Entities.Race.Date),
+                                                    QueryConditionType.GreaterThanOrEquals,
+                                                    seasonEntSet.First(s => s.Id == sp.SeasonId).StartDate),
+                                            () => new QueryConditionBuilder()
+                                                .DeclareCondition(
+                                                    nameof(Entities.Race.Date),
+                                                    QueryConditionType.LessThanOrEquals,
+                                                    seasonEntSet.First(s => s.Id == sp.SeasonId).EndDate)))));
+            }
+
+            var raceCondition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => raceTypeConditionBuilder,
+                    () => seasonConditionBuilder)
+                .Build();
+
+            var raceEntSet = await this.raceDao.GetAllConditionalAsync(raceCondition).ConfigureAwait(false);
+
+            return await Task.WhenAll(raceEntSet.Select(
+                    async raceEnt => new Domain.Race
+                    {
+                        Date = raceEnt.Date,
+                        Description = raceEnt.Description,
+                        GenderSpecificRaceId = raceEnt.GenderSpecificRaceId,
+                        Id = raceEnt.Id,
+                        NumberOfSensors = raceEnt.NumberOfSensors,
+                        OverallRaceState = new Domain.Associated<Domain.RaceState>(
+                                    await LoadOverallRaceStateOfRace(raceEnt.Id).ConfigureAwait(false))
+                    }))
+                .ConfigureAwait(false);
+        }
+
         public async Task<Domain.Race> GetRaceByIdAsync(
             int raceId,
             Domain.Associated<Domain.RaceState>.LoadingType overallRaceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference,

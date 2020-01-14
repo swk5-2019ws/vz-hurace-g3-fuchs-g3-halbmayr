@@ -1,4 +1,5 @@
 ﻿using Hurace.Core.BL;
+using Hurace.Core.Logging.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,9 +24,14 @@ namespace Hurace.Api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Returns all races")]
         public async Task<ActionResult<IEnumerable<Domain.Race>>> GetAllRaces()
         {
-            logger.LogInformation($"this is a log info");
+#if DEBUG
+            logger.LogCall();
+#endif
 
             return Ok(await informationManager.GetAllRacesAsync(
                     raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
@@ -39,16 +45,51 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         [OpenApiOperation("Returns race for the given raceId")]
-        public async Task<ActionResult<Domain.Race>> GetCountryById(int raceId)
+        public async Task<ActionResult<Domain.Race>> GetRaceById(int raceId)
         {
-            logger.LogInformation($"this is a log info");
+#if DEBUG
+            logger.LogCall(new { raceId });
+#endif
 
-            var race = await informationManager.GetRaceByIdAsync(raceId)
-                .ConfigureAwait(false);
+            var race = await informationManager.GetRaceByIdAsync(raceId).ConfigureAwait(true);
 
             return race == null
                 ? NotFound($"Invalid raceId: {raceId}")
                 : (ActionResult<Domain.Race>)Ok(race);
+        }
+
+        [HttpGet("{raceId}/ranks")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Returns ranked skiers of specific race")]
+        public async Task<ActionResult<IEnumerable<Domain.RankedSkier>>> GetRankedSkiersOfRace(int raceId)
+        {
+#if DEBUG
+            logger.LogCall(new { raceId });
+#endif
+
+            try
+            {
+                var skierList = await informationManager.GetRankedSkiersOfRaceAsync(raceId).ConfigureAwait(true);
+
+                return Ok(skierList);
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound($"RaceId '{raceId}' not found");
+            }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<IEnumerable<Domain.Race>>> GetRacesByFilter(Models.RaceFilter raceFilter)
+        {
+#if DEBUG
+            logger.LogCall(new { raceFilter?.RaceTypeIds, raceFilter?.SeasonIds });
+#endif
+
+            return Ok(await informationManager.GetAllRacesOfRaceTypesAndSeasonsAsync(raceFilter?.RaceTypeIds, raceFilter?.SeasonIds)
+                .ConfigureAwait(false));
         }
     }
 }
