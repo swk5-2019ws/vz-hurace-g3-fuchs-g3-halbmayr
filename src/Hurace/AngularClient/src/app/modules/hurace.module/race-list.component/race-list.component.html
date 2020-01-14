@@ -5,8 +5,8 @@
         <mat-card-title>{{ 'overview.raceTypesHeader' | translate }}</mat-card-title>
         <mat-card-content>
           <mat-progress-spinner mode="indeterminate" *ngIf="raceTypesLoading"></mat-progress-spinner>
-          <mat-selection-list #raceTypes *ngFor="let raceType of raceTypes">
-            <mat-list-option>{{ raceType.label }}</mat-list-option>
+          <mat-selection-list #raceTypes *ngFor="let currentRaceType of raceTypes">
+            <mat-list-option (click)="clickRaceType(currentRaceType)">{{ currentRaceType.label }}</mat-list-option>
           </mat-selection-list>
         </mat-card-content>
       </mat-card>
@@ -16,8 +16,8 @@
         <mat-card-title>{{ 'overview.seasonsHeader' | translate }}</mat-card-title>
         <mat-card-content>
           <mat-progress-spinner mode="indeterminate" *ngIf="seasonsLoading"></mat-progress-spinner>
-          <mat-selection-list #raceTypes *ngFor="let season of seasons">
-            <mat-list-option>{{ season.name }}</mat-list-option>
+          <mat-selection-list #seasons *ngFor="let currentSeason of seasons">
+            <mat-list-option (click)="clickSeason(currentSeason)">{{ currentSeason.name }}</mat-list-option>
           </mat-selection-list>
         </mat-card-content>
       </mat-card>

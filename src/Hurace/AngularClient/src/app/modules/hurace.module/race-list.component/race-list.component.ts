@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService, Race, RaceFilter, RaceType, Season } from 'src/app/common/services/api-service.client';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSelectionList } from '@angular/material';
 
 @Component({
   selector: 'race-list',
@@ -7,29 +9,19 @@ import { ApiService, Race, RaceFilter, RaceType, Season } from 'src/app/common/s
   styleUrls: ['./race-list.component.css']
 })
 export class RaceListComponent implements OnInit {
-  racesLoading: boolean;
-  races: Race[] = [];
-  raceTypesLoading: boolean;
-  raceTypes: RaceType[] = [];
-  seasonsLoading: boolean;
-  seasons: Season[] = [];
+  racesLoading: boolean = true;
+  raceTypesLoading: boolean = true;
+  seasonsLoading: boolean = true;
+  races: Race[];
+  raceTypes: RaceType[];
+  seasons: Season[];
+  selectedRaceTypes: RaceType[] = [];
+  selectedSeasons: Season[] = [];
 
-  constructor(private apiService: ApiService) {
-    this.racesLoading = true;
-    this.raceTypesLoading = true;
-    this.seasonsLoading = true;
-  }
+  constructor(private apiService: ApiService) { }
 
   ngOnInit() {
-    let raceFilter: RaceFilter = {
-      raceTypeIds: null,
-      seasonIds: null
-    };
-    this.apiService.race_GetRacesByFilter(raceFilter)
-      .subscribe(raceList => {
-        this.races = raceList;
-        this.racesLoading = false;
-      });
+    this.updateRaces();
 
     this.apiService.returns_all_race_types()
       .subscribe(raceTypes => {
@@ -44,4 +36,45 @@ export class RaceListComponent implements OnInit {
       })
   }
 
+  private updateRaces(): void{
+    this.races = [];
+    this.racesLoading = true;
+
+    let raceFilter: RaceFilter = {
+      raceTypeIds: this.selectedRaceTypes.map(rt => rt.id),
+      seasonIds: this.selectedSeasons.map(s => s.id)
+    };
+  
+    this.apiService.race_GetRacesByFilter(raceFilter)
+      .subscribe(raceList => {
+        this.races = raceList;
+        this.racesLoading = false;
+      });
+  }
+
+  clickRaceType(raceType: RaceType) {
+    if (this.selectedRaceTypes.includes(raceType)){
+      this.selectedRaceTypes.splice(
+        this.selectedRaceTypes.findIndex(rt => rt.id == raceType.id),
+        1
+      );
+    } else {
+      this.selectedRaceTypes.push(raceType);
+    }
+
+    this.updateRaces();
+  }
+
+  clickSeason(season: Season) {
+    if (this.selectedSeasons.includes(season)){
+      this.selectedSeasons.splice(
+        this.selectedSeasons.findIndex(rt => rt.id == season.id),
+        1
+      );
+    } else {
+      this.selectedSeasons.push(season);
+    }
+
+    this.updateRaces();
+  }
 }
