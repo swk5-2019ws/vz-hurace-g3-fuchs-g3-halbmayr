@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  huraceServiceBaseUrl: 'https://localhost:5001'
+  huraceServiceBaseUrl: 'https://10.211.55.4:5001'
 };

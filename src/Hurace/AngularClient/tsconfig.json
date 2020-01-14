@@ -18,6 +18,11 @@
       "es2018",
       "dom"
     ],
+    "paths": {
+      "@auth_config": [
+        "auth_config.json"
+      ]
+    },
     "resolveJsonModule": true,
     "esModuleInterop": true
   },

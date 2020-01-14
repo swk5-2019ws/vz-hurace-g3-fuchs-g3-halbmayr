@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  huraceServiceBaseUrl: 'https://localhost:5001'
+  huraceServiceBaseUrl: 'https://10.211.55.4:5001'
 };
 
 /*

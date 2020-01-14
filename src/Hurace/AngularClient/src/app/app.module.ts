@@ -13,6 +13,7 @@ import { NavbarComponent } from './common/components/navbar.component/navbar.com
 import { RaceListComponent } from './modules/hurace.module/race-list.component/race-list.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AdminstrationComponent } from './modules/hurace.module/adminstration.component/adminstration.component';
+import { AnalysationComponent } from './modules/hurace.module/analysation.component/analysation.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -25,7 +26,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SpinnerComponent,
     NavbarComponent,
     RaceListComponent,
-    AdminstrationComponent
+    AdminstrationComponent,
+    AnalysationComponent
   ],
   imports: [
     BrowserModule,
