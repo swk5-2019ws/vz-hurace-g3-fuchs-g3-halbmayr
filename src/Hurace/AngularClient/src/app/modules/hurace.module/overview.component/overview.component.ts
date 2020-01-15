@@ -1,7 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService, Race, RaceFilter, RaceType, Season } from 'src/app/common/services/api-service.client';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSelectionList } from '@angular/material';
 
 @Component({
   selector: 'overview',
@@ -36,28 +34,9 @@ export class OverviewComponent implements OnInit {
       })
   }
 
-  private updateRaces(): void{
-    this.races = [];
-    this.racesLoading = true;
-
-    let raceFilter: RaceFilter = {
-      raceTypeIds: this.selectedRaceTypes.map(rt => rt.id),
-      seasonIds: this.selectedSeasons.map(s => s.id)
-    };
-  
-    this.apiService.race_GetRacesByFilter(raceFilter)
-      .subscribe(raceList => {
-        this.races = raceList;
-        this.racesLoading = false;
-      });
-  }
-
   clickRaceType(raceType: RaceType) {
     if (this.selectedRaceTypes.includes(raceType)){
-      this.selectedRaceTypes.splice(
-        this.selectedRaceTypes.findIndex(rt => rt.id == raceType.id),
-        1
-      );
+      this.selectedRaceTypes.splice(this.selectedRaceTypes.findIndex(rt => rt.id == raceType.id), 1);
     } else {
       this.selectedRaceTypes.push(raceType);
     }
@@ -76,5 +55,21 @@ export class OverviewComponent implements OnInit {
     }
 
     this.updateRaces();
+  }
+
+  private updateRaces(): void{
+    this.races = [];
+    this.racesLoading = true;
+
+    let raceFilter: RaceFilter = {
+      raceTypeIds: this.selectedRaceTypes.map(rt => rt.id),
+      seasonIds: this.selectedSeasons.map(s => s.id)
+    };
+  
+    this.apiService.race_GetRacesByFilter(raceFilter)
+      .subscribe(raceList => {
+        this.races = raceList;
+        this.racesLoading = false;
+      });
   }
 }
