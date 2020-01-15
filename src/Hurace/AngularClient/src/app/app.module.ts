@@ -14,6 +14,7 @@ import { OverviewComponent } from './modules/hurace.module/overview.component/ov
 import { AppRoutingModule } from './app-routing.module';
 import { AdminstrationComponent } from './modules/hurace.module/adminstration.component/adminstration.component';
 import { AnalysationComponent } from './modules/hurace.module/analysation.component/analysation.component';
+import { RecordIconComponent } from './common/components/record-icon.component/record-icon.component'
 
 //Angular Material Components
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -60,7 +61,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NavbarComponent,
     OverviewComponent,
     AdminstrationComponent,
-    AnalysationComponent
+    AnalysationComponent,
+    RecordIconComponent
   ],
   imports: [
     HttpClientModule,

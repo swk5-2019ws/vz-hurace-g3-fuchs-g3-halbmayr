@@ -1,0 +1,13 @@
+.record-icon {
+  height: 6px;
+  width: 6px;
+  background-color: rgb(216, 20, 20);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.record-icon-container {
+  height: 100%;
+  width: 1.25em;
+  justify-content: center;
+}

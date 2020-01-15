@@ -32,7 +32,10 @@
         <mat-selection-list #races *ngFor="let race of races">
           <mat-list-item>
             <div matLine class="d-flex justify-content-between">
-              <h5 [class.disabledListItem]="race.overallRaceState.reference.id == 4">{{ race.venue.reference.name }}</h5>
+              <div class="d-flex justify-content-start align-self-center raceItemHeader">
+                <h5 class="raceItemVenueName" [class.disabledListItem]="race.overallRaceState.reference.id == 4">{{ race.venue.reference.name }}</h5>
+                <record-icon *ngIf="race.overallRaceState.reference.id == 3"></record-icon>
+              </div>
               <mat-chip-list>
                 <mat-chip>{{ race.raceType.reference.label }}</mat-chip>
               </mat-chip-list>
