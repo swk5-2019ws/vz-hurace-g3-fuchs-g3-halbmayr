@@ -8,6 +8,7 @@
     "overview": {
         "raceTypesHeader": "Race Types",
         "seasonsHeader": "Seasons",
-        "racesHeader": "Races"
+        "racesHeader": "Races",
+        "rankedSkierHeader": "Ranks"
     }
 }

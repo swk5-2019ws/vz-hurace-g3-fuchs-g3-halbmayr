@@ -9,5 +9,19 @@
         "raceTypesHeader": "Renntypen",
         "seasonsHeader": "Saisonen",
         "racesHeader": "Rennen"
+    },
+    "rank-list": {
+        "header": "Rangliste",
+        "ranks": {
+            "rankHeader": "Rang",
+            "lastNameHeader": "Nachname",
+            "firstNameHeader": "Vorname",
+            "startPositionHeader": "SP",
+            "countryHeader": "Land",
+            "firstRunTimeHeader": "1.Lauf",
+            "secondRunTimeHeader": "2.Lauf",
+            "interimTimeFormat": "{{sensorId}}.ZZ",
+            "totalTimeHeader": "Σ-Zeit"
+        }
     }
 }

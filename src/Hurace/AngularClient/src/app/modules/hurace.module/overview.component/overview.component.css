@@ -1,11 +1,11 @@
-.raceFilterContainer {
+.race-filter-container {
     width: 100%;
 }
 
-.raceItemVenueName {
+.race-item-venue-name {
     margin: 0px;
 }
 
-.raceItemHeader {
+.race-item-header {
     height: fit-content;
 }

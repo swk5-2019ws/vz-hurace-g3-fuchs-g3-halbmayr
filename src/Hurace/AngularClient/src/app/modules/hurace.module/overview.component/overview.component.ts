@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, Race, RaceFilter, RaceType, Season } from 'src/app/common/services/api-service.client';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'overview',
@@ -16,7 +17,10 @@ export class OverviewComponent implements OnInit {
   selectedRaceTypes: RaceType[] = [];
   selectedSeasons: Season[] = [];
 
-  constructor(private apiService: ApiService) { }
+  constructor(
+    private apiService: ApiService,
+    private router: Router) {
+  }
 
   ngOnInit() {
     this.updateRaces();
@@ -34,27 +38,34 @@ export class OverviewComponent implements OnInit {
       })
   }
 
-  clickRaceType(raceType: RaceType) {
-    if (this.selectedRaceTypes.includes(raceType)){
-      this.selectedRaceTypes.splice(this.selectedRaceTypes.findIndex(rt => rt.id == raceType.id), 1);
+  onRaceTypeClicked(currentRaceType: RaceType): void {
+    if (this.selectedRaceTypes.includes(currentRaceType)){
+      this.selectedRaceTypes.splice(this.selectedRaceTypes.findIndex(rt => rt.id == currentRaceType.id), 1);
     } else {
-      this.selectedRaceTypes.push(raceType);
+      this.selectedRaceTypes.push(currentRaceType);
     }
 
     this.updateRaces();
   }
 
-  clickSeason(season: Season) {
-    if (this.selectedSeasons.includes(season)){
+  onSeasonClicked(currentSeason: Season): void {
+    if (this.selectedSeasons.includes(currentSeason)){
       this.selectedSeasons.splice(
-        this.selectedSeasons.findIndex(rt => rt.id == season.id),
+        this.selectedSeasons.findIndex(rt => rt.id == currentSeason.id),
         1
       );
     } else {
-      this.selectedSeasons.push(season);
+      this.selectedSeasons.push(currentSeason);
     }
 
     this.updateRaces();
+  }
+
+  onRaceClicked(currentRace: Race): void{
+    if (currentRace.overallRaceState.reference.id !== 4){
+      let rankMode: string = currentRace.overallRaceState.reference.id == 3 ? 'live' : 'static';
+      this.router.navigateByUrl(`overview/${currentRace.id}/${rankMode}`)
+    }
   }
 
   private updateRaces(): void{

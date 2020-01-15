@@ -7,15 +7,6 @@ import { HttpClientModule, HttpClient} from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { AppComponent } from './app.component';
-import { SpinnerComponent } from './common/components/spinner.component/spinner.component';
-import { NavbarComponent } from './common/components/navbar.component/navbar.component';
-import { OverviewComponent } from './modules/hurace.module/overview.component/overview.component';
-import { AppRoutingModule } from './app-routing.module';
-import { AdminstrationComponent } from './modules/hurace.module/adminstration.component/adminstration.component';
-import { AnalysationComponent } from './modules/hurace.module/analysation.component/analysation.component';
-import { RecordIconComponent } from './common/components/record-icon.component/record-icon.component'
-
 //Angular Material Components
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatCheckboxModule} from '@angular/material';
@@ -49,6 +40,16 @@ import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import {MatPaginatorModule} from '@angular/material/paginator';
 
+import { AppComponent } from './app.component';
+import { SpinnerComponent } from './common/components/spinner.component/spinner.component';
+import { NavbarComponent } from './common/components/navbar.component/navbar.component';
+import { OverviewComponent } from './modules/hurace.module/overview.component/overview.component';
+import { AppRoutingModule } from './app-routing.module';
+import { AdminstrationComponent } from './modules/hurace.module/adminstration.component/adminstration.component';
+import { AnalysationComponent } from './modules/hurace.module/analysation.component/analysation.component';
+import { RecordIconComponent } from './common/components/record-icon.component/record-icon.component'
+import { RankListComponent } from './modules/hurace.module/rank-list.component/rank-list.component';
+
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -62,7 +63,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     OverviewComponent,
     AdminstrationComponent,
     AnalysationComponent,
-    RecordIconComponent
+    RecordIconComponent,
+    RankListComponent
   ],
   imports: [
     HttpClientModule,
