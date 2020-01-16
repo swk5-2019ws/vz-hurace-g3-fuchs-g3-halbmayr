@@ -8,7 +8,10 @@ namespace Hurace.Domain
     {
         public int Rank { get; set; }
         public TimeSpan ElapsedTimeInFirstRun { get; set; }
+        public string ElapsedTimeInFirstRunString { get; set; }
         public TimeSpan ElapsedTimeInSecondRun { get; set; }
+        public string ElapsedTimeInSecondRunString { get; set; }
         public TimeSpan ElapsedTotalTime { get; set; }
+        public string ElapsedTotalTimeString { get; set; }
     }
 }

@@ -714,10 +714,17 @@ namespace Hurace.Core.BL
             }
 
             var bestRankedSkier = orderedRankedSkierSet.First(ors => ors.Rank == 1);
-            foreach (var rankedSkier in orderedRankedSkierSet.Where(ors => ors.Rank != 1))
+            foreach (var rankedSkier in orderedRankedSkierSet)
             {
-                rankedSkier.ElapsedTimeInFirstRun -= bestRankedSkier.ElapsedTimeInFirstRun;
-                rankedSkier.ElapsedTimeInSecondRun -= bestRankedSkier.ElapsedTimeInSecondRun;
+                if (rankedSkier.Rank != 1)
+                {
+                    rankedSkier.ElapsedTimeInFirstRun -= bestRankedSkier.ElapsedTimeInFirstRun;
+                    rankedSkier.ElapsedTimeInSecondRun -= bestRankedSkier.ElapsedTimeInSecondRun;
+                }
+
+                rankedSkier.ElapsedTimeInFirstRunString = this.FormatTimeSpan(rankedSkier.ElapsedTimeInFirstRun);
+                rankedSkier.ElapsedTimeInSecondRunString = this.FormatTimeSpan(rankedSkier.ElapsedTimeInSecondRun);
+                rankedSkier.ElapsedTotalTimeString = this.FormatTimeSpan(rankedSkier.ElapsedTotalTime);
             }
 
             return orderedRankedSkierSet;
@@ -1338,6 +1345,20 @@ namespace Hurace.Core.BL
 
         #endregion
         #region Helper
+
+        private string FormatTimeSpan(TimeSpan elapsedTime)
+        {
+            if (elapsedTime == TimeSpan.MaxValue)
+                return "/";
+
+            var prefix = "  ";
+            if (elapsedTime < TimeSpan.Zero)
+                prefix = "- ";
+            else if (elapsedTime > TimeSpan.Zero)
+                prefix = "+ ";
+
+            return $"{prefix}{elapsedTime.ToString("mm\\:ss\\.ff")}";
+        }
 
         private async Task<Domain.Associated<T>> LoadAssociatedDomainObject<T>(
             Domain.Associated<T>.LoadingType desiredLoadingType,
