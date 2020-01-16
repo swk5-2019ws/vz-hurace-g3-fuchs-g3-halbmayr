@@ -706,8 +706,11 @@ export interface Sex extends DomainObjectBase {
 export interface RankedSkier extends Skier {
     rank?: number;
     elapsedTimeInFirstRun?: string;
+    elapsedTimeInFirstRunString?: string | undefined;
     elapsedTimeInSecondRun?: string;
+    elapsedTimeInSecondRunString?: string | undefined;
     elapsedTotalTime?: string;
+    elapsedTotalTimeString?: string | undefined;
 }
 
 export interface RaceFilter {

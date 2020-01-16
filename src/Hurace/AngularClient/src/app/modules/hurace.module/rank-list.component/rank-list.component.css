@@ -1,3 +1,11 @@
-.hc-entry {
+.text-center-vertically {
     vertical-align: middle;
+}
+
+.faster-time {
+    color: green;
+}
+
+.slower-time {
+    color: red;
 }

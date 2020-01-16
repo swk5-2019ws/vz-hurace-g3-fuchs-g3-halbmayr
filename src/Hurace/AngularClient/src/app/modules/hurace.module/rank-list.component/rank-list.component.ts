@@ -25,8 +25,6 @@ export class RankListComponent implements OnInit {
       .subscribe(rankedSkiers => {
         this.rankedSkiersLoading = false;
         this.rankedSkiers = rankedSkiers;
-
-        console.log(rankedSkiers);
       });
   }
 
