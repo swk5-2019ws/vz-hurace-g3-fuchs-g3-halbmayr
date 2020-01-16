@@ -8,7 +8,20 @@
     "overview": {
         "raceTypesHeader": "Race Types",
         "seasonsHeader": "Seasons",
-        "racesHeader": "Races",
-        "rankedSkierHeader": "Ranks"
+        "racesHeader": "Races"
+    },
+    "rank-list": {
+        "header": "Ranklist",
+        "ranks": {
+            "rankHeader": "Rank",
+            "lastNameHeader": "Lastname",
+            "firstNameHeader": "Firstname",
+            "startPositionHeader": "SP",
+            "countryHeader": "Country",
+            "firstRunTimeHeader": "first run",
+            "secondRunTimeHeader": "second run",
+            "interimTimeFormat": "{{sensorId}}.IM",
+            "totalTimeHeader": "Σ-Time"
+        }
     }
 }
