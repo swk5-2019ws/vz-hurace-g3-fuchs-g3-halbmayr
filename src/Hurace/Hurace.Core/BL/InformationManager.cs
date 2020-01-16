@@ -716,15 +716,27 @@ namespace Hurace.Core.BL
             var bestRankedSkier = orderedRankedSkierSet.First(ors => ors.Rank == 1);
             foreach (var rankedSkier in orderedRankedSkierSet)
             {
-                if (rankedSkier.Rank != 1)
+                var notFirstSkier = rankedSkier.Rank != 1;
+                if (notFirstSkier)
                 {
-                    rankedSkier.ElapsedTimeInFirstRun -= bestRankedSkier.ElapsedTimeInFirstRun;
-                    rankedSkier.ElapsedTimeInSecondRun -= bestRankedSkier.ElapsedTimeInSecondRun;
+                    if (rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue)
+                        rankedSkier.ElapsedTimeInFirstRun -= bestRankedSkier.ElapsedTimeInFirstRun;
+
+                    if (rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue)
+                        rankedSkier.ElapsedTimeInSecondRun -= bestRankedSkier.ElapsedTimeInSecondRun;
                 }
 
-                rankedSkier.ElapsedTimeInFirstRunString = this.FormatTimeSpan(rankedSkier.ElapsedTimeInFirstRun);
-                rankedSkier.ElapsedTimeInSecondRunString = this.FormatTimeSpan(rankedSkier.ElapsedTimeInSecondRun);
-                rankedSkier.ElapsedTotalTimeString = this.FormatTimeSpan(rankedSkier.ElapsedTotalTime);
+                rankedSkier.ElapsedTimeInFirstRunString = rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue
+                    ? this.FormatTimeSpan(rankedSkier.ElapsedTimeInFirstRun, notFirstSkier)
+                    : "n/a";
+
+                rankedSkier.ElapsedTimeInSecondRunString = rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue
+                    ? this.FormatTimeSpan(rankedSkier.ElapsedTimeInSecondRun, notFirstSkier)
+                    : "n/a";
+
+                rankedSkier.ElapsedTotalTimeString = rankedSkier.ElapsedTotalTime != TimeSpan.MaxValue
+                    ? this.FormatTimeSpan(rankedSkier.ElapsedTotalTime, false)
+                    : "n/a";
             }
 
             return orderedRankedSkierSet;
@@ -1346,7 +1358,7 @@ namespace Hurace.Core.BL
         #endregion
         #region Helper
 
-        private string FormatTimeSpan(TimeSpan elapsedTime)
+        private string FormatTimeSpan(TimeSpan elapsedTime, bool addSignPrefix)
         {
             if (elapsedTime == TimeSpan.MaxValue)
                 return "/";
@@ -1357,7 +1369,7 @@ namespace Hurace.Core.BL
             else if (elapsedTime > TimeSpan.Zero)
                 prefix = "+ ";
 
-            return $"{prefix}{elapsedTime.ToString("mm\\:ss\\.ff")}";
+            return $"{(addSignPrefix ? prefix : "")}{elapsedTime.ToString("mm\\:ss\\.ff")}";
         }
 
         private async Task<Domain.Associated<T>> LoadAssociatedDomainObject<T>(
