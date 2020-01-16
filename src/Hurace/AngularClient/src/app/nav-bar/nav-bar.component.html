@@ -1,7 +1,24 @@
 <header>
-  <div class="ui three item tabs menu">
-  <a routerLink="home"  routerLinkActive="active" class="item">Home</a>
-  <button (click)="auth.login()" *ngIf="!auth.loggedIn">Log In</button>
-  <button (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+  <!--<div class="ui three item tabs menu" *ngIf="auth.loggedIn">
+    <a routerLink="profile" *ngIf="auth.loggedIn" class="item">Profile</a>
+    <a routerLink="home"  routerLinkActive="active" class="item">Home</a>
+    <a (click)="auth.login()" *ngIf="!auth.loggedIn" class="item">Log In</a>
+    <a (click)="auth.logout()" *ngIf="auth.loggedIn" class="item">Log Out</a>
+  </div>
+
+  <div class="ui two item tabs menu" *ngIf="!auth.loggedIn">
+    <a routerLink="profile" *ngIf="auth.loggedIn" class="item">Profile</a>
+    <a routerLink="home"  routerLinkActive="active" class="item">Home</a>
+    <a (click)="auth.login()" *ngIf="!auth.loggedIn" class="item">Log In</a>
+    <a (click)="auth.logout()" *ngIf="auth.loggedIn" class="item">Log Out</a>
+  </div>-->
+
+  <div class="ui pointing menu">
+    <a routerLink="home"  routerLinkActive="active" class="item">Home</a>
+    <div class="right menu">
+        <a routerLink="profile" *ngIf="auth.loggedIn" class="item">Profile</a>
+        <a (click)="auth.login()" *ngIf="!auth.loggedIn" class="item">Log In</a>
+        <a (click)="auth.logout()" *ngIf="auth.loggedIn" class="item">Log Out</a>
+    </div>
   </div>
 </header>
