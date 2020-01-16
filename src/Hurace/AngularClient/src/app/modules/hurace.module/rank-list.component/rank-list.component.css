@@ -9,3 +9,18 @@
 .slower-time {
     color: red;
 }
+
+.rank-list {
+    font-size: x-small;
+    white-space: nowrap;
+}
+
+table tr {
+    border-left: 1px solid #454d55;
+    border-right: 1px solid #454d55;
+}
+
+table td, th {
+    border-left: 1px solid #454d55;
+    border-right: 1px solid #454d55;
+}

@@ -49,6 +49,7 @@ import { AdminstrationComponent } from './modules/hurace.module/adminstration.co
 import { AnalysationComponent } from './modules/hurace.module/analysation.component/analysation.component';
 import { RecordIconComponent } from './common/components/record-icon.component/record-icon.component'
 import { RankListComponent } from './modules/hurace.module/rank-list.component/rank-list.component';
+import { RaceDetailPageComponent } from './modules/hurace.module/race-detail-page.component/race-detail-page.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -64,7 +65,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminstrationComponent,
     AnalysationComponent,
     RecordIconComponent,
-    RankListComponent
+    RankListComponent,
+    RaceDetailPageComponent
   ],
   imports: [
     HttpClientModule,

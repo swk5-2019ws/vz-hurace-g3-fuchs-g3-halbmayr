@@ -1,7 +1,7 @@
 <h4>{{ 'rank-list.header' | translate }}</h4>
 <spinner *ngIf="rankedSkiersLoading"></spinner>
 <div class="table-responsive" *ngIf="!rankedSkiersLoading && !raceLoading">
-    <table class="table table-dark">
+    <table class="table table-dark rank-list">
         <thead>
             <tr class="dflex">
                 <th scope="col" rowspan="2" class="text-center-vertically">{{ 'rank-list.ranks.rankHeader' | translate}}</th>
@@ -18,7 +18,7 @@
                 <th scope="col" class="text-center" *ngFor="let sensorId of generateSequence(race.numberOfSensors)">{{ 'rank-list.ranks.interimTimeFormat' | translate:{ sensorId: sensorId } }}</th>
             </tr>
         </thead>
-        <tbody *ngFor="let currentRankedSkier of rankedSkiers">
+        <tbody *ngFor="let currentRankedSkier of rankedSkiers" class="rank-list-body">
             <tr>
                 <td rowspan="2" class="text-center-vertically">{{ currentRankedSkier.rank }}</td>
                 <td rowspan="2" class="text-center-vertically">{{ currentRankedSkier.lastName }}</td>

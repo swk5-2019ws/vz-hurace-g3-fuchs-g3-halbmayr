@@ -1,0 +1,11 @@
+<spinner *ngIf="raceLoading"></spinner>
+<ng-container *ngIf="!raceLoading">
+    <div class="d-flex justify-content-start align-self-center">
+        <h1 class="race-item-venue-name">{{ race.venue.reference.name }}</h1>
+        <record-icon *ngIf="race.overallRaceState.reference.id === 3"></record-icon>
+    </div>
+</ng-container>
+
+<div class="mt-3">
+    <rank-list></rank-list>
+</div>
