@@ -707,8 +707,10 @@ export interface RankedSkier extends Skier {
     rank?: number;
     elapsedTimeInFirstRun?: string;
     elapsedTimeInFirstRunString?: string | undefined;
+    elapsedMeasurementStringsInFirstRun?: string[] | undefined;
     elapsedTimeInSecondRun?: string;
     elapsedTimeInSecondRunString?: string | undefined;
+    elapsedMeasurementStringsInSecondRun?: string[] | undefined;
     elapsedTotalTime?: string;
     elapsedTotalTimeString?: string | undefined;
 }
