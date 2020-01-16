@@ -3,34 +3,39 @@
 <div class="table-responsive" *ngIf="!rankedSkiersLoading">
     <table class="table table-dark">
         <thead>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
+            <tr class="dflex">
+                <th scope="col" rowspan="2" class="hc-entry">{{ 'rank-list.ranks.rankHeader' | translate}}</th>
+                <th scope="col" rowspan="2" class="hc-entry">{{ 'rank-list.ranks.lastNameHeader' | translate }}</th>
+                <th scope="col" rowspan="2" class="hc-entry">{{ 'rank-list.ranks.firstNameHeader' | translate }}</th>
+                <th scope="col" rowspan="2" class="hc-entry">{{ 'rank-list.ranks.startPositionHeader' | translate }}</th>
+                <th scope="col" rowspan="2" class="hc-entry">{{ 'rank-list.ranks.countryHeader' | translate }}</th>
                 <th scope="col" colspan="2" class="text-center">{{ 'rank-list.ranks.firstRunTimeHeader' | translate }}</th>
                 <th scope="col" colspan="2" class="text-center">{{ 'rank-list.ranks.secondRunTimeHeader' | translate }}</th>
-                <th scope="col"></th>
+                <th scope="col" rowspan="2" class="hc-entry">{{ 'rank-list.ranks.totalTimeHeader' | translate }}</th>
             </tr>
             <tr>
-                <th scope="col">{{ 'rank-list.ranks.rankHeader' | translate}}</th>
-                <th scope="col">{{ 'rank-list.ranks.lastNameHeader' | translate }}</th>
-                <th scope="col">{{ 'rank-list.ranks.firstNameHeader' | translate }}</th>
-                <th scope="col">{{ 'rank-list.ranks.startPositionHeader' | translate }}</th>
-                <th scope="col">{{ 'rank-list.ranks.countryHeader' | translate }}</th>
                 <th scope="col">{{ 'rank-list.ranks.interimTimeFormat' | translate:{ sensorId: 1 } }}</th>
                 <th scope="col">{{ 'rank-list.ranks.interimTimeFormat' | translate:{ sensorId: 2 } }}</th>
                 <th scope="col">{{ 'rank-list.ranks.interimTimeFormat' | translate:{ sensorId: 1 } }}</th>
                 <th scope="col">{{ 'rank-list.ranks.interimTimeFormat' | translate:{ sensorId: 2 } }}</th>
-                <th scope="col">{{ 'rank-list.ranks.totalTimeHeader' | translate }}</th>
             </tr>
         </thead>
         <tbody *ngFor="let currentRankedSkier of rankedSkiers">
             <tr>
-                <td>{{ currentRankedSkier.rank }}</td>
-                <td>{{ currentRankedSkier.lastName }}</td>
-                <td>{{ currentRankedSkier.firstName }}</td>
+                <td rowspan="2" class="hc-entry">{{ currentRankedSkier.rank }}</td>
+                <td rowspan="2" class="hc-entry">{{ currentRankedSkier.lastName }}</td>
+                <td rowspan="2" class="hc-entry">{{ currentRankedSkier.firstName }}</td>
+                <td rowspan="2" class="hc-entry">n/a</td>
+                <td rowspan="2" class="hc-entry">{{ currentRankedSkier.country.reference.name }}</td>
+                <td colspan="2" class="text-center">{{ currentRankedSkier.elapsedTimeInFirstRun }}</td>
+                <td colspan="2" class="text-center">{{ currentRankedSkier.elapsedTimeInSecondRun }}</td>
+                <td>{{ currentRankedSkier.elapsedTotalTime }}</td>
+            </tr>
+            <tr>
+                <td>n/a</td>
+                <td>n/a</td>
+                <td>n/a</td>
+                <td>n/a</td>
             </tr>
         </tbody>
     </table>
