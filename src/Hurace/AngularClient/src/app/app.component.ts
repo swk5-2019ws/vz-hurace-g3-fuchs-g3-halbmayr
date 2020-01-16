@@ -6,14 +6,14 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'AngularClient';
   races: Race[] = [];
 
   constructor(private converterClient: ConverterClient) {}
 
   ngOnInit(): void {
-    this.converterClient.getAllRaces()
+    this.converterClient.race_GetAllRaces()
       .subscribe(raceList => {
         this.races = raceList;
       });
