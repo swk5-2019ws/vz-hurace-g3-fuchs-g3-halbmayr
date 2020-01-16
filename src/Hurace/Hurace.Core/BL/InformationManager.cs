@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#pragma warning disable CA1502 // Avoid excessive complexity
 #pragma warning disable IDE0039 // Use local function
 #pragma warning disable IDE0046 // Convert to conditional expression
 #pragma warning disable IDE0010 // Add missing cases
@@ -657,7 +658,10 @@ namespace Hurace.Core.BL
 
             var countryEntSet = await countryDao.GetAllConditionalAsync().ConfigureAwait(false);
 
-            var rankedSkierSet = new List<Domain.RankedSkier>();
+            var rankedSkierTimeSet = new List<(
+                Domain.RankedSkier RankedSkier,
+                IEnumerable<TimeSpan> ElapsedMeasurementsInFirstRun,
+                IEnumerable<TimeSpan> ElapsedMeasurementsInSecondRun)>();
             foreach (var skierEnt in skierEntSet)
             {
                 var countryEnt = countryEntSet.First(c => c.Id == skierEnt.CountryId);
@@ -684,7 +688,21 @@ namespace Hurace.Core.BL
                     ? TimeSpan.FromMilliseconds(firstFinalMeasurement.Measurement)
                     : TimeSpan.MaxValue;
 
+                var measurementsOfFirstRun = timeMeasurementSet
+                    .Where(tm => tm.RaceDataId == firstRaceDataEnt.Id &&
+                                 tm.IsValid)
+                    .Select(tm => (tm.SensorId, TSMeasurement: TimeSpan.FromMilliseconds(tm.Measurement)))
+                    .ToList();
+                measurementsOfFirstRun.AddRange(
+                    Enumerable.Range(0, raceEntity.NumberOfSensors)
+                        .Where(sensorId => !measurementsOfFirstRun.Any(m => m.SensorId == sensorId))
+                        .Select(sensorId => (sensorId, TimeSpan.MaxValue)));
+                var elapsedMeasurementsInFirstRun = measurementsOfFirstRun
+                    .OrderBy(m => m.SensorId)
+                    .Select(m => m.TSMeasurement);
+
                 var secondRaceDataEnt = secondRaceDataSet.FirstOrDefault(rd => rd.SkierId == skierEnt.Id);
+                IEnumerable<TimeSpan> elapsedMeasurementsInSecondRun = null;
                 if (secondRaceDataEnt != null)
                 {
                     var secondFinalMeasurement = timeMeasurementSet
@@ -695,6 +713,19 @@ namespace Hurace.Core.BL
                     rankedSkier.ElapsedTimeInSecondRun = secondFinalMeasurement != null
                         ? TimeSpan.FromMilliseconds(secondFinalMeasurement.Measurement)
                         : TimeSpan.MaxValue;
+
+                    var measurementsOfSecondRun = timeMeasurementSet
+                        .Where(tm => tm.RaceDataId == secondRaceDataEnt.Id &&
+                                     tm.IsValid)
+                        .Select(tm => (tm.SensorId, TSMeasurement: TimeSpan.FromMilliseconds(tm.Measurement)))
+                        .ToList();
+                    measurementsOfSecondRun.AddRange(
+                        Enumerable.Range(0, raceEntity.NumberOfSensors)
+                            .Where(sensorId => !measurementsOfSecondRun.Any(m => m.SensorId == sensorId))
+                            .Select(sensorId => (sensorId, TimeSpan.MaxValue)));
+                    elapsedMeasurementsInSecondRun = measurementsOfSecondRun
+                        .OrderBy(m => m.SensorId)
+                        .Select(m => m.TSMeasurement);
                 }
 
                 rankedSkier.ElapsedTotalTime =
@@ -702,44 +733,66 @@ namespace Hurace.Core.BL
                         ? rankedSkier.ElapsedTimeInFirstRun + rankedSkier.ElapsedTimeInSecondRun
                         : TimeSpan.MaxValue;
 
-                rankedSkierSet.Add(rankedSkier);
+                rankedSkierTimeSet.Add((rankedSkier, elapsedMeasurementsInFirstRun, elapsedMeasurementsInSecondRun));
             }
 
-            var orderedRankedSkierSet = rankedSkierSet.OrderBy(rs => rs.ElapsedTotalTime);
+            var orderedRankedSkierTimeSet = rankedSkierTimeSet.OrderBy(rst => rst.RankedSkier.ElapsedTotalTime).ToList();
 
             var counter = 1;
-            foreach (var rankedSkier in orderedRankedSkierSet)
+            foreach (var rankedSkier in orderedRankedSkierTimeSet.Select(rst => rst.RankedSkier))
             {
                 rankedSkier.Rank = counter++;
             }
 
-            var bestRankedSkier = orderedRankedSkierSet.First(ors => ors.Rank == 1);
-            foreach (var rankedSkier in orderedRankedSkierSet)
+            var (bestRankedSkier, bestElapsedMeasurementsInFirstRun, bestElapsedMeasurementsInSecondRun) =
+                orderedRankedSkierTimeSet.First(ors => ors.RankedSkier.Rank == 1);
+
+            for (int i = 0; i < orderedRankedSkierTimeSet.Count; i++)
             {
-                var notFirstSkier = rankedSkier.Rank != 1;
-                if (notFirstSkier)
+                var (rankedSkier, elapsedMeasurementsInFirstRun, elapsedMeasurementsInSecondRun) = orderedRankedSkierTimeSet[i];
+
+                var notFirstRankedSkier = rankedSkier.Rank != 1;
+                if (notFirstRankedSkier)
                 {
                     if (rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue)
                         rankedSkier.ElapsedTimeInFirstRun -= bestRankedSkier.ElapsedTimeInFirstRun;
 
+                    elapsedMeasurementsInFirstRun = this.UpdateMeasurementsAccordingToBest(
+                        elapsedMeasurementsInFirstRun,
+                        bestElapsedMeasurementsInFirstRun);
+
                     if (rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue)
                         rankedSkier.ElapsedTimeInSecondRun -= bestRankedSkier.ElapsedTimeInSecondRun;
+
+                    elapsedMeasurementsInSecondRun = this.UpdateMeasurementsAccordingToBest(
+                        elapsedMeasurementsInSecondRun,
+                        bestElapsedMeasurementsInSecondRun);
                 }
 
                 rankedSkier.ElapsedTimeInFirstRunString = rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue
-                    ? this.FormatTimeSpan(rankedSkier.ElapsedTimeInFirstRun, notFirstSkier)
+                    ? this.FormatTimeSpan(rankedSkier.ElapsedTimeInFirstRun, notFirstRankedSkier)
                     : "n/a";
 
+                rankedSkier.ElapsedMeasurementStringsInFirstRun = this.FormatElapsedMeasurements(
+                    elapsedMeasurementsInFirstRun,
+                    bestElapsedMeasurementsInFirstRun,
+                    notFirstRankedSkier);
+
                 rankedSkier.ElapsedTimeInSecondRunString = rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue
-                    ? this.FormatTimeSpan(rankedSkier.ElapsedTimeInSecondRun, notFirstSkier)
+                    ? this.FormatTimeSpan(rankedSkier.ElapsedTimeInSecondRun, notFirstRankedSkier)
                     : "n/a";
+
+                rankedSkier.ElapsedMeasurementStringsInSecondRun = this.FormatElapsedMeasurements(
+                    elapsedMeasurementsInSecondRun,
+                    bestElapsedMeasurementsInSecondRun,
+                    notFirstRankedSkier);
 
                 rankedSkier.ElapsedTotalTimeString = rankedSkier.ElapsedTotalTime != TimeSpan.MaxValue
                     ? this.FormatTimeSpan(rankedSkier.ElapsedTotalTime, false)
                     : "n/a";
             }
 
-            return orderedRankedSkierSet;
+            return orderedRankedSkierTimeSet.Select(rst => rst.RankedSkier);
         }
 
         #endregion
@@ -1357,6 +1410,63 @@ namespace Hurace.Core.BL
 
         #endregion
         #region Helper
+
+        private IEnumerable<string> FormatElapsedMeasurements(
+            IEnumerable<TimeSpan> elapsedMeasurements,
+            IEnumerable<TimeSpan> bestElapsedMeasurements,
+            bool notFirstRankedSkier)
+        {
+            var formattedMeasurements = new List<string>();
+
+            var elapsedMeasurementsList = elapsedMeasurements.ToList();
+            var bestElapsedMeasurementsList = bestElapsedMeasurements.ToList();
+            for (int i = 0; i < elapsedMeasurementsList.Count; i++)
+            {
+                if (!notFirstRankedSkier)
+                {
+                    if (elapsedMeasurementsList[i] != TimeSpan.MaxValue)
+                        formattedMeasurements.Add(this.FormatTimeSpan(elapsedMeasurementsList[i], false));
+                    else
+                        formattedMeasurements.Add("n/a");
+                }
+                else
+                {
+                    if (elapsedMeasurementsList[i] != TimeSpan.MaxValue &&
+                        bestElapsedMeasurementsList[i] != TimeSpan.MaxValue)
+                    {
+                        formattedMeasurements.Add(this.FormatTimeSpan(elapsedMeasurementsList[i], true));
+                    }
+                    else if (elapsedMeasurementsList[i] != TimeSpan.MaxValue &&
+                             bestElapsedMeasurementsList[i] == TimeSpan.MaxValue)
+                    {
+                        formattedMeasurements.Add(this.FormatTimeSpan(elapsedMeasurementsList[i], false));
+                    }
+                    else
+                    {
+                        formattedMeasurements.Add("n/a");
+                    }
+                }
+            }
+
+            return formattedMeasurements;
+        }
+
+        private IEnumerable<TimeSpan> UpdateMeasurementsAccordingToBest(
+            IEnumerable<TimeSpan> elapsedMeasurements,
+            IEnumerable<TimeSpan> bestElapsedMeasurements)
+        {
+            var newElapsedMeasurements = elapsedMeasurements.ToList();
+            var bestElapsedMeasurementsList = bestElapsedMeasurements.ToList();
+            for (int i = 0; i < newElapsedMeasurements.Count; i++)
+            {
+                if (newElapsedMeasurements[i] != TimeSpan.MaxValue &&
+                    bestElapsedMeasurementsList[i] != TimeSpan.MaxValue)
+                {
+                    newElapsedMeasurements[i] -= bestElapsedMeasurementsList[i];
+                }
+            }
+            return newElapsedMeasurements;
+        }
 
         private string FormatTimeSpan(TimeSpan elapsedTime, bool addSignPrefix)
         {
