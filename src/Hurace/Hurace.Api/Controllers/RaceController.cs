@@ -51,7 +51,12 @@ namespace Hurace.Api.Controllers
             logger.LogCall(new { raceId });
 #endif
 
-            var race = await informationManager.GetRaceByIdAsync(raceId).ConfigureAwait(true);
+            var race = await informationManager.GetRaceByIdAsync(
+                    raceId,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference,
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference)
+                .ConfigureAwait(true);
 
             return race == null
                 ? NotFound($"Invalid raceId: {raceId}")
