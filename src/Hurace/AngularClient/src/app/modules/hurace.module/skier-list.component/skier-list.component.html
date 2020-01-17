@@ -1,0 +1,26 @@
+<table class="table table-dark skier-table">
+    <thead>
+        <tr>
+            <th scope="col">{{ 'skier-list.imageHeader' | translate }}</th>
+            <th scope="col">{{ 'skier-list.lastName' | translate }}</th>
+            <th scope="col">{{ 'skier-list.firstName' | translate }}</th>
+            <th scope="col">{{ 'skier-list.dateOfBirth' | translate}}</th>
+            <th scope="col">{{ 'skier-list.sex' | translate }}</th>
+            <th scope="col">{{ 'skier-list.country' | translate }}</th>
+            <th scope="col">{{ 'skier-list.editButtonLabel' | translate }}</th>
+            <th scope="col">{{ 'skier-list.deleteButtonLabel' | translate }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="skier-container" (click)="skierListItemClicked(currentSkier)" *ngFor="let currentSkier of skiers">
+            <td>
+                <img class="rounded-circle skier-image" [src]="currentSkier.imageUrl" alt="Skier profile image">
+            </td>
+            <td>{{ currentSkier.lastName }}</td>
+            <td>{{ currentSkier.firstName }}</td>
+            <td>{{ currentSkier.dateOfBirth | date:'dd.MM.yyyy' }}</td>
+            <td>{{ currentSkier.sex.reference.label }}</td>
+            <td>{{ currentSkier.country.reference.name }}</td>
+        </tr>
+    </tbody>
+</table>

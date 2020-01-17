@@ -23,5 +23,20 @@
             "interimTimeFormat": "{{sensorId}}.ZZ",
             "totalTimeHeader": "Σ-Zeit"
         }
+    },
+    "administration": {
+        "header": "Rennläufer verwalten",
+        "searchTextPlaceholder": "Suchtext",
+        "createNewSkierButton": "Neuen Skifahrer erstellen"
+    },
+    "skier-list": {
+        "imageHeader": "Bild",
+        "lastName": "Nachname",
+        "firstName": "Vorname",
+        "dateOfBirth": "Geburtsdatum",
+        "country": "Land",
+        "sex": "Geschlecht",
+        "editButtonLabel": "Bearbeiten",
+        "deleteButtonLabel": "Löschen"
     }
 }

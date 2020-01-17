@@ -14,4 +14,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     -moz-user-select: none;       /* Old versions of Firefox */
     -ms-user-select: none;        /* Internet Explorer/Edge */
     user-select: none;            /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
-  }
+}
+
+.text-center-vertically {
+    vertical-align: middle;
+}

@@ -1,0 +1,8 @@
+.skier-container {
+    max-height: 5em;
+}
+
+.skier-image {
+    max-height: 4em;
+    /* overflow: hidden; */
+}

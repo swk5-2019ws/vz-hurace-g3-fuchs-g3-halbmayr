@@ -12,6 +12,7 @@ const routes: Routes = [
   { path: 'overview/:raceId/:mode', component: RaceDetailPageComponent },
   { path: 'analysis', component: AnalysationComponent },
   { path: 'administration', component: AdminstrationComponent, canActivate: [AuthGuard] },
+  { path: 'administration?code=:code', redirectTo: 'administration' },
   { path: '', redirectTo: 'overview', pathMatch: 'full' },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

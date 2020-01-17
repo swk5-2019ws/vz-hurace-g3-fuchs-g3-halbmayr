@@ -1,0 +1,11 @@
+.skier-list-container {
+    width: 100%;
+    margin-top: 3em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.skier-loading-spinner {
+    width: 100%;
+    margin-top: 3em;
+}

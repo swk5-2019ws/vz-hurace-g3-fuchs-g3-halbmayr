@@ -50,6 +50,9 @@ import { AnalysationComponent } from './modules/hurace.module/analysation.compon
 import { RecordIconComponent } from './common/components/record-icon.component/record-icon.component'
 import { RankListComponent } from './modules/hurace.module/rank-list.component/rank-list.component';
 import { RaceDetailPageComponent } from './modules/hurace.module/race-detail-page.component/race-detail-page.component';
+import { InputSearchComponent } from './common/components/input-search.component/input-search.component';
+import { SkierListComponent } from './modules/hurace.module/skier-list.component/skier-list.component';
+import { DatePipe } from '@angular/common';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -66,7 +69,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     AnalysationComponent,
     RecordIconComponent,
     RankListComponent,
-    RaceDetailPageComponent
+    RaceDetailPageComponent,
+    InputSearchComponent,
+    SkierListComponent
   ],
   imports: [
     HttpClientModule,
@@ -118,7 +123,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     {
       provide: HURACE_SERVICE_BASE_URL,
       useValue: environment.huraceServiceBaseUrl
-    }
+    },
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })
