@@ -359,5 +359,81 @@ namespace Hurace.Core.Db.Tests.QueryConditionTests
                     .DeclareConditionFromBuilderSet(QueryConditionNodeType.And, null)
                     .Build());
         }
+
+        [Fact]
+        public void TautologyConditionTest()
+        {
+            var queryBuilder = new StringBuilder();
+
+            var condition = new QueryConditionBuilder()
+                .DeclareTautologyCondition()
+                .Build();
+
+            condition.AppendTo(queryBuilder, null);
+
+            Assert.Equal("1 = 1", queryBuilder.ToString());
+        }
+
+        [Fact]
+        public void NestedTautologyConditionTest()
+        {
+            string expectedQuery = "([Id] = @Id0 AND 1 = 1)";
+            var queryParameters = new List<QueryParameter>();
+
+            var queryBuilder = new StringBuilder();
+
+            var condition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition("Id", QueryConditionType.Equals, 5),
+                    () => new QueryConditionBuilder().DeclareTautologyCondition())
+                .Build();
+
+            condition.AppendTo(queryBuilder, queryParameters);
+
+            Assert.Equal(expectedQuery, queryBuilder.ToString());
+            Assert.Single(queryParameters);
+            Assert.Equal("Id0", queryParameters.First().ParameterName);
+            Assert.Equal(5, queryParameters.First().Value);
+        }
+
+        [Fact]
+        public void ContractionConditionTest()
+        {
+            var queryBuilder = new StringBuilder();
+
+            var condition = new QueryConditionBuilder()
+                .DeclareContradictingCondition()
+                .Build();
+
+            condition.AppendTo(queryBuilder, null);
+
+            Assert.Equal("1 = 0", queryBuilder.ToString());
+        }
+
+        [Fact]
+        public void NestedContradictionConditionTest()
+        {
+            string expectedQuery = "([Id] = @Id0 AND 1 = 0)";
+            var queryParameters = new List<QueryParameter>();
+
+            var queryBuilder = new StringBuilder();
+
+            var condition = new QueryConditionBuilder()
+                .DeclareConditionNode(
+                    QueryConditionNodeType.And,
+                    () => new QueryConditionBuilder()
+                        .DeclareCondition("Id", QueryConditionType.Equals, 5),
+                    () => new QueryConditionBuilder().DeclareContradictingCondition())
+                .Build();
+
+            condition.AppendTo(queryBuilder, queryParameters);
+
+            Assert.Equal(expectedQuery, queryBuilder.ToString());
+            Assert.Single(queryParameters);
+            Assert.Equal("Id0", queryParameters.First().ParameterName);
+            Assert.Equal(5, queryParameters.First().Value);
+        }
     }
 }
