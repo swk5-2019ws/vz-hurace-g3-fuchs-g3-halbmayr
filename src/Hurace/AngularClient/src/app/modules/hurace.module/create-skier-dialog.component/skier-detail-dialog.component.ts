@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { Skier } from 'src/app/common/services/api-service.client';
+import { Skier, Sex, ApiService, Country } from 'src/app/common/services/api-service.client';
 
 @Component({
   selector: 'skier-detail-dialog',
@@ -9,12 +9,59 @@ import { Skier } from 'src/app/common/services/api-service.client';
 })
 export class SkierDetailDialog implements OnInit {
 
-  constructor(
-    public dialogRef: MatDialogRef<SkierDetailDialog>,
-    @Inject(MAT_DIALOG_DATA) public skier: Skier
-  ) { console.log(skier); }
+  inCreateMode: boolean;
 
-  ngOnInit() {
+  loadingSexes: boolean = true;
+  sexes: Sex[];
+
+  loadingCountries: boolean = true;
+  countries: Country[];
+
+  constructor(
+    private dialogRef: MatDialogRef<SkierDetailDialog>,
+    @Inject(MAT_DIALOG_DATA) private skier: Skier,
+    private apiService: ApiService
+  ) {
+    this.inCreateMode = !skier;
+    if (this.inCreateMode){
+      this.skier = { country: {}, sex: {} };
+    }
   }
 
+  ngOnInit() {
+    this.apiService.returns_all_sexes()
+      .subscribe(sexes => {
+        this.loadingSexes = false;
+        this.sexes = sexes;
+      })
+
+      this.apiService.returns_all_countries()
+        .subscribe(countries => {
+          this.loadingCountries = false;
+          this.countries = countries.sort((c1, c2) => {
+            return c1.name.localeCompare(c2.name);
+          });
+        });
+  }
+
+  generateUniqueImageUrl(): string{
+    return `https://robohash.org/${this.skier.lastName}-${this.skier.firstName}`
+  }
+
+  abortDialog(): void{
+    console.log("aborted dialog");
+    this.dialogRef.close(false);
+  }
+
+  createSkier(): void{
+    console.log("created skier");
+    console.log(this.skier);
+    this.dialogRef.close(true);
+  }
+
+  editSkier(): void{
+    console.log("edited skier");
+    console.log(this.skier);
+    this.dialogRef.close(true);
+  }
 }

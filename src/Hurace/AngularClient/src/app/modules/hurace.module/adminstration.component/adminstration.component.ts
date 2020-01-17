@@ -6,13 +6,13 @@ import { DatePipe } from '@angular/common';
 import { SkierDetailDialog } from '../create-skier-dialog.component/skier-detail-dialog.component';
 
 @Component({
-  selector: 'app-adminstration',
+  selector: 'adminstration',
   templateUrl: './adminstration.component.html',
   styleUrls: ['./adminstration.component.css']
 })
 export class AdminstrationComponent implements OnInit {
 
-  skiersLoading: boolean = true;
+  skiersLoading: boolean;
   skiers: Skier[];
   allSkiers: Skier[];
 
@@ -33,7 +33,7 @@ export class AdminstrationComponent implements OnInit {
     const dialogRef = this.dialogRef.open(
       SkierDetailDialog,
       {
-        width: '500px',
+        width: '650px',
         data: null
       }
     );
@@ -49,15 +49,13 @@ export class AdminstrationComponent implements OnInit {
     const dialogRef = this.dialogRef.open(
       SkierDetailDialog,
       {
-        width: '500px',
+        width: '650px',
         data: selectedSkier
       }
     );
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.reloadSkiers();
-      }
+      this.reloadSkiers();
     });
   }
 
@@ -67,6 +65,10 @@ export class AdminstrationComponent implements OnInit {
   }
 
   private reloadSkiers(){
+    this.skiersLoading = true;
+    this.skiers = [];
+    this.allSkiers = [];
+
     this.apiService.returns_all_skiers()
       .subscribe(skiers => {
         this.skiersLoading = false;

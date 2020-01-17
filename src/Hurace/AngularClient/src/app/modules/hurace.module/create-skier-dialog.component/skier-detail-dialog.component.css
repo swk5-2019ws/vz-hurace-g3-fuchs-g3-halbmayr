@@ -1,0 +1,23 @@
+.dialog-button {
+    width: 45%;
+}
+
+.dialog-form-field-container {
+    margin: 1em;
+}
+
+.dialog-ff-row-filled {
+    width: 100%;
+}
+
+.dialog-ff-split-left-element {
+    padding-left: 0px;
+    width: 100%;
+    margin: 1em;
+}
+
+.dialog-ff-split-right-element {
+    padding-right: 0px;
+    width: 100%;
+    margin: 1em;
+}

@@ -1,2 +1,63 @@
-<p>create-skier-dialog works!</p>
-<p *ngIf="skier">{{ skier.firstName }}</p>
+<!-- <p>create-skier-dialog works!</p>
+<p *ngIf="skier">{{ skier.firstName }}</p> -->
+
+<h1 mat-dialog-title *ngIf="inCreateMode">{{ 'skier-detail-dialog.createSkierHeader' | translate }}</h1>
+<h1 mat-dialog-title *ngIf="!inCreateMode">{{ 'skier-detail-dialog.editSkierHeader' | translate }}</h1>
+
+<div mat-dialog-content *ngIf="loadingSexes || loadingCountries">
+    <spinner></spinner>
+</div>
+<div mat-dialog-content *ngIf="!loadingSexes && !loadingCountries">
+    <div class="row dialog-form-field-container">
+        <mat-form-field class="dialog-ff-row-filled">
+            <mat-label>{{ 'skier-detail-dialog.skierLastNameLabel' | translate }}</mat-label>
+            <input matInput [(ngModel)]="skier.lastName" required>
+        </mat-form-field>
+    </div>
+    <div class="row dialog-form-field-container">
+        <mat-form-field class="dialog-ff-row-filled">
+            <mat-label>{{ 'skier-detail-dialog.skierFirstNameLabel' | translate }}</mat-label>
+            <input matInput [(ngModel)]="skier.firstName" required>
+        </mat-form-field>
+    </div>
+    <div class="row dialog-form-field-container">
+        <mat-form-field class="dialog-ff-row-filled">
+            <mat-label>{{ 'skier-detail-dialog.skierImageUrlLabel' | translate }}</mat-label>
+            <input matInput [(ngModel)]="skier.imageUrl" [placeholder]="generateUniqueImageUrl()">
+        </mat-form-field>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row dialog-ff-split-left-element">
+                <mat-form-field>
+                    <mat-label>{{ 'skier-detail-dialog.sexSelectionLabel' | translate }}</mat-label>
+                    <mat-select [(ngModel)]="skier.sex.reference" name="sex" required>
+                        <mat-option *ngFor="let currentSex of sexes" [value]="currentSex">{{ currentSex.label }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="row dialog-ff-split-left-element">
+                <mat-form-field>
+                    <mat-label>{{ 'skier-detail-dialog.countrySelectionLabel' | translate }}</mat-label>
+                    <mat-select [(ngModel)]="skier.country.reference" name="country" required>
+                        <mat-option *ngFor="let currentCountry of countries" [value]="currentCountry">{{ currentCountry.name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="col dialog-ff-split-right-element">
+            <mat-form-field class="dialog-ff-row-filled">
+                <mat-label>{{ 'skier-detail-dialog.dateOfBirthLabel' | translate }}</mat-label>
+                <input matInput [matDatepicker]="birthdatePicker" [(ngModel)]="skier.dateOfBirth" required>
+                <mat-datepicker-toggle matSuffix [for]="birthdatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #birthdatePicker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+</div>
+
+<div mat-dialog-actions class="d-flex justify-content-around">
+    <button mat-raised-button class="dialog-button" (click)="abortDialog($event)">{{ 'skier-detail-dialog.abortDialogButtonLabel' | translate }}</button>
+    <button mat-raised-button class="dialog-button" *ngIf="inCreateMode" (click)="createSkier($event)" cdkFocusInitial>{{ 'skier-detail-dialog.createSkierButtonLabel' | translate }}</button>
+    <button mat-raised-button class="dialog-button" *ngIf="!inCreateMode" (click)="editSkier($event)" cdkFocusInitial>{{ 'skier-detail-dialog.editSkierButtonLabel' | translate }}</button>
+</div>

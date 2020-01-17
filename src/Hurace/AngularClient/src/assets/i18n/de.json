@@ -40,5 +40,18 @@
         "editButtonTooltip": "Skifahrer bearbeiten",
         "deleteButtonLabel": "Löschen",
         "deleteButtonTooltip": "Skifahrer löschen"
+    },
+    "skier-detail-dialog": {
+        "createSkierHeader": "Skifahrer erstellen",
+        "editSkierHeader": "Skifahrer bearbeiten",
+        "abortDialogButtonLabel": "Abbruch",
+        "createSkierButtonLabel": "Skifahrer erstellen",
+        "editSkierButtonLabel": "Änderungen speichern",
+        "skierLastNameLabel": "Nachname:",
+        "skierFirstNameLabel": "Vorname:",
+        "skierImageUrlLabel": "Adresse des Profilbilds:",
+        "dateOfBirthLabel": "Geburtsdatum:",
+        "sexSelectionLabel": "Geschlecht:",
+        "countrySelectionLabel": "Land:"
     }
 }
