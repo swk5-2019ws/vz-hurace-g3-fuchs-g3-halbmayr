@@ -37,6 +37,8 @@
         "country": "Land",
         "sex": "Geschlecht",
         "editButtonLabel": "Bearbeiten",
-        "deleteButtonLabel": "Löschen"
+        "editButtonTooltip": "Skifahrer bearbeiten",
+        "deleteButtonLabel": "Löschen",
+        "deleteButtonTooltip": "Skifahrer löschen"
     }
 }

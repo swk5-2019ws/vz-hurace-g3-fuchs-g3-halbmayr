@@ -17,7 +17,6 @@ export class AdminstrationComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private translateService: TranslateService,
     private datePipe: DatePipe) { }
 
   ngOnInit() {
@@ -28,7 +27,11 @@ export class AdminstrationComponent implements OnInit {
     this.skiers = this.filterSkiers(this.allSkiers, searchText);
   }
 
-  skierSelectedHandler(selectedSkier: Skier): void{
+  createNewSkierPressedHandler(): void{
+    console.log("create new");
+  }
+
+  editSkierPressedHandler(selectedSkier: Skier): void{
     console.log(selectedSkier);
   }
 

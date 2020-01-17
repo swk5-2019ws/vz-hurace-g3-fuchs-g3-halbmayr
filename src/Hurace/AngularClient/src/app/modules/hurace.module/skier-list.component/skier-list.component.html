@@ -1,31 +1,35 @@
 <table class="table table-dark skier-table">
     <thead>
         <tr>
-            <th scope="col">{{ 'skier-list.imageHeader' | translate }}</th>
+            <th scope="col" class="text-center">{{ 'skier-list.imageHeader' | translate }}</th>
             <th scope="col">{{ 'skier-list.lastName' | translate }}</th>
             <th scope="col">{{ 'skier-list.firstName' | translate }}</th>
             <th scope="col">{{ 'skier-list.dateOfBirth' | translate}}</th>
             <th scope="col">{{ 'skier-list.sex' | translate }}</th>
-            <th scope="col">{{ 'skier-list.country' | translate }}</th>
+            <th scope="col" class="text-center">{{ 'skier-list.country' | translate }}</th>
             <th scope="col" class="text-center">{{ 'skier-list.editButtonLabel' | translate }}</th>
             <th scope="col" class="text-center">{{ 'skier-list.deleteButtonLabel' | translate }}</th>
         </tr>
     </thead>
     <tbody>
         <tr class="skier-container" *ngFor="let currentSkier of skiers">
-            <td>
+            <td class="text-center">
                 <img class="rounded-circle skier-image" [src]="currentSkier.imageUrl" alt="Skier profile image">
             </td>
             <td class="text-center-vertically" class="text-center-vertically">{{ currentSkier.lastName }}</td>
             <td class="text-center-vertically">{{ currentSkier.firstName }}</td>
             <td class="text-center-vertically">{{ currentSkier.dateOfBirth | date:'dd.MM.yyyy' }}</td>
             <td class="text-center-vertically">{{ currentSkier.sex.reference.label }}</td>
-            <td class="text-center-vertically">{{ currentSkier.country.reference.name }}</td>
+            <td class="text-center text-center-vertically">{{ currentSkier.country.reference.name }}</td>
             <td class="text-center text-center-vertically">
-                <i class="fas fa-edit" (click)="editButtonPressed(currentSkier)" ></i>
+                <button mat-button [matTooltip]="'skier-list.editButtonTooltip' | translate" (click)="editButtonPressed(currentSkier)">
+                    <i class="fas fa-edit"></i>
+                </button>
             </td>
             <td class="text-center text-center-vertically">
-                <i class="fas fa-trash-alt" (click)="deleteButtonPressed(currentSkier)"></i>
+                <button mat-button [matTooltip]="'skier-list.deleteButtonTooltip' | translate" (click)="deleteButtonPressed(currentSkier)">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
             </td>
         </tr>
     </tbody>

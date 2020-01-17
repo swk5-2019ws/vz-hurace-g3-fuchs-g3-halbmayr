@@ -2,12 +2,14 @@
 
 <div class="d-flex justify-content-between">
     <input-search [placeholder]="'administration.searchTextPlaceholder' | translate" (searchTextChanged)="searchTextChangedHandler($event)"></input-search>
-    <button mat-raised-button>{{ 'administration.createNewSkierButton' | translate }}</button>
+    <button mat-raised-button (click)="createNewSkierPressedHandler()">
+        {{ 'administration.createNewSkierButton' | translate }}
+    </button>
 </div>
 
 <div class="row">
     <spinner *ngIf="skiersLoading" class="skier-loading-spinner"></spinner>
-    <skier-list *ngIf="!skiersLoading" class="skier-list-container" [skiers]="skiers" (editSkierPressed)="skierSelectedHandler($event)" (deleteSkierPressed)="deleteSkierPressedHandler($event)"></skier-list>
+    <skier-list *ngIf="!skiersLoading" class="skier-list-container" [skiers]="skiers" (editSkierPressed)="editSkierPressedHandler($event)" (deleteSkierPressed)="deleteSkierPressedHandler($event)"></skier-list>
 </div>
 
 <!-- create skier component -->
