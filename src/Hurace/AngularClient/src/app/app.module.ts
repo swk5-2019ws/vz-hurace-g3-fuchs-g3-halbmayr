@@ -53,6 +53,7 @@ import { RaceDetailPageComponent } from './modules/hurace.module/race-detail-pag
 import { InputSearchComponent } from './common/components/input-search.component/input-search.component';
 import { SkierListComponent } from './modules/hurace.module/skier-list.component/skier-list.component';
 import { DatePipe } from '@angular/common';
+import { SkierDetailDialog } from './modules/hurace.module/create-skier-dialog.component/skier-detail-dialog.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -71,7 +72,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     RankListComponent,
     RaceDetailPageComponent,
     InputSearchComponent,
-    SkierListComponent
+    SkierListComponent,
+    SkierDetailDialog
   ],
   imports: [
     HttpClientModule,
@@ -126,6 +128,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     },
     DatePipe
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    SkierDetailDialog
+  ]
 })
 export class AppModule { }

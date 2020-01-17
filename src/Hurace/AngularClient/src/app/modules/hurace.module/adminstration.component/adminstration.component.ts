@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Skier, ApiService } from 'src/app/common/services/api-service.client';
-import { MatGridTileHeaderCssMatStyler } from '@angular/material';
+import { MatGridTileHeaderCssMatStyler, MatDialog } from '@angular/material';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
+import { SkierDetailDialog } from '../create-skier-dialog.component/skier-detail-dialog.component';
 
 @Component({
   selector: 'app-adminstration',
@@ -17,7 +18,8 @@ export class AdminstrationComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private datePipe: DatePipe) { }
+    private datePipe: DatePipe,
+    private dialogRef: MatDialog) { }
 
   ngOnInit() {
     this.reloadSkiers();
@@ -28,11 +30,35 @@ export class AdminstrationComponent implements OnInit {
   }
 
   createNewSkierPressedHandler(): void{
-    console.log("create new");
+    const dialogRef = this.dialogRef.open(
+      SkierDetailDialog,
+      {
+        width: '500px',
+        data: null
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.reloadSkiers();
+      }
+    });
   }
 
   editSkierPressedHandler(selectedSkier: Skier): void{
-    console.log(selectedSkier);
+    const dialogRef = this.dialogRef.open(
+      SkierDetailDialog,
+      {
+        width: '500px',
+        data: selectedSkier
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.reloadSkiers();
+      }
+    });
   }
 
   deleteSkierPressedHandler(skier: Skier): void{
