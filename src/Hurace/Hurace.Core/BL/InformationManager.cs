@@ -933,6 +933,16 @@ namespace Hurace.Core.BL
         #endregion
         #region Sex-Methods
 
+        public async Task<IEnumerable<Domain.Sex>> GetAllSexesAsync()
+        {
+            return (await this.sexDao.GetAllConditionalAsync().ConfigureAwait(false))
+                .Select(sexEnt => new Domain.Sex
+                {
+                    Id = sexEnt.Id,
+                    Label = sexEnt.Label
+                });
+        }
+
         public async Task<Domain.Sex> GetSexByIdAsync(int sexId)
         {
             var sexEntity = await sexDao.GetByIdAsync(sexId).ConfigureAwait(false);

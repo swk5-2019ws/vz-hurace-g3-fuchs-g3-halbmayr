@@ -79,5 +79,7 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
 
         Task<IEnumerable<Domain.StartPosition>> GetStartPositionListAsync(int raceId, bool firstStartList);
+
+        Task<IEnumerable<Domain.Sex>> GetAllSexesAsync();
     }
 }
