@@ -9,15 +9,19 @@ import { Skier } from 'src/app/common/services/api-service.client';
 export class SkierListComponent implements OnInit {
 
   @Input() skiers: Skier[];
-  @Output() skierSelected = new EventEmitter<Skier>();
+  @Output() editSkierPressed = new EventEmitter<Skier>();
+  @Output() deleteSkierPressed = new EventEmitter<Skier>();
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  skierListItemClicked(clickedSkier: Skier): void{
-    this.skierSelected.emit(clickedSkier);
+  editButtonPressed(clickedSkier: Skier): void{
+    this.editSkierPressed.emit(clickedSkier);
   }
 
+  deleteButtonPressed(clickedSkier: Skier): void{
+    this.deleteSkierPressed.emit(clickedSkier);
+  }
 }

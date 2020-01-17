@@ -21,21 +21,29 @@ export class AdminstrationComponent implements OnInit {
     private datePipe: DatePipe) { }
 
   ngOnInit() {
+    this.reloadSkiers();
+  }
+
+  searchTextChangedHandler(searchText: string): void{
+    this.skiers = this.filterSkiers(this.allSkiers, searchText);
+  }
+
+  skierSelectedHandler(selectedSkier: Skier): void{
+    console.log(selectedSkier);
+  }
+
+  deleteSkierPressedHandler(skier: Skier): void{
+    console.log('delete this skier with lastname ' + skier.lastName);
+    this.reloadSkiers();
+  }
+
+  private reloadSkiers(){
     this.apiService.returns_all_skiers()
       .subscribe(skiers => {
         this.skiersLoading = false;
         this.allSkiers = skiers;
         this.skiers = this.sortSkiers(skiers);
       });
-  }
-
-  searchTextChangedHandler(searchText: string): void{
-    console.log(searchText);
-    this.skiers = this.filterSkiers(this.allSkiers, searchText);
-  }
-
-  skierSelectedHandler(selectedSkier: Skier): void{
-    console.log(selectedSkier);
   }
 
   private sortSkiers(unsortedSkiers: Skier[]): Skier[]{

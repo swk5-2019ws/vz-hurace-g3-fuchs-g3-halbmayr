@@ -7,7 +7,7 @@
 
 <div class="row">
     <spinner *ngIf="skiersLoading" class="skier-loading-spinner"></spinner>
-    <skier-list *ngIf="!skiersLoading" class="skier-list-container" [skiers]="skiers" (skierSelected)="skierSelectedHandler($event)"></skier-list>
+    <skier-list *ngIf="!skiersLoading" class="skier-list-container" [skiers]="skiers" (editSkierPressed)="skierSelectedHandler($event)" (deleteSkierPressed)="deleteSkierPressedHandler($event)"></skier-list>
 </div>
 
 <!-- create skier component -->
