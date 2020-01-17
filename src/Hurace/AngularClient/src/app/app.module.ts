@@ -10,13 +10,15 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { ProfileComponent } from './profile/profile.component';
+import { SkierListComponent } from './skier-list/skier-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavBarComponent,
     HomeComponent,
-    ProfileComponent
+    ProfileComponent,
+    SkierListComponent
   ],
   imports: [
     BrowserModule,
