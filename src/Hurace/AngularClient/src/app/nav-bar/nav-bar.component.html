@@ -15,6 +15,7 @@
 
   <div class="ui pointing menu">
     <a routerLink="home"  routerLinkActive="active" class="item">Home</a>
+    <a routerLink="skier" routerLinkActive="active" class ="item">Skier</a>
     <div class="right menu">
         <div *ngIf="auth.loggedIn"  class="item">
           <p *ngIf="auth.userProfile$ | async as profile">

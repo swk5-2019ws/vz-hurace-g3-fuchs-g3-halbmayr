@@ -11,6 +11,7 @@ import { HomeComponent } from './home/home.component';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SkierListComponent } from './skier-list/skier-list.component';
+import { SkierListItemComponent } from './skier-list-item/skier-list-item.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { SkierListComponent } from './skier-list/skier-list.component';
     NavBarComponent,
     HomeComponent,
     ProfileComponent,
-    SkierListComponent
+    SkierListComponent,
+    SkierListItemComponent
   ],
   imports: [
     BrowserModule,

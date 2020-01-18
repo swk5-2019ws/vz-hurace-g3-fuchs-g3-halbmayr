@@ -1,1 +1,10 @@
-<p>skier-list works!</p>
+
+<label>Search: <input #box (keyup)="onEnter(box.value)"></label>
+
+<div class="ui middle aligned selection divided list">
+  <a class="app-skier-list-item item"
+      *ngFor="let skier of foundSkiers"
+      [skier]="skier"
+      [routerLink]="skier.id">
+  </a>
+</div>

@@ -1,0 +1,9 @@
+<img class="ui small image"
+*ngIf="skier.imageUrl"
+[src]="skier.imageUrl">
+<div class="content">
+  <div class="header">{{skier.firstName}} {{skier.lastName}}</div>
+  <div class="description"> {{date.toLocaleDateString()}} {{skier.country.reference.name}} </div>
+  <div class="extra">{{skier.sex.reference.label}}</div>
+</div>
+

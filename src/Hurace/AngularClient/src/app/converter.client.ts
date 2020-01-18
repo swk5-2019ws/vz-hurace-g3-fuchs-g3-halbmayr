@@ -25,7 +25,7 @@ export class ConverterClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    country_GetAllCountries(): Observable<Country[]> {
+    returns_all_countries(): Observable<Country[]> {
         let url_ = this.baseUrl + "/api/Country";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -38,11 +38,11 @@ export class ConverterClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCountry_GetAllCountries(response_);
+            return this.processReturns_all_countries(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCountry_GetAllCountries(<any>response_);
+                    return this.processReturns_all_countries(<any>response_);
                 } catch (e) {
                     return <Observable<Country[]>><any>_observableThrow(e);
                 }
@@ -51,7 +51,7 @@ export class ConverterClient {
         }));
     }
 
-    protected processCountry_GetAllCountries(response: HttpResponseBase): Observable<Country[]> {
+    protected processReturns_all_countries(response: HttpResponseBase): Observable<Country[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -64,15 +64,16 @@ export class ConverterClient {
             result200 = _responseText === "" ? null : <Country[]>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
-        } else if (status !== 200 && status !== 204) {
+        } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
             }));
         }
-        return _observableOf<Country[]>(<any>null);
     }
 
-    returns_Country_for_the_country_Id(countryId: number): Observable<Country> {
+    returns_country_for_a_passed_country_Id(countryId: number): Observable<Country> {
         let url_ = this.baseUrl + "/api/Country/{countryId}";
         if (countryId === undefined || countryId === null)
             throw new Error("The parameter 'countryId' must be defined.");
@@ -88,11 +89,11 @@ export class ConverterClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_Country_for_the_country_Id(response_);
+            return this.processReturns_country_for_a_passed_country_Id(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_Country_for_the_country_Id(<any>response_);
+                    return this.processReturns_country_for_a_passed_country_Id(<any>response_);
                 } catch (e) {
                     return <Observable<Country>><any>_observableThrow(e);
                 }
@@ -101,7 +102,7 @@ export class ConverterClient {
         }));
     }
 
-    protected processReturns_Country_for_the_country_Id(response: HttpResponseBase): Observable<Country> {
+    protected processReturns_country_for_a_passed_country_Id(response: HttpResponseBase): Observable<Country> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -129,7 +130,7 @@ export class ConverterClient {
         }
     }
 
-    race_GetAllRaces(): Observable<Race[]> {
+    returns_all_races(): Observable<Race[]> {
         let url_ = this.baseUrl + "/api/Race";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -142,11 +143,11 @@ export class ConverterClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processRace_GetAllRaces(response_);
+            return this.processReturns_all_races(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processRace_GetAllRaces(<any>response_);
+                    return this.processReturns_all_races(<any>response_);
                 } catch (e) {
                     return <Observable<Race[]>><any>_observableThrow(e);
                 }
@@ -155,7 +156,59 @@ export class ConverterClient {
         }));
     }
 
-    protected processRace_GetAllRaces(response: HttpResponseBase): Observable<Race[]> {
+    protected processReturns_all_races(response: HttpResponseBase): Observable<Race[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <Race[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    race_GetRacesByFilter(raceFilter: RaceFilter): Observable<Race[]> {
+        let url_ = this.baseUrl + "/api/Race";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(raceFilter);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRace_GetRacesByFilter(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRace_GetRacesByFilter(<any>response_);
+                } catch (e) {
+                    return <Observable<Race[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Race[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processRace_GetRacesByFilter(response: HttpResponseBase): Observable<Race[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -233,196 +286,8 @@ export class ConverterClient {
         }
     }
 
-    raceState_GetAllRaceStates(): Observable<RaceState[]> {
-        let url_ = this.baseUrl + "/api/RaceState";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",			
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processRaceState_GetAllRaceStates(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processRaceState_GetAllRaceStates(<any>response_);
-                } catch (e) {
-                    return <Observable<RaceState[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<RaceState[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processRaceState_GetAllRaceStates(response: HttpResponseBase): Observable<RaceState[]> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <RaceState[]>JSON.parse(_responseText, this.jsonParseReviver);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<RaceState[]>(<any>null);
-    }
-
-    raceType_GetAllRaceTypes(): Observable<RaceType[]> {
-        let url_ = this.baseUrl + "/api/RaceType";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",			
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processRaceType_GetAllRaceTypes(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processRaceType_GetAllRaceTypes(<any>response_);
-                } catch (e) {
-                    return <Observable<RaceType[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<RaceType[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processRaceType_GetAllRaceTypes(response: HttpResponseBase): Observable<RaceType[]> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <RaceType[]>JSON.parse(_responseText, this.jsonParseReviver);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<RaceType[]>(<any>null);
-    }
-
-    season_GetAllRaces(): Observable<Season[]> {
-        let url_ = this.baseUrl + "/api/Season";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",			
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSeason_GetAllRaces(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSeason_GetAllRaces(<any>response_);
-                } catch (e) {
-                    return <Observable<Season[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<Season[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processSeason_GetAllRaces(response: HttpResponseBase): Observable<Season[]> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <Season[]>JSON.parse(_responseText, this.jsonParseReviver);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Season[]>(<any>null);
-    }
-
-    skier_GetAllRaces(): Observable<Skier[]> {
-        let url_ = this.baseUrl + "/api/Skier";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",			
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSkier_GetAllRaces(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSkier_GetAllRaces(<any>response_);
-                } catch (e) {
-                    return <Observable<Skier[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<Skier[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processSkier_GetAllRaces(response: HttpResponseBase): Observable<Skier[]> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <Skier[]>JSON.parse(_responseText, this.jsonParseReviver);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Skier[]>(<any>null);
-    }
-
-    returns_skiers_for_the_given_raceId(raceId: number): Observable<Skier[]> {
-        let url_ = this.baseUrl + "/api/Skier/{raceId}";
+    returns_ranked_skiers_of_specific_race(raceId: number): Observable<RankedSkier[]> {
+        let url_ = this.baseUrl + "/api/Race/{raceId}/ranks";
         if (raceId === undefined || raceId === null)
             throw new Error("The parameter 'raceId' must be defined.");
         url_ = url_.replace("{raceId}", encodeURIComponent("" + raceId)); 
@@ -437,20 +302,20 @@ export class ConverterClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_skiers_for_the_given_raceId(response_);
+            return this.processReturns_ranked_skiers_of_specific_race(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_skiers_for_the_given_raceId(<any>response_);
+                    return this.processReturns_ranked_skiers_of_specific_race(<any>response_);
                 } catch (e) {
-                    return <Observable<Skier[]>><any>_observableThrow(e);
+                    return <Observable<RankedSkier[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<Skier[]>><any>_observableThrow(response_);
+                return <Observable<RankedSkier[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processReturns_skiers_for_the_given_raceId(response: HttpResponseBase): Observable<Skier[]> {
+    protected processReturns_ranked_skiers_of_specific_race(response: HttpResponseBase): Observable<RankedSkier[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -460,7 +325,7 @@ export class ConverterClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : <Skier[]>JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = _responseText === "" ? null : <RankedSkier[]>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
         } else if (status === 404) {
@@ -478,7 +343,199 @@ export class ConverterClient {
         }
     }
 
-    venue_GetAllRaces(): Observable<Venue[]> {
+    returns_all_race_states(): Observable<RaceState[]> {
+        let url_ = this.baseUrl + "/api/RaceState";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReturns_all_race_states(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReturns_all_race_states(<any>response_);
+                } catch (e) {
+                    return <Observable<RaceState[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<RaceState[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processReturns_all_race_states(response: HttpResponseBase): Observable<RaceState[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <RaceState[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    returns_all_race_types(): Observable<RaceType[]> {
+        let url_ = this.baseUrl + "/api/RaceType";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReturns_all_race_types(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReturns_all_race_types(<any>response_);
+                } catch (e) {
+                    return <Observable<RaceType[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<RaceType[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processReturns_all_race_types(response: HttpResponseBase): Observable<RaceType[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <RaceType[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    returns_all_seasons(): Observable<Season[]> {
+        let url_ = this.baseUrl + "/api/Season";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReturns_all_seasons(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReturns_all_seasons(<any>response_);
+                } catch (e) {
+                    return <Observable<Season[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Season[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processReturns_all_seasons(response: HttpResponseBase): Observable<Season[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <Season[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    returns_all_skiers(): Observable<Skier[]> {
+        let url_ = this.baseUrl + "/api/Skier";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReturns_all_skiers(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReturns_all_skiers(<any>response_);
+                } catch (e) {
+                    return <Observable<Skier[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Skier[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processReturns_all_skiers(response: HttpResponseBase): Observable<Skier[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <Skier[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    returns_all_venues(): Observable<Venue[]> {
         let url_ = this.baseUrl + "/api/Venue";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -491,11 +548,11 @@ export class ConverterClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processVenue_GetAllRaces(response_);
+            return this.processReturns_all_venues(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processVenue_GetAllRaces(<any>response_);
+                    return this.processReturns_all_venues(<any>response_);
                 } catch (e) {
                     return <Observable<Venue[]>><any>_observableThrow(e);
                 }
@@ -504,7 +561,7 @@ export class ConverterClient {
         }));
     }
 
-    protected processVenue_GetAllRaces(response: HttpResponseBase): Observable<Venue[]> {
+    protected processReturns_all_venues(response: HttpResponseBase): Observable<Venue[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -517,12 +574,13 @@ export class ConverterClient {
             result200 = _responseText === "" ? null : <Venue[]>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
-        } else if (status !== 200 && status !== 204) {
+        } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
             }));
         }
-        return _observableOf<Venue[]>(<any>null);
     }
 }
 
@@ -643,6 +701,23 @@ export interface AssociatedOfSex {
 
 export interface Sex extends DomainObjectBase {
     label?: string | undefined;
+}
+
+export interface RankedSkier extends Skier {
+    rank?: number;
+    elapsedTimeInFirstRun?: string;
+    elapsedTimeInFirstRunString?: string | undefined;
+    elapsedMeasurementStringsInFirstRun?: string[] | undefined;
+    elapsedTimeInSecondRun?: string;
+    elapsedTimeInSecondRunString?: string | undefined;
+    elapsedMeasurementStringsInSecondRun?: string[] | undefined;
+    elapsedTotalTime?: string;
+    elapsedTotalTimeString?: string | undefined;
+}
+
+export interface RaceFilter {
+    raceTypeIds?: number[] | undefined;
+    seasonIds?: number[] | undefined;
 }
 
 export class ApiException extends Error {

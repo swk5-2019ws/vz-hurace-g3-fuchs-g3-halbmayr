@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit {
               private converterClient: ConverterClient) { }
 
   ngOnInit(): void {
-    this.converterClient.race_GetAllRaces()
+    this.converterClient.returns_all_races()
       .subscribe(raceList => {
         this.races = raceList;
       });
