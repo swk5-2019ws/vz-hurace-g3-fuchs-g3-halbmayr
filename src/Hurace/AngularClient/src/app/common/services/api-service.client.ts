@@ -25,7 +25,7 @@ export class ApiService {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    returns_all_countries(): Observable<Country[]> {
+    getAllCountries(): Observable<Country[]> {
         let url_ = this.baseUrl + "/api/Country";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -38,11 +38,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_countries(response_);
+            return this.processGetAllCountries(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_countries(<any>response_);
+                    return this.processGetAllCountries(<any>response_);
                 } catch (e) {
                     return <Observable<Country[]>><any>_observableThrow(e);
                 }
@@ -51,7 +51,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_countries(response: HttpResponseBase): Observable<Country[]> {
+    protected processGetAllCountries(response: HttpResponseBase): Observable<Country[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -73,7 +73,7 @@ export class ApiService {
         }
     }
 
-    returns_country_for_a_passed_country_Id(countryId: number): Observable<Country> {
+    getCountryById(countryId: number): Observable<Country> {
         let url_ = this.baseUrl + "/api/Country/{countryId}";
         if (countryId === undefined || countryId === null)
             throw new Error("The parameter 'countryId' must be defined.");
@@ -89,11 +89,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_country_for_a_passed_country_Id(response_);
+            return this.processGetCountryById(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_country_for_a_passed_country_Id(<any>response_);
+                    return this.processGetCountryById(<any>response_);
                 } catch (e) {
                     return <Observable<Country>><any>_observableThrow(e);
                 }
@@ -102,7 +102,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_country_for_a_passed_country_Id(response: HttpResponseBase): Observable<Country> {
+    protected processGetCountryById(response: HttpResponseBase): Observable<Country> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -130,7 +130,7 @@ export class ApiService {
         }
     }
 
-    returns_all_races(): Observable<Race[]> {
+    getAllRaces(): Observable<Race[]> {
         let url_ = this.baseUrl + "/api/Race";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -143,11 +143,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_races(response_);
+            return this.processGetAllRaces(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_races(<any>response_);
+                    return this.processGetAllRaces(<any>response_);
                 } catch (e) {
                     return <Observable<Race[]>><any>_observableThrow(e);
                 }
@@ -156,7 +156,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_races(response: HttpResponseBase): Observable<Race[]> {
+    protected processGetAllRaces(response: HttpResponseBase): Observable<Race[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -178,7 +178,7 @@ export class ApiService {
         }
     }
 
-    race_GetRacesByFilter(raceFilter: RaceFilter): Observable<Race[]> {
+    getRacesByFilter(raceFilter: RaceFilter): Observable<Race[]> {
         let url_ = this.baseUrl + "/api/Race";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -195,11 +195,11 @@ export class ApiService {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processRace_GetRacesByFilter(response_);
+            return this.processGetRacesByFilter(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processRace_GetRacesByFilter(<any>response_);
+                    return this.processGetRacesByFilter(<any>response_);
                 } catch (e) {
                     return <Observable<Race[]>><any>_observableThrow(e);
                 }
@@ -208,7 +208,7 @@ export class ApiService {
         }));
     }
 
-    protected processRace_GetRacesByFilter(response: HttpResponseBase): Observable<Race[]> {
+    protected processGetRacesByFilter(response: HttpResponseBase): Observable<Race[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -221,15 +221,16 @@ export class ApiService {
             result200 = _responseText === "" ? null : <Race[]>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
-        } else if (status !== 200 && status !== 204) {
+        } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
             }));
         }
-        return _observableOf<Race[]>(<any>null);
     }
 
-    returns_race_for_the_given_raceId(raceId: number): Observable<Race> {
+    getRaceById(raceId: number): Observable<Race> {
         let url_ = this.baseUrl + "/api/Race/{raceId}";
         if (raceId === undefined || raceId === null)
             throw new Error("The parameter 'raceId' must be defined.");
@@ -245,11 +246,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_race_for_the_given_raceId(response_);
+            return this.processGetRaceById(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_race_for_the_given_raceId(<any>response_);
+                    return this.processGetRaceById(<any>response_);
                 } catch (e) {
                     return <Observable<Race>><any>_observableThrow(e);
                 }
@@ -258,7 +259,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_race_for_the_given_raceId(response: HttpResponseBase): Observable<Race> {
+    protected processGetRaceById(response: HttpResponseBase): Observable<Race> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -286,7 +287,7 @@ export class ApiService {
         }
     }
 
-    returns_ranked_skiers_of_specific_race(raceId: number): Observable<RankedSkier[]> {
+    getRankedSkiersOfRace(raceId: number): Observable<RankedSkier[]> {
         let url_ = this.baseUrl + "/api/Race/{raceId}/ranks";
         if (raceId === undefined || raceId === null)
             throw new Error("The parameter 'raceId' must be defined.");
@@ -302,11 +303,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_ranked_skiers_of_specific_race(response_);
+            return this.processGetRankedSkiersOfRace(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_ranked_skiers_of_specific_race(<any>response_);
+                    return this.processGetRankedSkiersOfRace(<any>response_);
                 } catch (e) {
                     return <Observable<RankedSkier[]>><any>_observableThrow(e);
                 }
@@ -315,7 +316,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_ranked_skiers_of_specific_race(response: HttpResponseBase): Observable<RankedSkier[]> {
+    protected processGetRankedSkiersOfRace(response: HttpResponseBase): Observable<RankedSkier[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -343,7 +344,7 @@ export class ApiService {
         }
     }
 
-    returns_all_race_states(): Observable<RaceState[]> {
+    getAllRaceStates(): Observable<RaceState[]> {
         let url_ = this.baseUrl + "/api/RaceState";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -356,11 +357,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_race_states(response_);
+            return this.processGetAllRaceStates(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_race_states(<any>response_);
+                    return this.processGetAllRaceStates(<any>response_);
                 } catch (e) {
                     return <Observable<RaceState[]>><any>_observableThrow(e);
                 }
@@ -369,7 +370,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_race_states(response: HttpResponseBase): Observable<RaceState[]> {
+    protected processGetAllRaceStates(response: HttpResponseBase): Observable<RaceState[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -391,7 +392,7 @@ export class ApiService {
         }
     }
 
-    returns_all_race_types(): Observable<RaceType[]> {
+    getAllRaceTypes(): Observable<RaceType[]> {
         let url_ = this.baseUrl + "/api/RaceType";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -404,11 +405,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_race_types(response_);
+            return this.processGetAllRaceTypes(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_race_types(<any>response_);
+                    return this.processGetAllRaceTypes(<any>response_);
                 } catch (e) {
                     return <Observable<RaceType[]>><any>_observableThrow(e);
                 }
@@ -417,7 +418,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_race_types(response: HttpResponseBase): Observable<RaceType[]> {
+    protected processGetAllRaceTypes(response: HttpResponseBase): Observable<RaceType[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -439,7 +440,7 @@ export class ApiService {
         }
     }
 
-    returns_all_seasons(): Observable<Season[]> {
+    getAllSeasons(): Observable<Season[]> {
         let url_ = this.baseUrl + "/api/Season";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -452,11 +453,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_seasons(response_);
+            return this.processGetAllSeasons(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_seasons(<any>response_);
+                    return this.processGetAllSeasons(<any>response_);
                 } catch (e) {
                     return <Observable<Season[]>><any>_observableThrow(e);
                 }
@@ -465,7 +466,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_seasons(response: HttpResponseBase): Observable<Season[]> {
+    protected processGetAllSeasons(response: HttpResponseBase): Observable<Season[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -487,7 +488,7 @@ export class ApiService {
         }
     }
 
-    returns_all_sexes(): Observable<Sex[]> {
+    getAllSexes(): Observable<Sex[]> {
         let url_ = this.baseUrl + "/api/Sex";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -500,11 +501,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_sexes(response_);
+            return this.processGetAllSexes(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_sexes(<any>response_);
+                    return this.processGetAllSexes(<any>response_);
                 } catch (e) {
                     return <Observable<Sex[]>><any>_observableThrow(e);
                 }
@@ -513,7 +514,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_sexes(response: HttpResponseBase): Observable<Sex[]> {
+    protected processGetAllSexes(response: HttpResponseBase): Observable<Sex[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -535,7 +536,7 @@ export class ApiService {
         }
     }
 
-    returns_all_skiers(): Observable<Skier[]> {
+    getAllSkiers(): Observable<Skier[]> {
         let url_ = this.baseUrl + "/api/Skier";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -548,11 +549,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_skiers(response_);
+            return this.processGetAllSkiers(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_skiers(<any>response_);
+                    return this.processGetAllSkiers(<any>response_);
                 } catch (e) {
                     return <Observable<Skier[]>><any>_observableThrow(e);
                 }
@@ -561,7 +562,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_skiers(response: HttpResponseBase): Observable<Skier[]> {
+    protected processGetAllSkiers(response: HttpResponseBase): Observable<Skier[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -583,7 +584,234 @@ export class ApiService {
         }
     }
 
-    returns_all_venues(): Observable<Venue[]> {
+    createSkier(skier: Skier): Observable<Skier> {
+        let url_ = this.baseUrl + "/api/Skier";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(skier);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateSkier(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateSkier(<any>response_);
+                } catch (e) {
+                    return <Observable<Skier>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Skier>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateSkier(response: HttpResponseBase): Observable<Skier> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : <Skier>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    getSkierById(skierId: number): Observable<Skier> {
+        let url_ = this.baseUrl + "/api/Skier/{skierId}";
+        if (skierId === undefined || skierId === null)
+            throw new Error("The parameter 'skierId' must be defined.");
+        url_ = url_.replace("{skierId}", encodeURIComponent("" + skierId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSkierById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSkierById(<any>response_);
+                } catch (e) {
+                    return <Observable<Skier>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Skier>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetSkierById(response: HttpResponseBase): Observable<Skier> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <Skier>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    updateSkier(skierId: number, skier: Skier): Observable<void> {
+        let url_ = this.baseUrl + "/api/Skier/{skierId}";
+        if (skierId === undefined || skierId === null)
+            throw new Error("The parameter 'skierId' must be defined.");
+        url_ = url_.replace("{skierId}", encodeURIComponent("" + skierId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(skier);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateSkier(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateSkier(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateSkier(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    deleteSkier(skierId: number): Observable<void> {
+        let url_ = this.baseUrl + "/api/Skier/{skierId}/delete";
+        if (skierId === undefined || skierId === null)
+            throw new Error("The parameter 'skierId' must be defined.");
+        url_ = url_.replace("{skierId}", encodeURIComponent("" + skierId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteSkier(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteSkier(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDeleteSkier(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    getAllVenues(): Observable<Venue[]> {
         let url_ = this.baseUrl + "/api/Venue";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -596,11 +824,11 @@ export class ApiService {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processReturns_all_venues(response_);
+            return this.processGetAllVenues(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processReturns_all_venues(<any>response_);
+                    return this.processGetAllVenues(<any>response_);
                 } catch (e) {
                     return <Observable<Venue[]>><any>_observableThrow(e);
                 }
@@ -609,7 +837,7 @@ export class ApiService {
         }));
     }
 
-    protected processReturns_all_venues(response: HttpResponseBase): Observable<Venue[]> {
+    protected processGetAllVenues(response: HttpResponseBase): Observable<Venue[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 

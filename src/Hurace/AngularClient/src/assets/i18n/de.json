@@ -47,13 +47,14 @@
         "abortDialogButtonLabel": "Abbruch",
         "createSkierButtonLabel": "Skifahrer erstellen",
         "editSkierButtonLabel": "Änderungen speichern",
-        "skierLastNameLabel": "Nachname:",
-        "skierFirstNameLabel": "Vorname:",
+        "skierLastNameLabel": "Nachname*:",
+        "skierFirstNameLabel": "Vorname*:",
         "skierImageUrlLabel": "Adresse des Profilbilds:",
-        "dateOfBirthLabel": "Geburtsdatum:",
-        "sexSelectionLabel": "Geschlecht:",
-        "countrySelectionLabel": "Land:",
-        "notEverythingFilledErrorMessage": "Bitte füllen Sie all Felder mit * aus.",
-        "imageUrlIsNotValidErrorMessage": "Adresse ist ungültig."
+        "dateOfBirthLabel": "Geburtsdatum*:",
+        "sexSelectionLabel": "Geschlecht*:",
+        "countrySelectionLabel": "Land*:",
+        "notFilledErrorMessage": "Das ist ein Pflichtfeld.",
+        "imageUrlIsNotValidErrorMessage": "Bildadresse ist ungültig.",
+        "requiredErrorMessage": "Pflichtfeld"
     }
 }

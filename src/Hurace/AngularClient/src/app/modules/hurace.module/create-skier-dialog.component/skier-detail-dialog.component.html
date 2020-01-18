@@ -1,62 +1,68 @@
-<!-- <p>create-skier-dialog works!</p>
-<p *ngIf="skier">{{ skier.firstName }}</p> -->
-
 <h1 mat-dialog-title *ngIf="inCreateMode">{{ 'skier-detail-dialog.createSkierHeader' | translate }}</h1>
 <h1 mat-dialog-title *ngIf="!inCreateMode">{{ 'skier-detail-dialog.editSkierHeader' | translate }}</h1>
 
-<div mat-dialog-content *ngIf="loadingSexes || loadingCountries">
+<div mat-dialog-content *ngIf="loadingSexes || loadingCountries || uploading">
     <spinner></spinner>
 </div>
-<div mat-dialog-content *ngIf="!loadingSexes && !loadingCountries">
-    <div class="row dialog-form-field-container">
-        <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
-            <mat-label>{{ 'skier-detail-dialog.skierLastNameLabel' | translate }}</mat-label>
-            <input matInput [(ngModel)]="skier.lastName" [errorStateMatcher]="errorStateMatcher" required>
-        </mat-form-field>
+<form [formGroup]="skierForm" mat-dialog-content *ngIf="!loadingSexes && !loadingCountries && !uploading">
+    <div class="form-row dialog-form-field-container">
+        <div class="col">
+            <label for="lastName">{{ 'skier-detail-dialog.skierLastNameLabel' | translate }}</label>
+            <input formControlName="lastName" class="form-control" [class.is-invalid]="lastName.hasError('required')" name="lastName">
+            <p class="errorText" *ngIf="lastName.hasError('required')">
+                {{ 'skier-detail-dialog.notFilledErrorMessage' | translate }}
+            </p>
+        </div>
+        <div class="col">
+            <label for="firstName">{{ 'skier-detail-dialog.skierFirstNameLabel' | translate }}</label>
+            <input formControlName="firstName" class="form-control" [class.is-invalid]="firstName.hasError('required')" name="firstName">
+            <p class="errorText" *ngIf="firstName.hasError('required')">
+                {{ 'skier-detail-dialog.notFilledErrorMessage' | translate }}
+            </p>
+        </div>
     </div>
-    <div class="row dialog-form-field-container">
-        <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
-            <mat-label>{{ 'skier-detail-dialog.skierFirstNameLabel' | translate }}</mat-label>
-            <input matInput [(ngModel)]="skier.firstName" [errorStateMatcher]="errorStateMatcher" required>
-        </mat-form-field>
-    </div>
-    <div class="row dialog-form-field-container">
-        <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
-            <mat-label>{{ 'skier-detail-dialog.skierImageUrlLabel' | translate }}</mat-label>
-            <input matInput [formControl]="imageUrlFormControl" [errorStateMatcher]="errorStateMatcher" [placeholder]="generateUniqueImageUrl()">
-            <mat-error *ngIf="imageUrlFormControl.hasError('url')">{{ 'skier-detail-dialog.imageUrlIsNotValidErrorMessage' | translate }}</mat-error>
-        </mat-form-field>
+    <div class="form-row dialog-form-field-container">
+        <div class="col">
+            <label for="imageUrl">{{ 'skier-detail-dialog.skierImageUrlLabel' | translate }}</label>
+            <input formControlName="imageUrl" class="form-control" [class.is-invalid]="imageUrl.hasError('url')" [placeholder]="generateUniqueImageUrl()" name="imageUrl">
+        </div>
     </div>
     <div class="row">
         <div class="col">
             <div class="row dialog-ff-split-left-element">
-                <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
-                    <mat-label>{{ 'skier-detail-dialog.sexSelectionLabel' | translate }}</mat-label>
-                    <mat-select [(ngModel)]="skier.sex.reference" [errorStateMatcher]="errorStateMatcher" name="sex" required>
-                        <mat-option *ngFor="let currentSex of sexes" [value]="currentSex">{{ currentSex.label }}</mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <label for="sexSelect">{{ 'skier-detail-dialog.sexSelectionLabel' | translate }}</label>
+                <select formControlName="sex" name="sexSelect" class="form-control" [class.is-invalid]="sex.hasError('required')">
+                    <option *ngFor="let currentSex of sexes" [value]="currentSex.label">{{ currentSex.label }}</option>
+                </select>
+                <p class="errorText" *ngIf="sex.hasError('required')">
+                    {{ 'skier-detail-dialog.notFilledErrorMessage' | translate }}
+                </p>
             </div>
             <div class="row dialog-ff-split-left-element">
-                <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
-                    <mat-label>{{ 'skier-detail-dialog.countrySelectionLabel' | translate }}</mat-label>
-                    <mat-select [(ngModel)]="skier.country.reference" [errorStateMatcher]="errorStateMatcher" name="country" required>
-                        <mat-option *ngFor="let currentCountry of countries" [value]="currentCountry">{{ currentCountry.name }}</mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <label for="countrySelect">{{ 'skier-detail-dialog.countrySelectionLabel' | translate }}</label>
+                <select formControlName="country" name="countrySelect" class="form-control" [class.is-invalid]="country.hasError('required')">
+                    <option *ngFor="let currentCountry of countries" [value]="currentCountry.name">{{ currentCountry.name }}</option>
+                </select>
+                <p class="errorText" *ngIf="country.hasError('required')">
+                    {{ 'skier-detail-dialog.notFilledErrorMessage' | translate }}
+                </p>
             </div>
         </div>
         <div class="col dialog-ff-split-right-element">
             <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
-                <mat-label>{{ 'skier-detail-dialog.dateOfBirthLabel' | translate }}</mat-label>
-                <input matInput [matDatepicker]="birthdatePicker" [errorStateMatcher]="errorStateMatcher" [(ngModel)]="skier.dateOfBirth" required>
+                <label for="dateOfBirth">{{ 'skier-detail-dialog.dateOfBirthLabel' | translate }}</label>
+                <input matInput [matDatepicker]="birthdatePicker" formControlName="dateOfBirth" name="dateOfBirth" [errorStateMatcher]="errorStateMatcher">
                 <mat-datepicker-toggle matSuffix [for]="birthdatePicker"></mat-datepicker-toggle>
                 <mat-datepicker #birthdatePicker></mat-datepicker>
             </mat-form-field>
+            <p class="errorText" *ngIf="dateOfBirth.hasError('required')">
+                {{ 'skier-detail-dialog.notFilledErrorMessage' | translate }}
+            </p>
         </div>
     </div>
-    <mat-error *ngIf="!allElementsFilled">{{ 'skier-detail-dialog.notEverythingFilledErrorMessage' | translate }}</mat-error>
-</div>
+    <mat-error *ngIf="imageUrl.hasError('url')">{{ 'skier-detail-dialog.imageUrlIsNotValidErrorMessage' | translate }}</mat-error>
+    <mat-error *ngIf="uploadError && uploadError.length > 0">{{ uploadError }}</mat-error>
+</form>
 
 <div mat-dialog-actions class="d-flex justify-content-around">
     <button mat-raised-button class="dialog-button" (click)="abortDialog($event)">{{ 'skier-detail-dialog.abortDialogButtonLabel' | translate }}</button>

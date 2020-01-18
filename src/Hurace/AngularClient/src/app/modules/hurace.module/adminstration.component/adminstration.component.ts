@@ -16,6 +16,8 @@ export class AdminstrationComponent implements OnInit {
   skiers: Skier[];
   allSkiers: Skier[];
 
+  lastSearchText: string;
+
   constructor(
     private apiService: ApiService,
     private datePipe: DatePipe,
@@ -26,6 +28,7 @@ export class AdminstrationComponent implements OnInit {
   }
 
   searchTextChangedHandler(searchText: string): void{
+    this.lastSearchText = searchText;
     this.skiers = this.filterSkiers(this.allSkiers, searchText);
   }
 
@@ -55,13 +58,19 @@ export class AdminstrationComponent implements OnInit {
     );
 
     dialogRef.afterClosed().subscribe(result => {
-      this.reloadSkiers();
+      if (result === true) {
+        this.reloadSkiers();
+      }
     });
   }
 
   deleteSkierPressedHandler(skier: Skier): void{
-    console.log('delete this skier with lastname ' + skier.lastName);
-    this.reloadSkiers();
+    this.skiersLoading = true;
+
+    this.apiService.deleteSkier(skier.id)
+      .subscribe(_ => {
+        this.reloadSkiers();
+      });
   }
 
   private reloadSkiers(){
@@ -69,11 +78,15 @@ export class AdminstrationComponent implements OnInit {
     this.skiers = [];
     this.allSkiers = [];
 
-    this.apiService.returns_all_skiers()
+    this.apiService.getAllSkiers()
       .subscribe(skiers => {
         this.skiersLoading = false;
         this.allSkiers = skiers;
         this.skiers = this.sortSkiers(skiers);
+
+        if (this.lastSearchText && this.lastSearchText !== ""){
+          this.skiers = this.filterSkiers(this.allSkiers, this.lastSearchText);
+        }
       });
   }
 

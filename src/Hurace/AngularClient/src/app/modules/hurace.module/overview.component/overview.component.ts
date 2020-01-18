@@ -25,13 +25,13 @@ export class OverviewComponent implements OnInit {
   ngOnInit() {
     this.updateRaces();
 
-    this.apiService.returns_all_race_types()
+    this.apiService.getAllRaceTypes()
       .subscribe(raceTypes => {
         this.raceTypes = raceTypes;
         this.raceTypesLoading = false;
       });
 
-    this.apiService.returns_all_seasons()
+    this.apiService.getAllSeasons()
       .subscribe(seasons => {
         this.seasons = seasons;
         this.seasonsLoading = false;
@@ -77,7 +77,7 @@ export class OverviewComponent implements OnInit {
       seasonIds: this.selectedSeasons.map(s => s.id)
     };
   
-    this.apiService.race_GetRacesByFilter(raceFilter)
+    this.apiService.getRacesByFilter(raceFilter)
       .subscribe(raceList => {
         this.races = raceList;
         this.racesLoading = false;

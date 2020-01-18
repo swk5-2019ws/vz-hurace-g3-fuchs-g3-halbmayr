@@ -24,12 +24,12 @@ export class RankListComponent implements OnInit {
     // this.route.snapshot.paramMap.get('mode');
 
     let raceId: number = +(this.route.snapshot.paramMap.get('raceId'));
-    this.apiService.returns_race_for_the_given_raceId(raceId)
+    this.apiService.getRaceById(raceId)
       .subscribe(race => {
         this.raceLoading = false;
         this.race = race;
       })
-    this.apiService.returns_ranked_skiers_of_specific_race(raceId)
+    this.apiService.getRankedSkiersOfRace(raceId)
       .subscribe(rankedSkiers => {
         this.rankedSkiersLoading = false;
         this.rankedSkiers = rankedSkiers;

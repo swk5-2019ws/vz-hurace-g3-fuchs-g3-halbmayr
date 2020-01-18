@@ -1,8 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { Skier, Sex, ApiService, Country } from 'src/app/common/services/api-service.client';
-import { CustomMaterialErrorStateMatcher } from 'src/app/common/error-handling/custom-material-error-state-matcher';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { CustomValidators } from 'src/app/common/error-handling/custom-validators';
 
 @Component({
@@ -13,6 +12,7 @@ import { CustomValidators } from 'src/app/common/error-handling/custom-validator
 export class SkierDetailDialog implements OnInit {
 
   inCreateMode: boolean;
+  uploading: boolean = false;
 
   loadingSexes: boolean = true;
   sexes: Sex[];
@@ -20,14 +20,9 @@ export class SkierDetailDialog implements OnInit {
   loadingCountries: boolean = true;
   countries: Country[];
 
-  allElementsFilled: boolean = true;
-  lastNameFilled: boolean = true;
-  imageUrlIsValid: boolean = true;
-  imageUrlFormControl: FormControl = new FormControl('', [
-    CustomValidators.url
-  ]);
+  skierForm: FormGroup;
 
-  errorStateMatcher = new CustomMaterialErrorStateMatcher();
+  uploadError: Error;
 
   constructor(
     private dialogRef: MatDialogRef<SkierDetailDialog>,
@@ -36,28 +31,65 @@ export class SkierDetailDialog implements OnInit {
   ) {
     this.inCreateMode = !skier;
     if (this.inCreateMode){
-      this.skier = { country: {}, sex: {} };
+      this.skier = {
+        country: { reference: { name: null } },
+        sex: { reference: { label: null } }
+       };
     }
+
+    this.skierForm = new FormGroup({
+      'lastName': new FormControl(this.skier.lastName, Validators.required),
+      'firstName': new FormControl(this.skier.firstName, Validators.required),
+      'imageUrl': new FormControl(this.skier.imageUrl, CustomValidators.url),
+      'sex': new FormControl(null, Validators.required),
+      'country': new FormControl(null, Validators.required),
+      'dateOfBirth': new FormControl(this.skier.dateOfBirth, Validators.required)
+    });
   }
 
+  get lastName() { return this.skierForm.get('lastName'); }
+  get firstName() { return this.skierForm.get('firstName'); }
+  get imageUrl() { return this.skierForm.get('imageUrl'); }
+  get sex() { return this.skierForm.get('sex'); }
+  get country() { return this.skierForm.get('country'); }
+  get dateOfBirth() { return this.skierForm.get('dateOfBirth'); }
+
   ngOnInit() {
-    this.apiService.returns_all_sexes()
+    this.apiService.getAllSexes()
       .subscribe(sexes => {
         this.loadingSexes = false;
-        this.sexes = sexes;
+        this.sexes = sexes.sort((s1, s2) => {
+          return s1.label.localeCompare(s2.label);
+        });
+    
+        if (!this.inCreateMode){
+          this.sex.setValue(this.skier.sex.reference.label);
+        }
       })
 
-      this.apiService.returns_all_countries()
-        .subscribe(countries => {
-          this.loadingCountries = false;
-          this.countries = countries.sort((c1, c2) => {
-            return c1.name.localeCompare(c2.name);
-          });
+    this.apiService.getAllCountries()
+      .subscribe(countries => {
+        this.loadingCountries = false;
+        this.countries = countries.sort((c1, c2) => {
+          return c1.name.localeCompare(c2.name);
         });
+    
+        if (!this.inCreateMode){
+          this.country.setValue(this.skier.country.reference.name);
+        }
+      });
   }
 
   generateUniqueImageUrl(): string{
-    return `https://robohash.org/${this.skier.lastName}-${this.skier.firstName}`
+    let lastNameStr = this.skier.lastName 
+      ? this.skier.lastName
+      : "<lastname>";
+
+    let firstNameStr = this.skier.firstName
+      ? this.skier.firstName
+      : "<firstname>";
+    
+    return `https://robohash.org/${lastNameStr}-${firstNameStr}`
   }
 
   abortDialog(): void{
@@ -66,30 +98,60 @@ export class SkierDetailDialog implements OnInit {
   }
 
   createSkier(): void{
-    this.errorStateMatcher.submitButtonPressed();
+    if (this.skierForm.valid) {
+      var newSkier = this.loadValuesFromForm();
 
-    let formValid = this.updateErrorStates();
-
-    if (formValid) {
-      console.log("created skier");
-      console.log(this.skier);
-      this.dialogRef.close(true);
+      this.uploading = true;
+      this.apiService.createSkier(newSkier)
+        .subscribe(
+          createdSkier => {
+            this.uploading = false;
+            console.log(createdSkier);
+            this.dialogRef.close(true);
+          },
+          errorString => {
+            this.uploading = false;
+            this.uploadError = errorString;
+          });
     }
   }
 
   editSkier(): void{
-    console.log("edited skier");
-    console.log(this.skier);
-    this.dialogRef.close(true);
+    if (this.skierForm.valid) {
+      var alteredSkier = this.loadValuesFromForm();
+
+      this.uploading = true;
+      this.apiService.updateSkier(this.skier.id, alteredSkier)
+        .subscribe(
+          _ => {
+            this.uploading = false;
+            this.dialogRef.close(true);
+          },
+          errorString => {
+            this.uploading = false;
+            this.uploadError = errorString;
+          });
+    }
   }
 
-  private updateErrorStates(): boolean{
-    this.allElementsFilled = false;
-    this.lastNameFilled = false;
-    this.imageUrlIsValid = false;
+  private loadValuesFromForm(): Skier{
+    let enteredImageUrl = this.skierForm.controls.imageUrl.value;
+    let imageUrl = enteredImageUrl
+      ? enteredImageUrl
+      : this.generateUniqueImageUrl();
 
-    return this.allElementsFilled &&
-      this.lastNameFilled &&
-      this.imageUrlIsValid
+    return {
+      id: this.skier.id,
+      lastName: this.skierForm.controls.lastName.value,
+      firstName: this.skierForm.controls.firstName.value,
+      dateOfBirth: this.skierForm.controls.dateOfBirth.value,
+      imageUrl: imageUrl,
+      sex: {
+        foreignKey: this.sexes.filter(s => s.label === this.skierForm.controls.sex.value)[0].id
+      },
+      country: {
+        foreignKey: this.countries.filter(c => c.name === this.skierForm.controls.country.value)[0].id
+      },
+    };
   }
 }
