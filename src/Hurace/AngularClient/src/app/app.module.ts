@@ -28,7 +28,7 @@ import { SkierFormComponent } from './skier-form/skier-form.component';
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
   providers: [
     ConverterClient,

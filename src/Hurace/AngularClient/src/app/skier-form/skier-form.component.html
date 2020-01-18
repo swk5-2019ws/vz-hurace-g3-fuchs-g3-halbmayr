@@ -3,33 +3,33 @@
   (ngSubmit)="submitForm()">
 
   <div class="field">
-    <label>Buchtitel</label>
+    <label>Vorname</label>
     <input
-      name="title"
+      name="firstName"
       [(ngModel)]="skier.firstName"
       required>
-    <div *ngIf="errors.title" class="ui negative message">
+    <div *ngIf="errors.firstName" class="ui negative message">
       {{ errors.title }}
     </div>
   </div>
 
   <div class="field">
-    <label>Autor</label>
+    <label>Nachname</label>
     <input
-      name="author"
+      name="lastName"
       [(ngModel)]="skier.lastName"
       required>
-    <div *ngIf="errors.author" class="ui negative message">
+    <div *ngIf="errors.lastName" class="ui negative message">
       {{ errors.author }}
     </div>
   </div>
 
   <div class="field">
-    <label>Erscheinungsdatum</label>
+    <label>Geburtsdatum</label>
     <input
       type="date"
       name="year"
-      [(ngModel)]="skier.country"
+      [(ngModel)]="skier.dateOfBirth"
       useValueAsDate
       required>
     <div *ngIf="errors.year" class="ui negative message">
@@ -38,18 +38,18 @@
   </div>
 
   <div class="field">
-    <label>Verlag</label>
+    <label>Nationalität</label>
     <input
-      name="publisher"
-      [(ngModel)]="skier.dateOfBirth"
+      name="country"
+      [(ngModel)]="skier.country"
       required>
-    <div *ngIf="errors.publisher" class="ui negative message">
+    <div *ngIf="errors.country" class="ui negative message">
       {{ errors.publisher }}
     </div>
   </div>
 
   <div class="field">
-    <label>Preis</label>
+    <label>Bild</label>
     <input
       name="prize"
       [(ngModel)]="skier.imageUrl"
@@ -58,14 +58,13 @@
       {{ errors.prize }}
     </div>
   </div>
+
   <div class="field">
-    <label>ID</label>
+    <label>Geschlecht</label>
     <input
-      name="id"
+      name="sex"
       [(ngModel)]="skier.sex"
-      required
-      minlength="2"
-      maxlength="8">
+      required>
     <div *ngIf="errors.id" class="ui negative message">
       {{ errors.id }}
     </div>

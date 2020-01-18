@@ -5,12 +5,11 @@ export class ErrorMessage {
       public text: string
     ) { }
   }
-  
+
 export const SkierFormErrorMessages = [
-    new ErrorMessage('title', 'required', 'Ein Buchtitel muss angegeben werden'),
-    new ErrorMessage('id', 'required', 'Es muss eine ID angegeben werden'),
-    new ErrorMessage('id', 'minlength', 'Die ID  muss mindestens 2 Zeichen enthalten'),
-    new ErrorMessage('id', 'maxlength', 'Eine ID darf höchstens 8 Zeichen haben'),
-    new ErrorMessage('year', 'required', 'Es muss ein Erscheinungsjahr angegeben werden'),
-    new ErrorMessage('authors', 'required', 'Es muss ein Autor angegeben werden')
-];  
+    new ErrorMessage('firstName', 'required', 'Ein Vorname muss angegeben werden'),
+    new ErrorMessage('lastName', 'required', 'Ein Nachname muss angegeben werden'),
+    new ErrorMessage('sex', 'required', 'Es muss ein Geschlecht angegeben werden'),
+    new ErrorMessage('year', 'required', 'Es muss ein GeburtsJahr angegeben werden'),
+    new ErrorMessage('country', 'required', 'Es muss eine Nationalität angegeben werden')
+];

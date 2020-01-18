@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AuthGuard } from './auth.guard';
 import { SkierListComponent } from './skier-list/skier-list.component';
+import { SkierFormComponent } from './skier-form/skier-form.component';
 
 
 const routes: Routes = [
@@ -24,6 +25,11 @@ const routes: Routes = [
   {
     path: 'skier',
     component: SkierListComponent,
+  },
+  {
+    path: 'admin',
+    component: SkierFormComponent,
+    canActivate: [AuthGuard]
   }
 ];
 

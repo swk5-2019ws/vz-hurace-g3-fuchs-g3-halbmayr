@@ -178,7 +178,7 @@ export class ConverterClient {
         }
     }
 
-    race_GetRacesByFilter(raceFilter: RaceFilter): Observable<Race[]> {
+    returns_ranked_skiers_of_specific_raceAll(raceFilter: RaceFilter): Observable<Race[]> {
         let url_ = this.baseUrl + "/api/Race";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -195,11 +195,11 @@ export class ConverterClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processRace_GetRacesByFilter(response_);
+            return this.processReturns_ranked_skiers_of_specific_raceAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processRace_GetRacesByFilter(<any>response_);
+                    return this.processReturns_ranked_skiers_of_specific_raceAll(<any>response_);
                 } catch (e) {
                     return <Observable<Race[]>><any>_observableThrow(e);
                 }
@@ -208,7 +208,7 @@ export class ConverterClient {
         }));
     }
 
-    protected processRace_GetRacesByFilter(response: HttpResponseBase): Observable<Race[]> {
+    protected processReturns_ranked_skiers_of_specific_raceAll(response: HttpResponseBase): Observable<Race[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -221,12 +221,13 @@ export class ConverterClient {
             result200 = _responseText === "" ? null : <Race[]>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
             }));
-        } else if (status !== 200 && status !== 204) {
+        } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
             }));
         }
-        return _observableOf<Race[]>(<any>null);
     }
 
     returns_race_for_the_given_raceId(raceId: number): Observable<Race> {
@@ -487,6 +488,54 @@ export class ConverterClient {
         }
     }
 
+    returns_all_sexes(): Observable<Sex[]> {
+        let url_ = this.baseUrl + "/api/Sex";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReturns_all_sexes(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReturns_all_sexes(<any>response_);
+                } catch (e) {
+                    return <Observable<Sex[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Sex[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processReturns_all_sexes(response: HttpResponseBase): Observable<Sex[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <Sex[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
     returns_all_skiers(): Observable<Skier[]> {
         let url_ = this.baseUrl + "/api/Skier";
         url_ = url_.replace(/[?&]$/, "");
@@ -525,6 +574,115 @@ export class ConverterClient {
             let result200: any = null;
             result200 = _responseText === "" ? null : <Skier[]>JSON.parse(_responseText, this.jsonParseReviver);
             return _observableOf(result200);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    creates_a_new_skier(skier: Skier): Observable<Skier> {
+        let url_ = this.baseUrl + "/api/Skier";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(skier);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreates_a_new_skier(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreates_a_new_skier(<any>response_);
+                } catch (e) {
+                    return <Observable<Skier>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Skier>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreates_a_new_skier(response: HttpResponseBase): Observable<Skier> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result201: any = null;
+            result201 = _responseText === "" ? null : <Skier>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result201);
+            }));
+        } else {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let resultdefault: any = null;
+            resultdefault = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
+            }));
+        }
+    }
+
+    returns_skier_for_the_given_skierId(skierId: number): Observable<Skier> {
+        let url_ = this.baseUrl + "/api/Skier/{skierId}";
+        if (skierId === undefined || skierId === null)
+            throw new Error("The parameter 'skierId' must be defined.");
+        url_ = url_.replace("{skierId}", encodeURIComponent("" + skierId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReturns_skier_for_the_given_skierId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReturns_skier_for_the_given_skierId(<any>response_);
+                } catch (e) {
+                    return <Observable<Skier>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<Skier>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processReturns_skier_for_the_given_skierId(response: HttpResponseBase): Observable<Skier> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <Skier>JSON.parse(_responseText, this.jsonParseReviver);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            result404 = _responseText === "" ? null : <ProblemDetails>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
             }));
         } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
