@@ -27,7 +27,7 @@ namespace Hurace.Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("getAllSexes")]
+        [OpenApiOperation(nameof(GetAllSexes))]
         public async Task<ActionResult<IEnumerable<Domain.Sex>>> GetAllSexes()
         {
 #if DEBUG
