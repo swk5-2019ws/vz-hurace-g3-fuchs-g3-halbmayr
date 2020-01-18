@@ -27,7 +27,7 @@ namespace Hurace.Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns all race types")]
+        [OpenApiOperation(nameof(GetAllRaceTypes))]
         public async Task<ActionResult<IEnumerable<Domain.RaceType>>> GetAllRaceTypes()
         {
 #if DEBUG

@@ -26,7 +26,7 @@ namespace Hurace.Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns all races")]
+        [OpenApiOperation(nameof(GetAllRaces))]
         public async Task<ActionResult<IEnumerable<Domain.Race>>> GetAllRaces()
         {
 #if DEBUG
@@ -44,7 +44,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns race for the given raceId")]
+        [OpenApiOperation(nameof(GetRaceById))]
         public async Task<ActionResult<Domain.Race>> GetRaceById(int raceId)
         {
 #if DEBUG
@@ -67,7 +67,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns ranked skiers of specific race")]
+        [OpenApiOperation(nameof(GetRankedSkiersOfRace))]
         public async Task<ActionResult<IEnumerable<Domain.RankedSkier>>> GetRankedSkiersOfRace(int raceId)
         {
 #if DEBUG
@@ -89,7 +89,7 @@ namespace Hurace.Api.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns ranked skiers of specific race")]
+        [OpenApiOperation(nameof(GetRacesByFilter))]
         public async Task<ActionResult<IEnumerable<Domain.Race>>> GetRacesByFilter(Models.RaceFilter raceFilter)
         {
 #if DEBUG
