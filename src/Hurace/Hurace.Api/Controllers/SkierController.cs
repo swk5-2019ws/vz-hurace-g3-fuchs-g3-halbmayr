@@ -64,7 +64,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
         [OpenApiOperation("Creates a new skier")]
-        public async Task<ActionResult<IEnumerable<Domain.Race>>> CreateSkier(Domain.Skier skier)
+        public async Task<ActionResult<Domain.Skier>> CreateSkier(Domain.Skier skier)
         {
             if (skier is null || skier.Sex is null || skier.Country is null)
                 return BadRequest();
