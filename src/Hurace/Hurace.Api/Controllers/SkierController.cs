@@ -53,15 +53,20 @@ namespace Hurace.Api.Controllers
             logger.LogCall(new { skierId });
 #endif
 
-            var skier = await this.informationManager.GetSkierByIdAsync(skierId).ConfigureAwait(false);
-
-            return skier == null
-                ? NotFound($"Invalid skierId: {skierId}")
-                : (ActionResult<Domain.Skier>)Ok(skier);
+            try
+            {
+                var skier = await this.informationManager.GetSkierByIdAsync(skierId).ConfigureAwait(false);
+                return Ok(skier);
+            }
+            catch (HuraceException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
         [OpenApiOperation("Creates a new skier")]
         public async Task<ActionResult<Domain.Skier>> CreateSkier(Domain.Skier skier)
@@ -82,12 +87,27 @@ namespace Hurace.Api.Controllers
             }
             catch (HuraceException e)
             {
-                return BadRequest(new
-                {
-                    e.Message,
-                    e.StackTrace
-                });
+                return BadRequest(e.Message);
             }
+        }
+
+        [HttpPut("{skierId}/delete")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Deletes a skier by his id")]
+        public async Task<ActionResult> DeleteSkier(int skierId)
+        {
+            try
+            {
+                await this.informationManager.MarkSkierAsRemoved(skierId).ConfigureAwait(false);
+            }
+            catch (HuraceException)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

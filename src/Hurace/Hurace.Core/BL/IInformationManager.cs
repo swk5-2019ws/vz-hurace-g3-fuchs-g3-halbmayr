@@ -60,6 +60,7 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None);
         Task<Domain.Skier> GetSkierByStartPositionAsync(int startPositionId);
         Task<int> CreateSkierAsync(Domain.Skier skier);
+        Task MarkSkierAsRemoved(int skierId);
         Task<bool> IsLastSkierOfStartList(Domain.RaceData raceData);
 
         Task<bool> IsNextStartPositionAsync(Domain.Race race, bool firstStartlist, int position);
