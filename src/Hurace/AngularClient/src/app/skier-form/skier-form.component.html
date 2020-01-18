@@ -1,0 +1,75 @@
+<h1>Skierformular</h1>
+<form class="ui large form" #myForm="ngForm"
+  (ngSubmit)="submitForm()">
+
+  <div class="field">
+    <label>Buchtitel</label>
+    <input
+      name="title"
+      [(ngModel)]="skier.firstName"
+      required>
+    <div *ngIf="errors.title" class="ui negative message">
+      {{ errors.title }}
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Autor</label>
+    <input
+      name="author"
+      [(ngModel)]="skier.lastName"
+      required>
+    <div *ngIf="errors.author" class="ui negative message">
+      {{ errors.author }}
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Erscheinungsdatum</label>
+    <input
+      type="date"
+      name="year"
+      [(ngModel)]="skier.country"
+      useValueAsDate
+      required>
+    <div *ngIf="errors.year" class="ui negative message">
+      {{ errors.year }}
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Verlag</label>
+    <input
+      name="publisher"
+      [(ngModel)]="skier.dateOfBirth"
+      required>
+    <div *ngIf="errors.publisher" class="ui negative message">
+      {{ errors.publisher }}
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Preis</label>
+    <input
+      name="prize"
+      [(ngModel)]="skier.imageUrl"
+      required>
+    <div *ngIf="errors.prize" class="ui negative message">
+      {{ errors.prize }}
+    </div>
+  </div>
+  <div class="field">
+    <label>ID</label>
+    <input
+      name="id"
+      [(ngModel)]="skier.sex"
+      required
+      minlength="2"
+      maxlength="8">
+    <div *ngIf="errors.id" class="ui negative message">
+      {{ errors.id }}
+    </div>
+  </div>
+
+  <button type="submit" class="ui button" [disabled]="myForm.invalid">Speichern</button>
+</form>

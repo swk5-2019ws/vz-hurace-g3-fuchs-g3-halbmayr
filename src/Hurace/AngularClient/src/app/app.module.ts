@@ -12,6 +12,7 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SkierListComponent } from './skier-list/skier-list.component';
 import { SkierListItemComponent } from './skier-list-item/skier-list-item.component';
+import { SkierFormComponent } from './skier-form/skier-form.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { SkierListItemComponent } from './skier-list-item/skier-list-item.compon
     HomeComponent,
     ProfileComponent,
     SkierListComponent,
-    SkierListItemComponent
+    SkierListItemComponent,
+    SkierFormComponent
   ],
   imports: [
     BrowserModule,

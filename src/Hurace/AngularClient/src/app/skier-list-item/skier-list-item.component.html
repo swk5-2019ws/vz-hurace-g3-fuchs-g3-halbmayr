@@ -1,9 +1,25 @@
-<img class="ui small image"
+<!--<img class="ui small image"
 *ngIf="skier.imageUrl"
 [src]="skier.imageUrl">
 <div class="content">
   <div class="header">{{skier.firstName}} {{skier.lastName}}</div>
   <div class="description"> {{date.toLocaleDateString()}} {{skier.country.reference.name}} </div>
   <div class="extra">{{skier.sex.reference.label}}</div>
-</div>
+</div>-->
 
+
+<div class="ui image portrait" *ngIf="skier.imageUrl">
+  <img [src]="skier.imageUrl">
+</div>
+<div class="content">
+  <div class="header">{{skier.firstName}} {{skier.lastName}}</div>
+  <div class="description">
+    {{date.toLocaleDateString()}} {{skier.country.reference.name}}
+  </div>
+  <div class="meta">
+    {{skier.sex.reference.label}}
+  </div>
+  <div *ngIf="auth.loggedIn" >
+    <i class="edit icon"></i>
+  </div>
+</div>

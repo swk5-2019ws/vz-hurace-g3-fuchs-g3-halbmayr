@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'a.app-skier-list-item',
+  selector: 'div.app-skier-list-item',
   templateUrl: './skier-list-item.component.html',
   styleUrls: ['./skier-list-item.component.css']
 })

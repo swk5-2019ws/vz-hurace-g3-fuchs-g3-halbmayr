@@ -1,7 +1,6 @@
 import { ConverterClient, Skier } from './../converter.client';
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { debounceTime, distinctUntilChanged, tap, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-skier-list',
@@ -13,17 +12,18 @@ export class SkierListComponent implements OnInit {
   skiers: Skier[] = [];
   foundSkiers: Skier[] = [];
   keyup = new EventEmitter<string>();
-  constructor(private converterClient: ConverterClient) { }
+  constructor(private converterClient: ConverterClient, public auth: AuthService) { }
 
   ngOnInit() {
-    this.converterClient.returns_all_skiers()
+    this.retrieveData();
+    /*this.converterClient.returns_all_skiers()
       .subscribe(skierList => {
         this.skiers = skierList;
         this.foundSkiers = skierList;
       });
 
     this.keyup.pipe(
-    );
+    );*/
   }
 
   onEnter(value: string) {
@@ -35,4 +35,21 @@ export class SkierListComponent implements OnInit {
              date.toLocaleDateString().includes(value);
     });
   }
+
+  retrieveData()
+{
+    let data = JSON.parse(localStorage.getItem('skiers'));
+    if (data === null){
+        this.converterClient.returns_all_skiers().subscribe(skiers => {
+            localStorage.setItem('skiers', JSON.stringify(skiers));
+            this.skiers = skiers;
+            this.foundSkiers = skiers;
+        }, error => {
+            // handle errors
+        });
+    } else {
+        this.skiers = data;
+        this.foundSkiers = data;
+    }
+}
 }

@@ -1,10 +1,25 @@
 
-<label>Search: <input #box (keyup)="onEnter(box.value)"></label>
+<!--<label>Search: <input #box (keyup)="onEnter(box.value)"></label>-->
+<div class="ui center aligned segment">
+  <h1> Skier </h1>
+<div class="ui left icon input">
+  <input #box (keyup)="onEnter(box.value)"  type="text" placeholder="Search skiers...">
+  <i class="users icon"></i>
+</div>
+<button class="ui blue button" style="margin-left: 10px;">Skier Anlegen</button>
+</div>
 
-<div class="ui middle aligned selection divided list">
+<!--<div class="ui middle aligned selection divided list">
   <a class="app-skier-list-item item"
       *ngFor="let skier of foundSkiers"
       [skier]="skier"
       [routerLink]="skier.id">
   </a>
+</div>-->
+<div class="ui cards">
+  <div class="app-skier-list-item ui card"
+      *ngFor="let skier of foundSkiers"
+      [skier]="skier"
+      [routerLink]="skier.id">
+  </div>
 </div>
