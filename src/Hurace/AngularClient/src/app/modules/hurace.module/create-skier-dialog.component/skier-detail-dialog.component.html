@@ -9,51 +9,53 @@
 </div>
 <div mat-dialog-content *ngIf="!loadingSexes && !loadingCountries">
     <div class="row dialog-form-field-container">
-        <mat-form-field class="dialog-ff-row-filled">
+        <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
             <mat-label>{{ 'skier-detail-dialog.skierLastNameLabel' | translate }}</mat-label>
-            <input matInput [(ngModel)]="skier.lastName" required>
+            <input matInput [(ngModel)]="skier.lastName" [errorStateMatcher]="errorStateMatcher" required>
         </mat-form-field>
     </div>
     <div class="row dialog-form-field-container">
-        <mat-form-field class="dialog-ff-row-filled">
+        <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
             <mat-label>{{ 'skier-detail-dialog.skierFirstNameLabel' | translate }}</mat-label>
-            <input matInput [(ngModel)]="skier.firstName" required>
+            <input matInput [(ngModel)]="skier.firstName" [errorStateMatcher]="errorStateMatcher" required>
         </mat-form-field>
     </div>
     <div class="row dialog-form-field-container">
-        <mat-form-field class="dialog-ff-row-filled">
+        <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
             <mat-label>{{ 'skier-detail-dialog.skierImageUrlLabel' | translate }}</mat-label>
-            <input matInput [(ngModel)]="skier.imageUrl" [placeholder]="generateUniqueImageUrl()">
+            <input matInput [formControl]="imageUrlFormControl" [errorStateMatcher]="errorStateMatcher" [placeholder]="generateUniqueImageUrl()">
+            <mat-error *ngIf="imageUrlFormControl.hasError('url')">{{ 'skier-detail-dialog.imageUrlIsNotValidErrorMessage' | translate }}</mat-error>
         </mat-form-field>
     </div>
     <div class="row">
         <div class="col">
             <div class="row dialog-ff-split-left-element">
-                <mat-form-field>
+                <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
                     <mat-label>{{ 'skier-detail-dialog.sexSelectionLabel' | translate }}</mat-label>
-                    <mat-select [(ngModel)]="skier.sex.reference" name="sex" required>
+                    <mat-select [(ngModel)]="skier.sex.reference" [errorStateMatcher]="errorStateMatcher" name="sex" required>
                         <mat-option *ngFor="let currentSex of sexes" [value]="currentSex">{{ currentSex.label }}</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
             <div class="row dialog-ff-split-left-element">
-                <mat-form-field>
+                <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
                     <mat-label>{{ 'skier-detail-dialog.countrySelectionLabel' | translate }}</mat-label>
-                    <mat-select [(ngModel)]="skier.country.reference" name="country" required>
+                    <mat-select [(ngModel)]="skier.country.reference" [errorStateMatcher]="errorStateMatcher" name="country" required>
                         <mat-option *ngFor="let currentCountry of countries" [value]="currentCountry">{{ currentCountry.name }}</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
         </div>
         <div class="col dialog-ff-split-right-element">
-            <mat-form-field class="dialog-ff-row-filled">
+            <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
                 <mat-label>{{ 'skier-detail-dialog.dateOfBirthLabel' | translate }}</mat-label>
-                <input matInput [matDatepicker]="birthdatePicker" [(ngModel)]="skier.dateOfBirth" required>
+                <input matInput [matDatepicker]="birthdatePicker" [errorStateMatcher]="errorStateMatcher" [(ngModel)]="skier.dateOfBirth" required>
                 <mat-datepicker-toggle matSuffix [for]="birthdatePicker"></mat-datepicker-toggle>
                 <mat-datepicker #birthdatePicker></mat-datepicker>
             </mat-form-field>
         </div>
     </div>
+    <mat-error *ngIf="!allElementsFilled">{{ 'skier-detail-dialog.notEverythingFilledErrorMessage' | translate }}</mat-error>
 </div>
 
 <div mat-dialog-actions class="d-flex justify-content-around">

@@ -52,6 +52,8 @@
         "skierImageUrlLabel": "Adresse des Profilbilds:",
         "dateOfBirthLabel": "Geburtsdatum:",
         "sexSelectionLabel": "Geschlecht:",
-        "countrySelectionLabel": "Land:"
+        "countrySelectionLabel": "Land:",
+        "notEverythingFilledErrorMessage": "Bitte füllen Sie all Felder mit * aus.",
+        "imageUrlIsNotValidErrorMessage": "Adresse ist ungültig."
     }
 }
