@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
+#pragma warning disable CA1822 // Mark members as static
 namespace Hurace.RaceControl.ViewModels
 {
     public class MainViewModel : BaseViewModel

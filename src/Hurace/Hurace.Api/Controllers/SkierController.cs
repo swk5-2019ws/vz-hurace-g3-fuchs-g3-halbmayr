@@ -71,11 +71,12 @@ namespace Hurace.Api.Controllers
         [OpenApiOperation("Creates a new skier")]
         public async Task<ActionResult<Domain.Skier>> CreateSkier(Domain.Skier skier)
         {
-            if (skier is null || skier.Sex is null || skier.Country is null)
-                return BadRequest();
 #if DEBUG
             logger.LogCall(skier);
 #endif
+
+            if (skier is null || skier.Sex is null || skier.Country is null)
+                return BadRequest();
 
             try
             {
@@ -91,6 +92,31 @@ namespace Hurace.Api.Controllers
             }
         }
 
+        [HttpPut("{skierId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Updates a skier by his id")]
+        public async Task<ActionResult> UpdateSkier(int skierId, Domain.Skier skier)
+        {
+#if DEBUG
+            logger.LogCall(new { skierId, skier });
+#endif
+
+            if (skier is null)
+                return BadRequest("Passed skier is null");
+
+            try
+            {
+                await this.informationManager.UpdateSkierById(skierId, skier).ConfigureAwait(false);
+                return NoContent();
+            }
+            catch (HuraceException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpPut("{skierId}/delete")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -98,16 +124,19 @@ namespace Hurace.Api.Controllers
         [OpenApiOperation("Deletes a skier by his id")]
         public async Task<ActionResult> DeleteSkier(int skierId)
         {
+#if DEBUG
+            logger.LogCall(new { skierId });
+#endif
+
             try
             {
                 await this.informationManager.MarkSkierAsRemoved(skierId).ConfigureAwait(false);
+                return NoContent();
             }
             catch (HuraceException)
             {
                 return NotFound();
             }
-
-            return NoContent();
         }
     }
 }

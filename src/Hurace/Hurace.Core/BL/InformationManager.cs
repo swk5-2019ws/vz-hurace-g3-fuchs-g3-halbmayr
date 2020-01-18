@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CA1502 // Avoid excessive complexity
 #pragma warning disable IDE0039 // Use local function
 #pragma warning disable IDE0046 // Convert to conditional expression
@@ -1119,6 +1120,51 @@ namespace Hurace.Core.BL
             };
             await this.skierDao.UpdateAsync(objectContainingChanges, skierCondition)
                 .ConfigureAwait(false);
+        }
+
+        public async Task UpdateSkierById(int skierId, Domain.Skier skier)
+        {
+            if (skier is null)
+                throw new HuraceException($"Passed {nameof(skier)} is null", new ArgumentNullException(nameof(skier)));
+            else if (string.IsNullOrEmpty(skier.FirstName))
+                throw new HuraceException($"Passed {nameof(skier.FirstName)} is null or empty");
+            else if (string.IsNullOrEmpty(skier.LastName))
+                throw new HuraceException($"Passed {nameof(skier.LastName)} is null or empty");
+            else if (string.IsNullOrEmpty(skier.ImageUrl))
+                throw new HuraceException($"Passed {nameof(skier.ImageUrl)} is null or empty");
+            else if (skier.DateOfBirth < new DateTime(1950, 1, 1))
+                throw new HuraceException($"Passed {nameof(skier.DateOfBirth)} lies before 1950-01-01 ('{skier.DateOfBirth.Date.ToShortDateString()}')");
+            else if (DateTime.Now.Date < skier.DateOfBirth)
+                throw new HuraceException($"Passed {nameof(skier.DateOfBirth)} lies in the future ('{skier.DateOfBirth.Date.ToShortDateString()}')");
+
+            var countryCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.Country.Id), QueryConditionType.Equals, skier.Country.ForeignKey)
+                .Build();
+            var matchingCountrySet = await this.countryDao.GetAllConditionalAsync(countryCondition).ConfigureAwait(false);
+            if (!matchingCountrySet.Any())
+                throw new HuraceException($"Country with countryId '{skier.Country.ForeignKey}' is not existing");
+
+            var sexCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.Sex.Id), QueryConditionType.Equals, skier.Sex.ForeignKey)
+                .Build();
+            var matchingSexSet = await this.sexDao.GetAllConditionalAsync(sexCondition).ConfigureAwait(false);
+            if (!matchingSexSet.Any())
+                throw new HuraceException($"Sex with sexId '{skier.Sex.ForeignKey}' is not existing");
+
+            var updatedSkierEnt = new Entities.Skier
+            {
+                Id = skierId,
+                FirstName = skier.FirstName,
+                LastName = skier.LastName,
+                DateOfBirth = skier.DateOfBirth,
+                ImageUrl = skier.ImageUrl,
+                CountryId = skier.Country.ForeignKey.Value,
+                SexId = skier.Sex.ForeignKey.Value
+            };
+
+            var success = await this.skierDao.UpdateAsync(updatedSkierEnt).ConfigureAwait(false);
+            if (!success)
+                throw new HuraceException($"Skier with id '{skierId}' was not updated");
         }
 
         public async Task<Domain.Skier> GetSkierByStartPositionAsync(int startPositionId)

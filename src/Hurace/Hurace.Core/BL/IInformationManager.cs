@@ -61,6 +61,7 @@ namespace Hurace.Core.BL
         Task<Domain.Skier> GetSkierByStartPositionAsync(int startPositionId);
         Task<int> CreateSkierAsync(Domain.Skier skier);
         Task MarkSkierAsRemoved(int skierId);
+        Task UpdateSkierById(int skierId, Domain.Skier skier);
         Task<bool> IsLastSkierOfStartList(Domain.RaceData raceData);
 
         Task<bool> IsNextStartPositionAsync(Domain.Race race, bool firstStartlist, int position);
