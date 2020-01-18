@@ -27,7 +27,7 @@ namespace Hurace.Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns all venues")]
+        [OpenApiOperation("getAllVenues")]
         public async Task<ActionResult<IEnumerable<Domain.Venue>>> GetAllVenues()
         {
 #if DEBUG
