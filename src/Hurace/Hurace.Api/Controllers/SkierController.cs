@@ -28,7 +28,7 @@ namespace Hurace.Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("getAllSkiers")]
+        [OpenApiOperation(nameof(GetAllSkiers))]
         public async Task<ActionResult<IEnumerable<Domain.Skier>>> GetAllSkiers()
         {
 #if DEBUG
@@ -46,7 +46,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("getSkierById")]
+        [OpenApiOperation(nameof(GetSkierById))]
         public async Task<ActionResult<Domain.Skier>> GetSkierById(int skierId)
         {
 #if DEBUG
@@ -68,7 +68,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("createSkier")]
+        [OpenApiOperation(nameof(CreateSkier))]
         public async Task<ActionResult<Domain.Skier>> CreateSkier(Domain.Skier skier)
         {
 #if DEBUG
@@ -96,7 +96,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("updateSkier")]
+        [OpenApiOperation(nameof(UpdateSkier))]
         public async Task<ActionResult> UpdateSkier(int skierId, Domain.Skier skier)
         {
 #if DEBUG
@@ -121,7 +121,7 @@ namespace Hurace.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("deleteSkier")]
+        [OpenApiOperation(nameof(DeleteSkier))]
         public async Task<ActionResult> DeleteSkier(int skierId)
         {
 #if DEBUG
