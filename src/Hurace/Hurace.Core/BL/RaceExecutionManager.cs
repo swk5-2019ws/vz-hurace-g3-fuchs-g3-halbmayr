@@ -217,7 +217,7 @@ namespace Hurace.Core.BL
 
                         if (lastMeasurement)
                         {
-                            await this.GenerateSecondStartListIfNeeded().ConfigureAwait(false);
+                            await this.GenerateSecondStartListIfNeeded(this.trackedRaceData).ConfigureAwait(false);
 
                             if (bestDifference <= 0)
                                 this.bestMeasurementDictionary = this.measurementDictionary;
@@ -245,13 +245,22 @@ namespace Hurace.Core.BL
             triggerHandlerSem.Release();
         }
 
-        public async Task GenerateSecondStartListIfNeeded()
+        public async Task GenerateSecondStartListIfNeeded(Domain.StartPosition currentStartPosition)
         {
-            if (this.trackingFirstStartList &&
-                await this.informationManager.IsLastSkierOfStartList(this.trackedRaceData)
-                    .ConfigureAwait(false))
+            var currentRaceData = await this.informationManager.GetRaceDataByStartPositionDOAsync(currentStartPosition)
+                .ConfigureAwait(false);
+            await this.GenerateSecondStartListIfNeeded(currentRaceData).ConfigureAwait(false);
+        }
+
+        public async Task GenerateSecondStartListIfNeeded(Domain.RaceData currentRaceData)
+        {
+            if (currentRaceData is null)
+                throw new ArgumentNullException(nameof(currentRaceData));
+
+            if (!await this.informationManager.SecondStartlistExisting(currentRaceData).ConfigureAwait(false) &&
+                await this.informationManager.IsLastSkierOfStartList(currentRaceData).ConfigureAwait(false))
             {
-                await this.informationManager.GenerateSecondStartList(this.trackedRace.Id)
+                await this.informationManager.GenerateSecondStartList(currentRaceData)
                     .ConfigureAwait(false);
             }
         }

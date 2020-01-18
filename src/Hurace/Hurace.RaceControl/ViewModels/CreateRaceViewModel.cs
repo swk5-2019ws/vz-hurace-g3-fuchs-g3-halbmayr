@@ -43,6 +43,34 @@ namespace Hurace.RaceControl.ViewModels
         private ObservableCollection<Domain.StartPosition> maleStartPositions;
         private ObservableCollection<Domain.StartPosition> femaleStartPositions;
 
+        public CreateRaceViewModel(IInformationManager raceManager)
+        {
+            Loading = true;
+            MenListSelected = true;
+
+            this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
+            SelectedDate = DateTime.Now;
+
+            this.AddRacerToStartListCommand = new AsyncDelegateCommand(
+                AddRacerToStartList,
+                (object obj) => selectedSkier != null);
+            this.RemoveRacerFromStartListCommand = new AsyncDelegateCommand(
+                RemoveRacerFromStartList,
+                (object obj) => selectedStartPosition != null);
+            this.MoveSelectedStartPositionUpCommand = new AsyncDelegateCommand(
+                MoveRacerUpInStartList,
+                (object obj) => selectedStartPosition != null && selectedStartPosition.Position > 1);
+            this.MoveSelectedStartPositionDownCommand = new AsyncDelegateCommand(
+                MoveRacerDownInStartList,
+                (object obj) => selectedStartPosition != null && selectedStartPosition.Position < StartPositions.Count);
+            this.SelectMenListCommand = new AsyncDelegateCommand(
+                SelectMenList,
+                (object obj) => !menListSelected);
+            this.SelectWomenListCommand = new AsyncDelegateCommand(
+                SelectWomenList,
+                (object obj) => menListSelected);
+        }
+
         #region Properties
 
         public string CreateRaceHeader
@@ -164,34 +192,6 @@ namespace Hurace.RaceControl.ViewModels
         #endregion
 
         public bool HasErrors => this.errors.Any();
-
-        public CreateRaceViewModel(IInformationManager raceManager)
-        {
-            Loading = true;
-            MenListSelected = true;
-
-            this.raceManager = raceManager ?? throw new ArgumentNullException(nameof(raceManager));
-            SelectedDate = DateTime.Now;
-
-            this.AddRacerToStartListCommand = new AsyncDelegateCommand(
-                AddRacerToStartList,
-                (object obj) => selectedSkier != null);
-            this.RemoveRacerFromStartListCommand = new AsyncDelegateCommand(
-                RemoveRacerFromStartList,
-                (object obj) => selectedStartPosition != null);
-            this.MoveSelectedStartPositionUpCommand = new AsyncDelegateCommand(
-                MoveRacerUpInStartList,
-                (object obj) => selectedStartPosition != null && selectedStartPosition.Position > 1);
-            this.MoveSelectedStartPositionDownCommand = new AsyncDelegateCommand(
-                MoveRacerDownInStartList,
-                (object obj) => selectedStartPosition != null && selectedStartPosition.Position < StartPositions.Count);
-            this.SelectMenListCommand = new AsyncDelegateCommand(
-                SelectMenList,
-                (object obj) => !menListSelected);
-            this.SelectWomenListCommand = new AsyncDelegateCommand(
-                SelectWomenList,
-                (object obj) => menListSelected);
-        }
 
         public async Task InitializeExistingRace(Domain.Race race)
         {

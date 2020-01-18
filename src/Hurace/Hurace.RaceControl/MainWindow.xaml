@@ -73,6 +73,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <Button Content="Abbruch"
+                        Command="{Binding AbortRaceCreateOrUpdateCommand}"
                         Grid.Column="0"
                         Margin="5,5,2.5,5"/>
                 

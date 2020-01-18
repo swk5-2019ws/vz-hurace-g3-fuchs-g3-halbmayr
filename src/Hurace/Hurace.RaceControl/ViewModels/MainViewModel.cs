@@ -65,6 +65,7 @@ namespace Hurace.RaceControl.ViewModels
             this.DeleteRaceCommand = new AsyncDelegateCommand(
                 this.DeleteRace,
                 this.CanDeleteRace);
+            this.AbortRaceCreateOrUpdateCommand = new AsyncDelegateCommand(this.AbortRaceCreateOrUpdate);
 
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
@@ -122,7 +123,6 @@ namespace Hurace.RaceControl.ViewModels
                         .ConfigureAwait(false);
                 },
                 this.CanEditRace);
-
         }
 
         #endregion
@@ -136,6 +136,7 @@ namespace Hurace.RaceControl.ViewModels
         public AsyncDelegateCommand StartSimulatedRaceExecutionCommand { get; }
         public AsyncDelegateCommand StopRaceExecutionCommand { get; }
         public AsyncDelegateCommand DeleteRaceCommand { get; }
+        public AsyncDelegateCommand AbortRaceCreateOrUpdateCommand { get; set; }
 
         #endregion
 
@@ -166,6 +167,8 @@ namespace Hurace.RaceControl.ViewModels
                 base.NotifyPropertyChanged(nameof(RaceNotCompleted));
             }
         }
+
+        public bool RaceNotStarted { get; set; }
 
         public bool RaceNotCompleted =>
             this.ExecutionRunning ||
@@ -221,7 +224,7 @@ namespace Hurace.RaceControl.ViewModels
 
         private bool CanEditRace(object obj)
         {
-            return !this.ExecutionRunning && this.RaceNotCompleted;
+            return !this.ExecutionRunning && this.RaceNotStarted;
         }
 
         public bool CanStartRaceExecution(object argument)
@@ -293,6 +296,12 @@ namespace Hurace.RaceControl.ViewModels
                 });
         }
 
+        private Task AbortRaceCreateOrUpdate(object arg)
+        {
+            this.CreateRaceControlVisible = false;
+            return Task.CompletedTask;
+        }
+
         #endregion
         #region Async-Loaders
 
@@ -330,21 +339,19 @@ namespace Hurace.RaceControl.ViewModels
                     Domain.Associated<Domain.Skier>.LoadingType.Reference,
                     Domain.Associated<Domain.Sex>.LoadingType.Reference,
                     Domain.Associated<Domain.Country>.LoadingType.Reference)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
+
+            this.RaceNotStarted = await informationManager.WasRaceNeverStartedAsync(race.Id).ConfigureAwait(true);
 
             if (race.OverallRaceState.Reference.Id != 3 &&
                 race.OverallRaceState.Reference.Id != 4 &&
                 race.Id == this.SelectedRace.Race.Id)
             {
-                await this.SelectedRace.LoadRankList().ConfigureAwait(false);
+                await this.SelectedRace.LoadRankList().ConfigureAwait(true);
             }
 
-            Application.Current.Dispatcher.Invoke(
-                () =>
-                {
-                    this.SelectedRace.Race = race;
-                    base.NotifyPropertyChanged(nameof(RaceNotCompleted));
-                });
+            this.SelectedRace.Race = race;
+            base.NotifyPropertyChanged(nameof(RaceNotCompleted));
         }
 
         #endregion
