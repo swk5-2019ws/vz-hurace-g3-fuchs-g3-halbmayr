@@ -962,7 +962,11 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
             Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None)
         {
-            var skierEntities = await skierDao.GetAllConditionalAsync().ConfigureAwait(false);
+            var skierCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.Skier.IsRemoved), QueryConditionType.NotEquals, true)
+                .Build();
+            var skierEntities = await skierDao.GetAllConditionalAsync(skierCondition)
+                .ConfigureAwait(false);
 
             return await Task.WhenAll(
                     skierEntities.Select(
@@ -998,7 +1002,11 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
             Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None)
         {
-            var skierEntity = await skierDao.GetByIdAsync(skierId).ConfigureAwait(false);
+            Entities.Skier skierEntity = await skierDao.GetByIdAsync(skierId).ConfigureAwait(false);
+            if (skierEntity == null)
+                throw new HuraceException($"Skier with id '{skierId}' not existing");
+            else if (skierEntity.IsRemoved)
+                throw new HuraceException($"Skier with id '{skierId}' is marked as removed");
 
             return new Domain.Skier
             {
@@ -1094,6 +1102,23 @@ namespace Hurace.Core.BL
             };
 
             return await this.skierDao.CreateAsync(skierEnt).ConfigureAwait(false);
+        }
+
+        public async Task MarkSkierAsRemoved(int skierId)
+        {
+            var skierEnt = await this.skierDao.GetByIdAsync(skierId).ConfigureAwait(false);
+            if (skierEnt == null)
+                throw new HuraceException($"Skier with id '{skierId}' not found");
+
+            var skierCondition = new QueryConditionBuilder()
+                .DeclareCondition(nameof(Entities.Skier.Id), QueryConditionType.Equals, skierId)
+                .Build();
+            var objectContainingChanges = new
+            {
+                IsRemoved = true
+            };
+            await this.skierDao.UpdateAsync(objectContainingChanges, skierCondition)
+                .ConfigureAwait(false);
         }
 
         public async Task<Domain.Skier> GetSkierByStartPositionAsync(int startPositionId)
