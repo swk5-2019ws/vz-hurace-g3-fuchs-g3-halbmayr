@@ -27,7 +27,7 @@ namespace Hurace.Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns all seasons")]
+        [OpenApiOperation("getAllRaces")]
         public async Task<ActionResult<IEnumerable<Domain.Season>>> GetAllRaces()
         {
 #if DEBUG
