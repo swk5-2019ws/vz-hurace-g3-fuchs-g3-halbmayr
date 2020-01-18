@@ -1,5 +1,5 @@
 ﻿using Hurace.Core.BL;
-using Hurace.Core.Logging.Extensions;
+using Hurace.Core.Debugging.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -51,7 +51,12 @@ namespace Hurace.Api.Controllers
             logger.LogCall(new { raceId });
 #endif
 
-            var race = await informationManager.GetRaceByIdAsync(raceId).ConfigureAwait(true);
+            var race = await informationManager.GetRaceByIdAsync(
+                    raceId,
+                    venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference,
+                    raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference)
+                .ConfigureAwait(true);
 
             return race == null
                 ? NotFound($"Invalid raceId: {raceId}")
@@ -82,6 +87,9 @@ namespace Hurace.Api.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation("Returns ranked skiers of specific race")]
         public async Task<ActionResult<IEnumerable<Domain.Race>>> GetRacesByFilter(Models.RaceFilter raceFilter)
         {
 #if DEBUG

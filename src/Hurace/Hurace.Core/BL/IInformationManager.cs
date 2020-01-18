@@ -59,6 +59,7 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Country>.LoadingType countryLoadingType = Domain.Associated<Domain.Country>.LoadingType.Reference,
             Domain.Associated<Domain.StartPosition>.LoadingType startPositionLoadingType = Domain.Associated<Domain.StartPosition>.LoadingType.None);
         Task<Domain.Skier> GetSkierByStartPositionAsync(int startPositionId);
+        Task<int> CreateSkierAsync(Domain.Skier skier);
         Task<bool> IsLastSkierOfStartList(Domain.RaceData raceData);
 
         Task<bool> IsNextStartPositionAsync(Domain.Race race, bool firstStartlist, int position);
@@ -79,5 +80,7 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Season>.LoadingType seasonsOfVenueLoadingType = Domain.Associated<Domain.Season>.LoadingType.None);
 
         Task<IEnumerable<Domain.StartPosition>> GetStartPositionListAsync(int raceId, bool firstStartList);
+
+        Task<IEnumerable<Domain.Sex>> GetAllSexesAsync();
     }
 }

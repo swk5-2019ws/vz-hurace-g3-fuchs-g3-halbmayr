@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Hurace.Core.Logging.Extensions
+namespace Hurace.Core.Debugging.Extensions
 {
     public static class ILoggerExtensions
     {

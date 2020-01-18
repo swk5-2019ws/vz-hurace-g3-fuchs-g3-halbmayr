@@ -1,5 +1,5 @@
 ﻿using Hurace.Core.BL;
-using Hurace.Core.Logging.Extensions;
+using Hurace.Core.Debugging.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
