@@ -18,35 +18,35 @@
                 <th scope="col" class="text-center" *ngFor="let sensorId of generateSequence(race.numberOfSensors)">{{ 'rank-list.ranks.interimTimeFormat' | translate:{ sensorId: sensorId } }}</th>
             </tr>
         </thead>
-        <tbody *ngFor="let currentRankedSkier of rankedSkiers" class="rank-list-body">
+        <tbody *ngFor="let rs of rankedSkiers" class="rank-list-body">
             <tr>
-                <td rowspan="2" class="text-center-vertically">{{ currentRankedSkier.rank }}</td>
-                <td rowspan="2" class="text-center-vertically">{{ currentRankedSkier.lastName }}</td>
-                <td rowspan="2" class="text-center-vertically">{{ currentRankedSkier.firstName }}</td>
+                <td rowspan="2" class="text-center-vertically">{{ rs.rank }}</td>
+                <td rowspan="2" class="text-center-vertically">{{ rs.lastName }}</td>
+                <td rowspan="2" class="text-center-vertically">{{ rs.firstName }}</td>
                 <td rowspan="2" class="text-center-vertically">n/a</td>
-                <td rowspan="2" class="text-center-vertically">{{ currentRankedSkier.country.reference.name }}</td>
+                <td rowspan="2" class="text-center-vertically">{{ rs.country.reference.name }}</td>
 
-                <td [attr.colspan]="race.numberOfSensors" class="text-center faster-time" *ngIf="currentRankedSkier.elapsedTimeInFirstRunString.charAt(0) === '-'">{{ currentRankedSkier.elapsedTimeInFirstRunString }}</td>
-                <td [attr.colspan]="race.numberOfSensors" class="text-center slower-time" *ngIf="currentRankedSkier.elapsedTimeInFirstRunString.charAt(0) === '+'">{{ currentRankedSkier.elapsedTimeInFirstRunString }}</td>
-                <td [attr.colspan]="race.numberOfSensors" class="text-center" *ngIf="currentRankedSkier.elapsedTimeInFirstRunString.charAt(0) !== '-' && currentRankedSkier.elapsedTimeInFirstRunString.charAt(0) !== '+'">{{ currentRankedSkier.elapsedTimeInFirstRunString }}</td>
+                <td [attr.colspan]="race.numberOfSensors" class="text-center faster-time" *ngIf="rs.elapsedTimeInFirstRunString.length > 0 && rs.elapsedTimeInFirstRunString.charAt(0) === '-'">{{ rs.elapsedTimeInFirstRunString }}</td>
+                <td [attr.colspan]="race.numberOfSensors" class="text-center slower-time" *ngIf="rs.elapsedTimeInFirstRunString.length > 0 && rs.elapsedTimeInFirstRunString.charAt(0) === '+'">{{ rs.elapsedTimeInFirstRunString }}</td>
+                <td [attr.colspan]="race.numberOfSensors" class="text-center" *ngIf="rs.elapsedTimeInFirstRunString.length > 0 && rs.elapsedTimeInFirstRunString.charAt(0) !== '-' && rs.elapsedTimeInFirstRunString.charAt(0) !== '+'">{{ rs.elapsedTimeInFirstRunString }}</td>
                 
-                <td [attr.colspan]="race.numberOfSensors" class="text-center faster-time" *ngIf="currentRankedSkier.elapsedTimeInSecondRunString.charAt(0) === '-'">{{ currentRankedSkier.elapsedTimeInSecondRunString }}</td>
-                <td [attr.colspan]="race.numberOfSensors" class="text-center slower-time" *ngIf="currentRankedSkier.elapsedTimeInSecondRunString.charAt(0) === '+'">{{ currentRankedSkier.elapsedTimeInSecondRunString }}</td>
-                <td [attr.colspan]="race.numberOfSensors" class="text-center" *ngIf="currentRankedSkier.elapsedTimeInSecondRunString.charAt(0) !== '-' && currentRankedSkier.elapsedTimeInSecondRunString.charAt(0) !== '+'">{{ currentRankedSkier.elapsedTimeInSecondRunString }}</td>
+                <td [attr.colspan]="race.numberOfSensors" class="text-center faster-time" *ngIf="rs.elapsedTimeInSecondRunString.length > 0 && rs.elapsedTimeInSecondRunString.charAt(0) === '-'">{{ rs.elapsedTimeInSecondRunString }}</td>
+                <td [attr.colspan]="race.numberOfSensors" class="text-center slower-time" *ngIf="rs.elapsedTimeInSecondRunString.length > 0 && rs.elapsedTimeInSecondRunString.charAt(0) === '+'">{{ rs.elapsedTimeInSecondRunString }}</td>
+                <td [attr.colspan]="race.numberOfSensors" class="text-center" *ngIf="rs.elapsedTimeInSecondRunString.length > 0 && rs.elapsedTimeInSecondRunString.charAt(0) !== '-' && rs.elapsedTimeInSecondRunString.charAt(0) !== '+'">{{ rs.elapsedTimeInSecondRunString }}</td>
                 
-                <td rowspan="2" class="text-center-vertically">{{ currentRankedSkier.elapsedTotalTimeString }}</td>
+                <td rowspan="2" class="text-center-vertically">{{ rs.elapsedTotalTimeString }}</td>
             </tr>
             <tr>
-                <ng-container *ngFor="let currentMeasurementString of currentRankedSkier.elapsedMeasurementStringsInFirstRun">
-                    <td class="text-center" class="text-center faster-time" *ngIf="currentMeasurementString.charAt(0) === '-'">{{ currentMeasurementString }}</td>
-                    <td class="text-center" class="text-center slower-time" *ngIf="currentMeasurementString.charAt(0) === '+'">{{ currentMeasurementString }}</td>
-                    <td class="text-center" class="text-center" *ngIf="currentMeasurementString.charAt(0) !== '-' && currentMeasurementString.charAt(0) !== '+'">{{ currentMeasurementString }}</td>
+                <ng-container *ngFor="let ms of rs.elapsedMeasurementStringsInFirstRun">
+                    <td class="text-center" class="text-center faster-time" *ngIf="ms.charAt(0) === '-'">{{ ms }}</td>
+                    <td class="text-center" class="text-center slower-time" *ngIf="ms.charAt(0) === '+'">{{ ms }}</td>
+                    <td class="text-center" class="text-center" *ngIf="ms.charAt(0) !== '-' && ms.charAt(0) !== '+'">{{ ms }}</td>
                 </ng-container>
 
-                <ng-container *ngFor="let currentMeasurementString of currentRankedSkier.elapsedMeasurementStringsInSecondRun">
-                    <td class="text-center" class="text-center faster-time" *ngIf="currentMeasurementString.charAt(0) === '-'">{{ currentMeasurementString }}</td>
-                    <td class="text-center" class="text-center slower-time" *ngIf="currentMeasurementString.charAt(0) === '+'">{{ currentMeasurementString }}</td>
-                    <td class="text-center" class="text-center" *ngIf="currentMeasurementString.charAt(0) !== '-' && currentMeasurementString.charAt(0) !== '+'">{{ currentMeasurementString }}</td>
+                <ng-container *ngFor="let ms of rs.elapsedMeasurementStringsInSecondRun">
+                    <td class="text-center" class="text-center faster-time" *ngIf="ms.charAt(0) === '-'">{{ ms }}</td>
+                    <td class="text-center" class="text-center slower-time" *ngIf="ms.charAt(0) === '+'">{{ ms }}</td>
+                    <td class="text-center" class="text-center" *ngIf="ms.charAt(0) !== '-' && ms.charAt(0) !== '+'">{{ ms }}</td>
                 </ng-container>
             </tr>
         </tbody>
