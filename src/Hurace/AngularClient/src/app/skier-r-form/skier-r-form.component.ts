@@ -1,16 +1,17 @@
-import { Skier, ConverterClient, Sex, Country, AssociatedOfSex } from './../converter.client';
+import { Skier, ConverterClient, Sex, Country, AssociatedOfSex } from '../converter.client';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { SkierFormErrorMessages } from './skier-form-error-messages';
+import { SkierFormErrorMessages } from './skier-r-form-error-messages';
 import { SkierClass, AssociatedOfCountryClass, AssociatedOfSexClass } from '../shared/classes';
 import { count } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-skier-form',
-  templateUrl: './skier-form.component.html',
-  styleUrls: ['./skier-form.component.css']
+  selector: 'app-skier-r-form',
+  templateUrl: './skier-r-form.component.html',
+  styleUrls: ['./skier-r-form.component.css']
 })
-export class SkierFormComponent implements OnInit {
+export class SkierRFormComponent implements OnInit {
 
   @ViewChild('myForm', {static: true}) myForm: NgForm;
   skier: Skier = new SkierClass();
@@ -18,7 +19,9 @@ export class SkierFormComponent implements OnInit {
   countries: Country[] = [];
   errors: { [key: string]: string } = {};
 
-  constructor(private converterClient: ConverterClient) {
+  constructor(private route: ActivatedRoute,
+              private router: Router,
+              private converterClient: ConverterClient) {
 
   }
 
@@ -27,13 +30,21 @@ export class SkierFormComponent implements OnInit {
     this.skier.sex = new AssociatedOfSexClass();
     this.myForm.statusChanges.subscribe(() => this.updateErrorMessages());
     this.retrieveData();
+    const id = this.route.snapshot.params['id'];
+    if (id) {
+      this.converterClient.getSkierById(id).subscribe(res => {
+        this.skier = res;
+      });
+    }
   }
 
   submitForm() {
+
     this.converterClient.createSkier(this.skier).subscribe(res => {
       this.skier = res;
       this.myForm.reset(this.skier);
     });
+
     alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.skier, null, 4));
     // create skier
     /*this.bs.create(this.book).subscribe(res => {

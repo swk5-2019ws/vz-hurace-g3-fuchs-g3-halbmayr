@@ -6,6 +6,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { AuthGuard } from './auth.guard';
 import { SkierListComponent } from './skier-list/skier-list.component';
 import { SkierFormComponent } from './skier-form/skier-form.component';
+import { SkierRFormComponent } from './skier-r-form/skier-r-form.component';
 
 
 const routes: Routes = [
@@ -29,6 +30,11 @@ const routes: Routes = [
   {
     path: 'admin',
     component: SkierFormComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'adminR/:id',
+    component: SkierRFormComponent,
     canActivate: [AuthGuard]
   }
 ];

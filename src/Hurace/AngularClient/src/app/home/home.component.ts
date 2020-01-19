@@ -4,24 +4,7 @@ import { ConverterClient, Race} from '../converter.client';
 
 @Component({
   selector: 'app-home',
-  template: `
-  <div clas="ui container two column grid">
-    <div class="ui container column">
-      <h1>Home</h1>
-      <p>Hurace</p>
-      <div class="card-header bg-info text-center text-white">
-      <h1>Race Demo</h1>
-    </div>
-    <div class="card-body">
-      <ul class="races">
-        <li *ngFor="let race of races">
-          <span class="badge">{{race.id}}</span> {{race.venue.reference.name}}
-        </li>
-      </ul>
-    </div>
-    </div>
-  </div>
-  `,
+  templateUrl: './home.component.html',
   styles: []
 })
 export class HomeComponent implements OnInit {

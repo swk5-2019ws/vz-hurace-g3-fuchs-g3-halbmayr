@@ -33,7 +33,7 @@
     <td>Geburtsdatum</td>
     <td>Herkunft</td>
     <td>Geschlecht</td>
-    <td>Edit</td>
+    <td *ngIf="auth.loggedIn">Edit</td>
   </tr>
 </thead>
 <tr *ngFor="let skier of foundSkiers">
@@ -43,7 +43,7 @@
   <td>{{getDate(skier).toDateString()}}</td>
   <td>{{skier.country.reference.name}}</td>
   <td>{{skier.sex.reference.label}}</td>
-  <td></td>
+  <td *ngIf="auth.loggedIn"><i style="cursor: pointer" [routerLink]="['/../adminR', skier?.id]" class="edit icon"></i></td>
 </tr>
 </table>
 </div>

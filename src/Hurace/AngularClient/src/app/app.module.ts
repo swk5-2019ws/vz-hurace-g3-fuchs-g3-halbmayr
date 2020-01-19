@@ -14,6 +14,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { SkierListComponent } from './skier-list/skier-list.component';
 import { SkierListItemComponent } from './skier-list-item/skier-list-item.component';
 import { SkierFormComponent } from './skier-form/skier-form.component';
+import { SkierRFormComponent } from './skier-r-form/skier-r-form.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { SkierFormComponent } from './skier-form/skier-form.component';
     ProfileComponent,
     SkierListComponent,
     SkierListItemComponent,
-    SkierFormComponent
+    SkierFormComponent,
+    SkierRFormComponent
   ],
   imports: [
     BrowserModule,
