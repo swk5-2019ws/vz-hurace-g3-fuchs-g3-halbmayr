@@ -3,7 +3,7 @@ using System.Data;
 
 namespace Hurace.Core.Db.Utilities
 {
-    public class RowMapper<T> where T : new()
+    public sealed class RowMapper<T> where T : new()
     {
         /// <summary>
         /// Generic Map implementation that takes a single result-row and maps the single columns

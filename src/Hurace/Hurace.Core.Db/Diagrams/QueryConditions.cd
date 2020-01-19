@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Hurace.Core.Db.Queries.QueryCondition" BaseTypeListCollapsed="true">
-    <Position X="5" Y="3" Width="1.5" />
+    <Position X="3.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAgAAAACAAAAAAAAAACIAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Queries\QueryCondition.cs</FileName>
@@ -9,27 +9,35 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Hurace.Core.Db.Queries.QueryConditionBuilder">
-    <Position X="0.5" Y="0.5" Width="2" />
+    <Position X="7.75" Y="2.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAEQAAAAAAAAAAAAAgAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAEQAAAAAAAAAEAAEgAAAAAAgAAAABAAAAAAAAA=</HashCode>
       <FileName>Queries\QueryConditionBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Hurace.Core.Db.Queries.QueryConditionNode" BaseTypeListCollapsed="true">
-    <Position X="2.75" Y="3.25" Width="1.75" />
-    <AssociationLine Name="FirstCondition" Type="Hurace.Core.Db.Queries.IQueryCondition">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.609" Y="0.414" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="SecondCondition" Type="Hurace.Core.Db.Queries.IQueryCondition" FixedFromPoint="true" FixedToPoint="true">
+    <Position X="1.5" Y="3.5" Width="1.75" />
+    <AssociationLine Name="FirstCondition" Type="Hurace.Core.Db.Queries.IQueryCondition" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.375" Y="3.25" />
-        <Point X="3.375" Y="1.552" />
-        <Point X="3.75" Y="1.552" />
+        <Point X="3" Y="3.5" />
+        <Point X="3" Y="2.552" />
+        <Point X="2.875" Y="2.552" />
+        <Point X="2.875" Y="1.603" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.109" Y="-0.742" />
+        <Position X="-0.473" Y="0.497" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="SecondCondition" Type="Hurace.Core.Db.Queries.IQueryCondition" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.5" Y="4" />
+        <Point X="1.25" Y="4" />
+        <Point X="1.25" Y="3.073" />
+        <Point X="1.875" Y="3.073" />
+        <Point X="1.875" Y="1.603" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.682" Y="0.206" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -42,29 +50,37 @@
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="Hurace.Core.Db.Extensions.QueryParameterListExtensions">
-    <Position X="6.25" Y="1" Width="2.25" />
+  <Class Name="Hurace.Core.Db.Queries.QueryParameter">
+    <Position X="7.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Extensions\QueryParameterListExtensions.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAgAAAAAAA=</HashCode>
+      <FileName>Queries\QueryParameter.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Hurace.Core.Db.Queries.StaticQueryCondition" BaseTypeListCollapsed="true">
+    <Position X="3.5" Y="1.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Queries\StaticQueryCondition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Interface Name="Hurace.Core.Db.Queries.IQueryCondition">
-    <Position X="3.75" Y="1" Width="1.75" />
+    <Position X="1.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Queries\IQueryCondition.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Enum Name="Hurace.Core.Db.Queries.QueryConditionNodeType">
-    <Position X="0.5" Y="3.5" Width="2" />
+    <Position X="1.25" Y="5.25" Width="2" />
     <TypeIdentifier>
       <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
       <FileName>Queries\QueryConditionNodeType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Hurace.Core.Db.Queries.QueryConditionType">
-    <Position X="6.75" Y="3" Width="1.75" />
+    <Position X="5.25" Y="3.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>ACAACAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAQJACA=</HashCode>
       <FileName>Queries\QueryConditionType.cs</FileName>

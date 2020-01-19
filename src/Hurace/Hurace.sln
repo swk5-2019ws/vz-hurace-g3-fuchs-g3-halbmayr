@@ -14,12 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hurace.Db", "Hurace.Db", "{863248A7-DC90-461E-8B40-CFC0FA697019}"
-	ProjectSection(SolutionItems) = preProject
-		Hurace.Db\HuraceDb_dev.mdf = Hurace.Db\HuraceDb_dev.mdf
-		Hurace.Db\HuraceDb_dev_log.ldf = Hurace.Db\HuraceDb_dev_log.ldf
-		Hurace.Db\HuraceDb_test.mdf = Hurace.Db\HuraceDb_test.mdf
-		Hurace.Db\HuraceDb_test_log.ldf = Hurace.Db\HuraceDb_test_log.ldf
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Db", "Hurace.Core.Db\Hurace.Core.Db.csproj", "{06F756AC-02F0-4A92-B638-F0A9D5399C24}"
 EndProject
@@ -45,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Statistics", "H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Statistics.Tests", "Hurace.Core.Statistics.Tests\Hurace.Core.Statistics.Tests.csproj", "{35CA5516-55B7-4FC3-8E16-F9F253364490}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hurace.Core.Debugging", "Hurace.Core.Debugging\Hurace.Core.Debugging.csproj", "{33F401C4-FC5A-4FCE-AAA4-D308F221932D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hurace.Core.Debugging", "Hurace.Core.Debugging\Hurace.Core.Debugging.csproj", "{33F401C4-FC5A-4FCE-AAA4-D308F221932D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

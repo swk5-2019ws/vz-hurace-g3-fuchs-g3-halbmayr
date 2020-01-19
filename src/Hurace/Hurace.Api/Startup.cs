@@ -70,6 +70,8 @@ namespace Hurace.Api
 
             app.UseCors();
 
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

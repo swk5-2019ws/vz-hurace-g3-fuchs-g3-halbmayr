@@ -13,7 +13,7 @@
       </Enum>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAACAAAAAgAAAAAAAAAAAAAIAAAACAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAEACAAAAAgAAAAAAAAAAAAAIAAAACAAAAAAAAAAA=</HashCode>
       <FileName>Associated.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -34,7 +34,7 @@
   <Class Name="Hurace.Domain.Race">
     <Position X="5.25" Y="5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAQAAAAYAgAQAAAAAAAAAAAAAACIABAgAAAAAAAAA=</HashCode>
+      <HashCode>AAAAQAAAAYAgAQAAAAAAAEAAAAAACIABAgAAAAAAAgA=</HashCode>
       <FileName>Race.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -99,6 +99,20 @@
     <TypeIdentifier>
       <HashCode>AAAAQEAAAAAABAAAAAAAAAAAAAIQAAAAAAAgAAAACAg=</HashCode>
       <FileName>Skier.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Domain.ProcessedTimeMeasurement">
+    <Position X="11" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAABAAAAQAAAAAAQAAAAAAA=</HashCode>
+      <FileName>ProcessedTimeMeasurement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Domain.RankedSkier">
+    <Position X="8.5" Y="8" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAABAACAAAQAAAAAAABAAAQAgAAAAAEAAAAEAACAAAA=</HashCode>
+      <FileName>RankedSkier.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hurace.Core.Db.Queries
 {
-    internal class StaticQueryCondition : IQueryCondition
+    internal sealed class StaticQueryCondition : IQueryCondition
     {
         private readonly bool alwaysTrue;
 
