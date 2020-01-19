@@ -42,6 +42,7 @@ export class SkierListComponent implements OnInit {
         this.converterClient.getAllSkiers().subscribe(skiers => {
             localStorage.setItem('skiers', JSON.stringify(skiers));
             this.skiers = skiers;
+            this.skiers.sort((a, b) => a.lastName.localeCompare(b.lastName));
             this.foundSkiers = skiers;
         }, error => {
             // handle errors
@@ -52,6 +53,8 @@ export class SkierListComponent implements OnInit {
         this.converterClient.getAllSkiers().subscribe(skiers => {
           localStorage.setItem('skiers', JSON.stringify(skiers));
           this.skiers = skiers;
+          this.skiers.sort((a, b) => a.lastName.localeCompare(b.lastName));
+          this.foundSkiers = skiers;
           }, error => {
           // handle errorss
         });

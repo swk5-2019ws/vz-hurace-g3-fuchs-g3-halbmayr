@@ -1,0 +1,48 @@
+
+<div *ngIf="loading">
+  <div class="ui active dimmer">
+    <div class="ui text loader">Loading</div>
+  </div>
+</div>
+
+<div *ngIf="!loading" >
+  <div class="ui center aligned segment">
+  <h1>{{race.venue.reference.name}} - {{race.season.reference.name}}</h1>
+  <h2>{{convertDate(race.date).toLocaleDateString()}}</h2>
+  </div>
+
+  <div class="ui segment">
+    <table class="ui striped celled structured table">
+      <thead>
+        <tr>
+          <th rowspan="1">Rang</th>
+          <th rowspan="1">Name</th>
+          <th rowspan="1">GesamtZeit</th>
+          <th rowspan="1" class="center aligned" [attr.colspan]="race.numberOfSensors">Zeiten Durchgang 1</th>
+          <th rowspan="1" class="center aligned" [attr.colspan]="race.numberOfSensors">Zeiten Durchgang 2</th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let skier of rankedSkiers" >
+        <tr>
+          <td rowspan="2">{{skier.rank}}</td>
+          <td rowspan="2">{{skier.firstName}} {{skier.lastName}}</td>
+          <td rowspan="2">{{skier.elapsedTotalTimeString}}</td>
+          <td class="center aligned" [attr.colspan]="race.numberOfSensors"
+          [style.color]="skier.elapsedTimeInFirstRunString.charAt(0) == '+' ? '#f59987' : skier.elapsedTimeInFirstRunString.charAt(0) == '-' ? '#00cc66' : '' " >
+            {{skier.elapsedTimeInFirstRunString}}
+          </td>
+          <td class="center aligned" [attr.colspan]="race.numberOfSensors"
+          [style.color]="skier.elapsedTimeInSecondRunString.charAt(0) == '+' ? '#f59987' : skier.elapsedTimeInSecondRunString.charAt(0) == '-' ? '#00cc66' : '' " >
+            {{skier.elapsedTimeInSecondRunString}}
+          </td>
+        </tr>
+        <tr>
+          <td *ngFor="let time of skier.elapsedMeasurementStringsInFirstRun"
+            [style.color]="time.charAt(0) == '+' ? '#f59987' : time.charAt(0) == '-' ? '#00cc66' : '' " >{{time}}</td>
+          <td *ngFor="let time of skier.elapsedMeasurementStringsInSecondRun"
+            [style.color]="time.charAt(0) == '+' ? '#f59987' : time.charAt(0) == '-' ? '#00cc66' : '' " >{{time}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

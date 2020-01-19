@@ -1,3 +1,4 @@
+import { SeasonsComponent } from './seasons/seasons.component';
 import { environment } from './../environments/environment.prod';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -15,6 +16,7 @@ import { SkierListComponent } from './skier-list/skier-list.component';
 import { SkierListItemComponent } from './skier-list-item/skier-list-item.component';
 import { SkierFormComponent } from './skier-form/skier-form.component';
 import { SkierRFormComponent } from './skier-r-form/skier-r-form.component';
+import { RaceComponent } from './race/race.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { SkierRFormComponent } from './skier-r-form/skier-r-form.component';
     SkierListComponent,
     SkierListItemComponent,
     SkierFormComponent,
-    SkierRFormComponent
+    SkierRFormComponent,
+    SeasonsComponent,
+    RaceComponent
   ],
   imports: [
     BrowserModule,

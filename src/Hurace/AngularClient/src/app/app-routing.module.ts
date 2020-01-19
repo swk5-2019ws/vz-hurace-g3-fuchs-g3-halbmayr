@@ -1,3 +1,5 @@
+import { RaceComponent } from './race/race.component';
+import { SeasonsComponent } from './seasons/seasons.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -36,6 +38,14 @@ const routes: Routes = [
     path: 'adminR/:id',
     component: SkierRFormComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'seasons',
+    component: SeasonsComponent
+  },
+  {
+    path: 'race/:id',
+    component: RaceComponent
   }
 ];
 

@@ -1,0 +1,11 @@
+<p>seasons works!</p>
+<div *ngFor="let season of seasons" >
+<p>
+  {{season.name}} {{convertDate(season.startDate)}} {{convertDate(season.endDate)}}</p>
+  <div *ngFor="let raceType of raceTypes" >
+  <p>--{{raceType.label}}</p>
+  <div *ngFor="let race of races" >
+  <p *ngIf="raceType.id == race.raceType.reference.id" >----{{race.venue.reference.name}}</p>
+  </div>
+  </div>
+</div>
