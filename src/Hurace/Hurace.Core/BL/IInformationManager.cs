@@ -27,9 +27,11 @@ namespace Hurace.Core.BL
             Domain.Associated<Domain.Skier>.LoadingType skierLoadingType = Domain.Associated<Domain.Skier>.LoadingType.None,
             Domain.Associated<Domain.Sex>.LoadingType skierSexLoadingType = Domain.Associated<Domain.Sex>.LoadingType.None,
             Domain.Associated<Domain.Country>.LoadingType skierCountryLoadingType = Domain.Associated<Domain.Country>.LoadingType.None);
+        Task<bool> WasRaceNeverStartedAsync(int raceId);
 
         Task DeleteRaceAsync(int raceId);
-        Task GenerateSecondStartList(int raceId);
+        Task GenerateSecondStartList(Domain.RaceData raceData);
+        Task<bool> SecondStartlistExisting(Domain.RaceData raceData);
 
         Task<Domain.RaceData> GetRaceDataByRaceAndStartlistAndPositionAsync(
             Domain.Race race,
@@ -37,6 +39,7 @@ namespace Hurace.Core.BL
             int position,
             Domain.Associated<Domain.RaceState>.LoadingType raceStateLoadingType = Domain.Associated<Domain.RaceState>.LoadingType.Reference);
         Task<bool> UpdateRaceStateOfRaceDataAsync(Domain.RaceData raceData);
+        Task<Domain.RaceData> GetRaceDataByStartPositionDOAsync(Domain.StartPosition currentStartPosition);
         Task<IEnumerable<Domain.RankedSkier>> GetRankedSkiersOfRaceAsync(int raceId);
 
         Task<IEnumerable<Domain.RaceState>> GetAllRaceStatesAsync();
