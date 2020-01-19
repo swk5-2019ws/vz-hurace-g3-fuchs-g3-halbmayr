@@ -1,1 +1,0 @@
-ng build --prod --output-path ../Hurace.Api/wwwroot
