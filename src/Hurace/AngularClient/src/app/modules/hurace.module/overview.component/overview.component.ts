@@ -79,7 +79,16 @@ export class OverviewComponent implements OnInit {
   
     this.apiService.getRacesByFilter(raceFilter)
       .subscribe(raceList => {
-        this.races = raceList;
+        this.races = raceList.sort((r1, r2) => {
+          let d1 = new Date(r1.date);
+          let d2 = new Date(r2.date);
+          
+          if (d1.getTime() === d2.getTime()){
+            return r1.venue.reference.name.localeCompare(r2.venue.reference.name);
+          } else {
+            return d1.getTime() - d2.getTime();
+          }
+        });
         this.racesLoading = false;
       });
   }
