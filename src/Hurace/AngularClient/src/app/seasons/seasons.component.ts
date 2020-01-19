@@ -37,4 +37,15 @@ export class SeasonsComponent implements OnInit {
     return new Date(date);
   }
 
+  getCountForSeasonAndType(season: Season, type: RaceType): number{
+    let num = 0;
+
+    this.races.forEach(race => {
+      if(race.season.reference.id === season.id && race.raceType.reference.id === type.id){
+        num++;
+      }
+    });
+    return num;
+  }
+
 }

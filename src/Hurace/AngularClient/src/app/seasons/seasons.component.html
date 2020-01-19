@@ -1,11 +1,32 @@
-<p>seasons works!</p>
-<div *ngFor="let season of seasons" >
-<p>
-  {{season.name}} {{convertDate(season.startDate)}} {{convertDate(season.endDate)}}</p>
-  <div *ngFor="let raceType of raceTypes" >
-  <p>--{{raceType.label}}</p>
-  <div *ngFor="let race of races" >
-  <p *ngIf="raceType.id == race.raceType.reference.id" >----{{race.venue.reference.name}}</p>
-  </div>
+
+<div class="ui two column centered grid">
+  <div class="column"></div>
+  <div class="four column centered row">
+    <div class="column"></div>
+    <div class="column"></div>
   </div>
 </div>
+
+<div *ngFor="let season of seasons" class="center aligned item">
+  <div class="ui two column centered grid">
+    <div class="column">
+      <h1>{{season.name}} ({{convertDate(season.startDate).toLocaleDateString()}} - {{convertDate(season.endDate).toLocaleDateString()}}) </h1>
+    </div>
+    <div class="four column centered row">
+    <div *ngFor="let raceType of raceTypes" class="column">
+    <h2>{{raceType.label}}</h2>
+      <div *ngFor="let race of races">
+        <div *ngIf="raceType.id == race.raceType.reference.id && race.season.reference.id == season.id" class="ui relaxed divided list">
+          <div class="item">
+            <div class="content">
+              <a class="header"  [routerLink]="['/../race', race.id]"> {{race.venue.reference.name}} - {{race.raceType.reference.label}}</a>
+              <div class="description">{{convertDate(race.date).toLocaleDateString()}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+</div>
+

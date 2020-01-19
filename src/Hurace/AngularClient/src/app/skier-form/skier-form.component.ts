@@ -1,6 +1,6 @@
 import { Skier, ConverterClient, Sex, Country, AssociatedOfSex } from './../converter.client';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SkierFormErrorMessages } from './skier-form-error-messages';
 import { SkierClass, AssociatedOfCountryClass, AssociatedOfSexClass } from '../shared/classes';
 import { count } from 'rxjs/operators';
@@ -17,8 +17,10 @@ export class SkierFormComponent implements OnInit {
   sexes: Sex[] = [];
   countries: Country[] = [];
   errors: { [key: string]: string } = {};
+  registerForm: FormGroup;
+  submitted = false;
 
-  constructor(private converterClient: ConverterClient) {
+  constructor(private converterClient: ConverterClient, private formBuilder: FormBuilder) {
 
   }
 
@@ -27,9 +29,28 @@ export class SkierFormComponent implements OnInit {
     this.skier.sex = new AssociatedOfSexClass();
     this.myForm.statusChanges.subscribe(() => this.updateErrorMessages());
     this.retrieveData();
+
+    this.registerForm = this.formBuilder.group({
+      title: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+      acceptTerms: [false, Validators.requiredTrue]
+    });
   }
 
+  get f() { return this.registerForm.controls; }
+
   submitForm() {
+    /*this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.registerForm.invalid) {
+        return;
+    }*/
+
     this.converterClient.createSkier(this.skier).subscribe(res => {
       this.skier = res;
       this.myForm.reset(this.skier);

@@ -12,6 +12,7 @@ export class RaceComponent implements OnInit {
   race: Race;
   rankedSkiers: RankedSkier[] = [];
   loading: boolean;
+  raceActive: boolean;
 
   constructor(private converterClient: ConverterClient, private route: ActivatedRoute) {
     this.loading = true;
@@ -19,6 +20,7 @@ export class RaceComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.params.id;
+
     if (id) {
       this.converterClient.getRaceById(id).subscribe(res => {
         this.race = res;
@@ -29,6 +31,14 @@ export class RaceComponent implements OnInit {
       });
     }
   }
+
+  /*ngOnDestroy(){
+    if(this.inLiveMode){
+      this.pollUpdate.unsubscribe();
+    }
+  }*/
+
+
 
   convertDate(date: any): Date {
     return new Date(date);
