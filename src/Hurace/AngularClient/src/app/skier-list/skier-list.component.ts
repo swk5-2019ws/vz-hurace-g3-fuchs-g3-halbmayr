@@ -39,7 +39,7 @@ export class SkierListComponent implements OnInit {
   retrieveData() {
     let data = JSON.parse(localStorage.getItem('skiers'));
     if (data === null){
-        this.converterClient.returns_all_skiers().subscribe(skiers => {
+        this.converterClient.getAllSkiers().subscribe(skiers => {
             localStorage.setItem('skiers', JSON.stringify(skiers));
             this.skiers = skiers;
             this.foundSkiers = skiers;
@@ -50,5 +50,8 @@ export class SkierListComponent implements OnInit {
         this.skiers = data;
         this.foundSkiers = data;
     }
+  }
+  getDate(skier: Skier): Date{
+    return new Date(skier.dateOfBirth);
   }
 }

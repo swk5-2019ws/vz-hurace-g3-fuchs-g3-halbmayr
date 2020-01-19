@@ -8,7 +8,7 @@
 </div>-->
 
 
-<div class="ui image portrait" *ngIf="skier.imageUrl">
+<!--<div class="ui image portrait" *ngIf="skier.imageUrl">
   <img [src]="skier.imageUrl">
 </div>
 <div class="content">
@@ -22,4 +22,12 @@
   <div *ngIf="auth.loggedIn" >
     <i class="edit icon"></i>
   </div>
-</div>
+</div>-->
+
+<td><img [src]="skier.imageUrl"></td>
+<td>{{skier.firstName}}</td>
+<td>{{skier.lastName}}</td>
+<td>{{date}}</td>
+<td>{{skier.country.reference.name}}</td>
+<td>{{skier.sex.reference.label}}</td>
+<td></td>

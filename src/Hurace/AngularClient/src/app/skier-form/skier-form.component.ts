@@ -1,8 +1,9 @@
-import { Skier, ConverterClient, Sex, Country } from './../converter.client';
+import { Skier, ConverterClient, Sex, Country, AssociatedOfSex } from './../converter.client';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { SkierFormErrorMessages } from './skier-form-error-messages';
-import { SkierClass } from '../shared/classes';
+import { SkierClass, AssociatedOfCountryClass, AssociatedOfSexClass } from '../shared/classes';
+import { count } from 'rxjs/operators';
 
 @Component({
   selector: 'app-skier-form',
@@ -22,12 +23,16 @@ export class SkierFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.skier.country = new AssociatedOfCountryClass();
+    this.skier.sex = new AssociatedOfSexClass();
     this.myForm.statusChanges.subscribe(() => this.updateErrorMessages());
+    this.retrieveData();
   }
 
   submitForm() {
 
-    this.converterClient.creates_a_new_skier(this.skier).subscribe(res => {
+    alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.skier, null, 4));
+    /*this.converterClient.createSkier(this.skier).subscribe(res => {
       this.skier = new SkierClass();
       this.myForm.reset(this.skier);
     });
@@ -52,20 +57,24 @@ export class SkierFormComponent implements OnInit {
     }
   }
 
-  // retrieveData() {
-  //   let data = JSON.parse(localStorage.getItem('skiers'));
-  //   if (data === null){
-  //       this.converterClient.returns_all_skiers().subscribe(skiers => {
-  //           localStorage.setItem('skiers', JSON.stringify(skiers));
-  //           this.skiers = skiers;
-  //           this.foundSkiers = skiers;
-  //       }, error => {
-  //           // handle errors
-  //       });
-  //   } else {
-  //       this.skiers = data;
-  //       this.foundSkiers = data;
-  //   }
-  // }
+  retrieveData() {
+    let dataSexes = JSON.parse(localStorage.getItem('sexes'));
+    let dataCountries = JSON.parse(localStorage.getItem('countries'));
+    if (dataSexes === null || dataCountries === null) {
+        this.converterClient.getAllSexes().subscribe(sexes => {
+            localStorage.setItem('sexes', JSON.stringify(sexes));
+            this.sexes = sexes;
+        }, error => {
+            // handle errors
+        });
+        this.converterClient.getAllCountries().subscribe(countries => {
+          localStorage.setItem('countries', JSON.stringify(countries));
+          this.countries = countries;
+        })
+    } else {
+        this.sexes = dataSexes;
+        this.countries = dataCountries;
+    }
+  }
 
 }

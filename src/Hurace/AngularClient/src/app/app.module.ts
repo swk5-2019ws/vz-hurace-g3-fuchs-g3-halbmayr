@@ -5,6 +5,7 @@ import { ConverterClient, HURACE_SERVICE_BASE_URL } from './converter.client';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -29,6 +30,7 @@ import { SkierFormComponent } from './skier-form/skier-form.component';
     HttpClientModule,
     FormsModule,
     AppRoutingModule,
+    ReactiveFormsModule
   ],
   providers: [
     ConverterClient,

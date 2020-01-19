@@ -16,10 +16,34 @@
       [routerLink]="skier.id">
   </a>
 </div>-->
-<div class="ui cards">
+<!--<div class="ui cards">
   <div class="app-skier-list-item ui card"
       *ngFor="let skier of foundSkiers"
       [skier]="skier"
       [routerLink]="skier.id">
   </div>
+</div>-->
+<div class="ui segment">
+<table class="ui striped selectable inverted table">
+  <thead>
+  <tr>
+    <td>Bild</td>
+    <td>Vorname</td>
+    <td>Nachname</td>
+    <td>Geburtsdatum</td>
+    <td>Herkunft</td>
+    <td>Geschlecht</td>
+    <td>Edit</td>
+  </tr>
+</thead>
+<tr *ngFor="let skier of foundSkiers">
+  <td><img class="ui tiny image"[src]="skier.imageUrl"></td>
+  <td>{{skier.firstName}}</td>
+  <td>{{skier.lastName}}</td>
+  <td>{{getDate(skier).toDateString()}}</td>
+  <td>{{skier.country.reference.name}}</td>
+  <td>{{skier.sex.reference.label}}</td>
+  <td></td>
+</tr>
+</table>
 </div>

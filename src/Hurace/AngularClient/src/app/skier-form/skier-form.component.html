@@ -39,14 +39,20 @@
 
   <div class="field">
     <label>Nationalität</label>
-    <input
+    <select name="country" [(ngModel)]="skier.country.reference">
+      <option value="" disabled>Nationalität auswählen</option>
+      <option *ngFor="let country of countries" [ngValue]="country">{{country.name}}</option>
+   </select>
+    <!--<input
       name="country"
-      [(ngModel)]="skier.country"
-      required>
+      [(ngModel)]="skier.country.reference"
+      required>-->
     <div *ngIf="errors.country" class="ui negative message">
       {{ errors.publisher }}
     </div>
   </div>
+
+<!--<p>skier countr: {{skier.country.reference.name}}</p>-->
 
   <div class="field">
     <label>Bild</label>
@@ -61,13 +67,17 @@
 
   <div class="field">
     <label>Geschlecht</label>
-    <input
+    <select name="sex" [(ngModel)]="skier.sex.reference">
+      <option value="" disabled>Geschlecht auswählen</option>
+      <option *ngFor="let sex of sexes" [ngValue]="sex">{{sex.label}}</option>
+   </select>
+    <!--<input
       name="sex"
       [(ngModel)]="skier.sex"
       required>
     <div *ngIf="errors.id" class="ui negative message">
       {{ errors.id }}
-    </div>
+    </div>-->
   </div>
 
   <button type="submit" class="ui button" [disabled]="myForm.invalid">Speichern</button>

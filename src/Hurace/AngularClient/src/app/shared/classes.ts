@@ -12,13 +12,13 @@ export class SkierClass implements Skier {
   sex?: AssociatedOfSex) {}
 }
 
-class AssociatedOfCountryClass implements AssociatedOfCountry{
+export class AssociatedOfCountryClass implements AssociatedOfCountry{
   foreignKey?: number | undefined;
   reference?: Country | undefined;
   initialised?: boolean;
 }
 
-class AssociatedOfSexClass implements AssociatedOfSex{
+export class AssociatedOfSexClass implements AssociatedOfSex{
   foreignKey?: number | undefined;
   reference?: Sex | undefined;
   initialised?: boolean;

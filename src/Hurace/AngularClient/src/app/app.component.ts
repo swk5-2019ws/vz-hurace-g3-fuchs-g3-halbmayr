@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   constructor(private converterClient: ConverterClient) {}
 
   ngOnInit(): void {
-    this.converterClient.returns_all_races()
+    this.converterClient.getAllRaces()
       .subscribe(raceList => {
         this.races = raceList;
       });
