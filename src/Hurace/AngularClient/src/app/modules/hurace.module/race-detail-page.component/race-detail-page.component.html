@@ -4,6 +4,7 @@
         <h1 class="race-item-venue-name">{{ race.venue.reference.name }}</h1>
         <record-icon *ngIf="race.overallRaceState.reference.id === 3"></record-icon>
     </div>
+    <p>{{ race.description }}</p>
 </ng-container>
 
 <div class="mt-3">
