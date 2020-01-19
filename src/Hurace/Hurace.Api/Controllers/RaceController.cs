@@ -36,7 +36,7 @@ namespace Hurace.Api.Controllers
             return Ok(await informationManager.GetAllRacesAsync(
                     raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
                     venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.None)
+                    seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
                 .ConfigureAwait(false));
         }
 

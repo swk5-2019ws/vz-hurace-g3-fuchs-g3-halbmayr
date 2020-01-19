@@ -44,7 +44,7 @@ const routes: Routes = [
     component: SeasonsComponent
   },
   {
-    path: 'race/:id',
+    path: 'race/:id/:state',
     component: RaceComponent
   }
 ];

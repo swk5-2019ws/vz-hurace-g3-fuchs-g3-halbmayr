@@ -1,9 +1,8 @@
-import { Skier, ConverterClient, Sex, Country, AssociatedOfSex } from './../converter.client';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SkierFormErrorMessages } from './skier-form-error-messages';
+import { Skier, ConverterClient, Sex, Country } from './../converter.client';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SkierClass, AssociatedOfCountryClass, AssociatedOfSexClass } from '../shared/classes';
-import { count } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-skier-form',
@@ -12,12 +11,11 @@ import { count } from 'rxjs/operators';
 })
 export class SkierFormComponent implements OnInit {
 
-  @ViewChild('myForm', {static: true}) myForm: NgForm;
   skier: Skier = new SkierClass();
   sexes: Sex[] = [];
   countries: Country[] = [];
   errors: { [key: string]: string } = {};
-  registerForm: FormGroup;
+  skierForm: FormGroup;
   submitted = false;
 
   constructor(private converterClient: ConverterClient, private formBuilder: FormBuilder) {
@@ -25,35 +23,33 @@ export class SkierFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.skier.country = new AssociatedOfCountryClass();
-    this.skier.sex = new AssociatedOfSexClass();
-    this.myForm.statusChanges.subscribe(() => this.updateErrorMessages());
-    this.retrieveData();
-
-    this.registerForm = this.formBuilder.group({
-      title: ['', Validators.required],
+    this.skierForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
-      acceptTerms: [false, Validators.requiredTrue]
+      year: ['', Validators.required],
+      country: ['', Validators.required],
+      sex: ['', Validators.required],
+      image: ['', Validators.required]
     });
+
+    this.skier.country = new AssociatedOfCountryClass();
+    this.skier.sex = new AssociatedOfSexClass();
+    //this.myForm.statusChanges.subscribe(() => this.updateErrorMessages());
+    this.retrieveData();
   }
 
-  get f() { return this.registerForm.controls; }
+  get f() { return this.skierForm.controls; }
 
   submitForm() {
-    /*this.submitted = true;
+    this.submitted = true;
 
     // stop here if form is invalid
-    if (this.registerForm.invalid) {
+    if (this.skierForm.invalid) {
         return;
-    }*/
+    }
 
     this.converterClient.createSkier(this.skier).subscribe(res => {
       this.skier = res;
-      this.myForm.reset(this.skier);
     });
     alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.skier, null, 4));
     // create skier
@@ -63,7 +59,7 @@ export class SkierFormComponent implements OnInit {
     });*/
   }
 
-  updateErrorMessages() {
+  /*updateErrorMessages() {
     this.errors = {};
     for (const message of SkierFormErrorMessages) {
       const control = this.myForm.form.get(message.forControl);
@@ -75,7 +71,7 @@ export class SkierFormComponent implements OnInit {
         this.errors[message.forControl] = message.text;
       }
     }
-  }
+  }*/
 
   retrieveData() {
     let dataSexes = JSON.parse(localStorage.getItem('sexes'));
@@ -90,11 +86,18 @@ export class SkierFormComponent implements OnInit {
         this.converterClient.getAllCountries().subscribe(countries => {
           localStorage.setItem('countries', JSON.stringify(countries));
           this.countries = countries;
-        })
+        });
     } else {
         this.sexes = dataSexes;
         this.countries = dataCountries;
     }
   }
 
+  changeCountry(e) {
+    this.skier.country.reference = e.target.value;
+  }
+
+  changeSex(e) {
+    this.skier.sex.reference = e.target.value;
+  }
 }

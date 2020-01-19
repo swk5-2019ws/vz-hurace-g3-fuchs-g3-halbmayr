@@ -1,26 +1,26 @@
 <h1>Skierformular</h1>
-<form class="ui large form" #myForm="ngForm"
+<form class="ui large form" [formGroup]="skierForm"
   (ngSubmit)="submitForm()">
 
   <div class="field">
     <label>Vorname</label>
     <input
-      name="firstName"
+    formControlName="firstName"
       [(ngModel)]="skier.firstName"
-      required>
-    <div *ngIf="errors.firstName" class="ui negative message">
-      {{ errors.firstName }}
+      [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }">
+    <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
+      <div *ngIf="f.firstName.errors.required">Vorname ist erforderlich</div>
     </div>
   </div>
 
   <div class="field">
     <label>Nachname</label>
     <input
-      name="lastName"
+    formControlName="lastName"
       [(ngModel)]="skier.lastName"
-      required>
-    <div *ngIf="errors.lastName" class="ui negative message">
-      {{ errors.lastName }}
+      [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }">
+    <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
+      <div *ngIf="f.lastName.errors.required">Nachname ist erforderlich</div>
     </div>
   </div>
 
@@ -28,27 +28,38 @@
     <label>Geburtsdatum</label>
     <input
       type="date"
-      name="year"
+      formControlName="year"
       [(ngModel)]="skier.dateOfBirth"
       useValueAsDate
-      required>
-    <div *ngIf="errors.year" class="ui negative message">
-      {{ errors.year }}
+      [ngClass]="{ 'is-invalid': submitted && f.year.errors }">
+    <div *ngIf="submitted && f.year.errors" class="invalid-feedback">
+      <div *ngIf="f.year.errors.required">Geburtsdatum ist erforderlich</div>
     </div>
   </div>
 
   <div class="field">
     <label>Nationalität</label>
-    <select name="country" [(ngModel)]="skier.country.foreignKey">
-      <option value="" disabled>Nationalität auswählen</option>
-      <option *ngFor="let country of countries" [ngValue]="country.id">{{country.name}}</option>
+    <select formControlName="country"
+        [(ngModel)]="skier.country.foreignKey"
+        [ngClass]="{ 'is-invalid': submitted && f.country.errors }">
+      <option value="" disabled>Nationalität wählen...</option>
+      <option *ngFor="let country of countries" [ngValue]="country.id" (change)="changeCountry($event)">{{country.name}}</option>
    </select>
-    <!--<input
-      name="country"
-      [(ngModel)]="skier.country.reference"
-      required>-->
-    <div *ngIf="errors.country" class="ui negative message">
-      {{ errors.country }}
+    <div *ngIf="submitted && f.country?.errors" class="invalid-feedback">
+      <div *ngIf="f.country.errors.required">Nationalität ist erfordeerlich</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Geschlecht</label>
+    <select formControlName="sex"
+        [(ngModel)]="skier.sex.foreignKey"
+        [ngClass]="{ 'is-invalid': submitted && f.sex.errors }">
+      <option value="" disabled>Geschlecht wählen...</option>
+      <option *ngFor="let sex of sexes" [ngValue]="sex.id" (change)="changeSex($event)">{{sex.label}}</option>
+   </select>
+    <div *ngIf="submitted && f.sex?.errors" class="invalid-feedback">
+      <div *ngIf="f.sex.errors.required">Geschlecht ist erfordeerlich</div>
     </div>
   </div>
 
@@ -57,31 +68,13 @@
   <div class="field">
     <label>Bild</label>
     <input
-      name="image"
+    formControlName="image"
       [(ngModel)]="skier.imageUrl"
-      required>
-    <div *ngIf="errors.image" class="ui negative message">
-      {{ errors.image }}
+      [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
+    <div *ngIf="submitted && f.title.errors" class="invalid-feedback">
+      <div *ngIf="f.title.errors.required">Title is required</div>
     </div>
   </div>
 
-  <div class="field">
-    <label>Geschlecht</label>
-    <select name="sex" [(ngModel)]="skier.sex.foreignKey">
-      <option [ngValue]="skier.sex.foreignKey" disabled>Geschlecht auswählen</option>
-      <option *ngFor="let sex of sexes" [ngValue]="sex.id">{{sex.label}}</option>
-   </select>
-   <div *ngIf="errors.sex" class="ui negative message">
-    {{ errors.sex }}
-  </div>
-    <!--<input
-      name="sex"
-      [(ngModel)]="skier.sex"
-      required>
-    <div *ngIf="errors.id" class="ui negative message">
-      {{ errors.id }}
-    </div>-->
-  </div>
-
-  <button type="submit" class="ui button" [disabled]="myForm.invalid">Speichern</button>
+  <button type="submit" class="ui button" >Speichern</button>
 </form>

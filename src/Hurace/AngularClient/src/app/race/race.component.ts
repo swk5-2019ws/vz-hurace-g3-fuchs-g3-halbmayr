@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ConverterClient, Race, RankedSkier } from '../converter.client';
 import { ActivatedRoute } from '@angular/router';
+import { interval, Subscription } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-race',
@@ -13,6 +15,7 @@ export class RaceComponent implements OnInit {
   rankedSkiers: RankedSkier[] = [];
   loading: boolean;
   raceActive: boolean;
+  sub: Subscription;
 
   constructor(private converterClient: ConverterClient, private route: ActivatedRoute) {
     this.loading = true;
@@ -20,23 +23,36 @@ export class RaceComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.params.id;
-
     if (id) {
       this.converterClient.getRaceById(id).subscribe(res => {
         this.race = res;
-        this.converterClient.getRankedSkiersOfRace(id).subscribe(res => {
-          this.rankedSkiers = res;
-          this.loading = false;
-        });
+
+        if (this.race.overallRaceState.reference.id == 3){
+          this.raceActive = true;
+
+          this.sub = interval(5000).pipe(
+            startWith(0),
+            switchMap(() => this.converterClient.getRankedSkiersOfRace(id)))
+            .subscribe(res => {
+              this.rankedSkiers = res;
+              this.loading = false;
+            });
+        } else {
+          this.raceActive = false;
+          this.converterClient.getRankedSkiersOfRace(id).subscribe(res => {
+            this.rankedSkiers = res;
+            this.loading = false;
+          });
+        }
       });
     }
   }
 
-  /*ngOnDestroy(){
-    if(this.inLiveMode){
-      this.pollUpdate.unsubscribe();
+  ngOnDestroy(){
+    if(this.raceActive){
+      this.sub.unsubscribe();
     }
-  }*/
+  }
 
 
 

@@ -30,6 +30,8 @@ export class SeasonsComponent implements OnInit {
 
     this.converterClient.getAllRaces().subscribe(res => {
       this.races = res;
+      console.log(JSON.stringify(this.races));
+
     });
   }
 
