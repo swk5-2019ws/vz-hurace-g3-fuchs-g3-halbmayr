@@ -835,7 +835,11 @@ namespace Hurace.Core.BL
                 rankedSkierTimeSet.Add((rankedSkier, elapsedMeasurementsInFirstRun, elapsedMeasurementsInSecondRun));
             }
 
-            var orderedRankedSkierTimeSet = rankedSkierTimeSet.OrderBy(rst => rst.RankedSkier.ElapsedTotalTime).ToList();
+            var orderedRankedSkierTimeSet = rankedSkierTimeSet
+                .OrderBy(rst => rst.RankedSkier.ElapsedTotalTime)
+                .ThenBy(rst => rst.RankedSkier.ElapsedTimeInFirstRun)
+                .ThenBy(rst => rst.RankedSkier.ElapsedTimeInSecondRun)
+                .ToList();
 
             var counter = 1;
             foreach (var rankedSkier in orderedRankedSkierTimeSet.Select(rst => rst.RankedSkier))
@@ -853,14 +857,18 @@ namespace Hurace.Core.BL
                 var notFirstRankedSkier = rankedSkier.Rank != 1;
                 if (notFirstRankedSkier)
                 {
-                    if (rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue)
+                    if (rankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue &&
+                        bestRankedSkier.ElapsedTimeInFirstRun != TimeSpan.MaxValue)
+                    {
                         rankedSkier.ElapsedTimeInFirstRun -= bestRankedSkier.ElapsedTimeInFirstRun;
+                    }
 
                     elapsedMeasurementsInFirstRun = this.UpdateMeasurementsAccordingToBest(
                         elapsedMeasurementsInFirstRun,
                         bestElapsedMeasurementsInFirstRun);
 
-                    if (rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue)
+                    if (rankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue &&
+                        bestRankedSkier.ElapsedTimeInSecondRun != TimeSpan.MaxValue)
                         rankedSkier.ElapsedTimeInSecondRun -= bestRankedSkier.ElapsedTimeInSecondRun;
 
                     if (bestElapsedMeasurementsInSecondRun != null && elapsedMeasurementsInSecondRun != null)
@@ -888,6 +896,13 @@ namespace Hurace.Core.BL
                         elapsedMeasurementsInSecondRun,
                         bestElapsedMeasurementsInSecondRun,
                         notFirstRankedSkier);
+                }
+                else
+                {
+                    rankedSkier.ElapsedTimeInSecondRunString = "n/a";
+                    rankedSkier.ElapsedMeasurementStringsInSecondRun =
+                        Enumerable.Range(0, rankedSkier.ElapsedMeasurementStringsInFirstRun.Count())
+                            .Select(_ => "n/a");
                 }
 
                 rankedSkier.ElapsedTotalTimeString = rankedSkier.ElapsedTotalTime != TimeSpan.MaxValue

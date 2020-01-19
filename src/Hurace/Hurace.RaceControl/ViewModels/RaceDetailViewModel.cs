@@ -97,8 +97,8 @@ namespace Hurace.RaceControl.ViewModels
             int insertIndex = 0;
             if (this.Measurements.Count > 0)
             {
-                insertIndex = this.Measurements.ToList().FindLastIndex(
-                    m => string.Compare(m.SensorString, measurement.SensorString, StringComparison.OrdinalIgnoreCase) < 0)
+                insertIndex = this.Measurements.ToList()
+                    .FindLastIndex(m => string.Compare(m.SensorString, measurement.SensorString, StringComparison.OrdinalIgnoreCase) < 0)
                     + 1;
             }
 
@@ -121,7 +121,7 @@ namespace Hurace.RaceControl.ViewModels
                 await Task.Run(
                         async () =>
                         {
-                            Thread.Sleep(1500);
+                            Thread.Sleep(5000);
                             await this.UpdateStartingSkiers().ConfigureAwait(false);
                         })
                     .ConfigureAwait(false);
