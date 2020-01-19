@@ -51,7 +51,7 @@
         <div class="col dialog-ff-split-right-element">
             <mat-form-field class="dialog-ff-row-filled" floatLabel="always">
                 <label for="dateOfBirth">{{ 'skier-detail-dialog.dateOfBirthLabel' | translate }}</label>
-                <input matInput [matDatepicker]="birthdatePicker" formControlName="dateOfBirth" name="dateOfBirth" [errorStateMatcher]="errorStateMatcher">
+                <input matInput [matDatepicker]="birthdatePicker" formControlName="dateOfBirth" name="dateOfBirth">
                 <mat-datepicker-toggle matSuffix [for]="birthdatePicker"></mat-datepicker-toggle>
                 <mat-datepicker #birthdatePicker></mat-datepicker>
             </mat-form-field>
@@ -65,7 +65,7 @@
 </form>
 
 <div mat-dialog-actions class="d-flex justify-content-around">
-    <button mat-raised-button class="dialog-button" (click)="abortDialog($event)">{{ 'skier-detail-dialog.abortDialogButtonLabel' | translate }}</button>
-    <button mat-raised-button class="dialog-button" *ngIf="inCreateMode" (click)="createSkier($event)" cdkFocusInitial>{{ 'skier-detail-dialog.createSkierButtonLabel' | translate }}</button>
-    <button mat-raised-button class="dialog-button" *ngIf="!inCreateMode" (click)="editSkier($event)" cdkFocusInitial>{{ 'skier-detail-dialog.editSkierButtonLabel' | translate }}</button>
+    <button mat-raised-button class="dialog-button" (click)="abortDialog()">{{ 'skier-detail-dialog.abortDialogButtonLabel' | translate }}</button>
+    <button mat-raised-button class="dialog-button" *ngIf="inCreateMode" (click)="createSkier()" cdkFocusInitial>{{ 'skier-detail-dialog.createSkierButtonLabel' | translate }}</button>
+    <button mat-raised-button class="dialog-button" *ngIf="!inCreateMode" (click)="editSkier()" cdkFocusInitial>{{ 'skier-detail-dialog.editSkierButtonLabel' | translate }}</button>
 </div>

@@ -22,7 +22,7 @@ export class SkierDetailDialog implements OnInit {
 
   skierForm: FormGroup;
 
-  uploadError: Error;
+  uploadError: string;
 
   constructor(
     private dialogRef: MatDialogRef<SkierDetailDialog>,

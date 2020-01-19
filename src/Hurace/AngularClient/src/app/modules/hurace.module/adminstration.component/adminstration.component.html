@@ -2,7 +2,7 @@
 
 <div class="d-flex justify-content-between">
     <input-search [placeholder]="'administration.searchTextPlaceholder' | translate" (searchTextChanged)="searchTextChangedHandler($event)"></input-search>
-    <button mat-raised-button (click)="createNewSkierPressedHandler($event)">
+    <button mat-raised-button (click)="createNewSkierPressedHandler()">
         {{ 'administration.createNewSkierButton' | translate }}
     </button>
 </div>
