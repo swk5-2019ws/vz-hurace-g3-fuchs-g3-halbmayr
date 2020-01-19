@@ -3,7 +3,7 @@ import { Skier, ApiService } from 'src/app/common/services/api-service.client';
 import { MatGridTileHeaderCssMatStyler, MatDialog } from '@angular/material';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
-import { SkierDetailDialog } from '../create-skier-dialog.component/skier-detail-dialog.component';
+import { SkierDetailDialog } from '../skier-detail-dialog.component/skier-detail-dialog.component';
 
 @Component({
   selector: 'adminstration',

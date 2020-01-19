@@ -23,5 +23,38 @@
             "interimTimeFormat": "{{sensorId}}.IM",
             "totalTimeHeader": "Σ-Time"
         }
+    },
+    "administration": {
+        "header": "Manage skiers",
+        "searchTextPlaceholder": "Searchtext",
+        "createNewSkierButton": "Create new Skier"
+    },
+    "skier-list": {
+        "imageHeader": "Image",
+        "lastName": "Lastname",
+        "firstName": "Firstname",
+        "dateOfBirth": "Date of Birth",
+        "country": "Country",
+        "sex": "Sex",
+        "editButtonLabel": "Edit",
+        "editButtonTooltip": "Edit skier",
+        "deleteButtonLabel": "Remove",
+        "deleteButtonTooltip": "Remove skier"
+    },
+    "skier-detail-dialog": {
+        "createSkierHeader": "Create skier",
+        "editSkierHeader": "Edit skier",
+        "abortDialogButtonLabel": "Abort",
+        "createSkierButtonLabel": "Create skier",
+        "editSkierButtonLabel": "Save changes",
+        "skierLastNameLabel": "Lastname*:",
+        "skierFirstNameLabel": "Firstname*:",
+        "skierImageUrlLabel": "Adress of image:",
+        "dateOfBirthLabel": "Date of birth*:",
+        "sexSelectionLabel": "Sex*:",
+        "countrySelectionLabel": "Country*:",
+        "notFilledErrorMessage": "This field is mandatory.",
+        "imageUrlIsNotValidErrorMessage": "Imageaddress is invalid.",
+        "requiredErrorMessage": "mandatory field"
     }
 }
