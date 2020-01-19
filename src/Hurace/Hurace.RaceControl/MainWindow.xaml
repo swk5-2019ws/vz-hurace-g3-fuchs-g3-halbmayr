@@ -73,6 +73,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <Button Content="Abbruch"
+                        Command="{Binding AbortRaceCreateOrUpdateCommand}"
                         Grid.Column="0"
                         Margin="5,5,2.5,5"/>
                 
@@ -181,7 +182,7 @@
                                Grid.Column="0"
                                Grid.ColumnSpan="2"
                                LastChildFill="False"
-                               Visibility="{Binding RaceNotCompleted, Converter={StaticResource InvertedVisibilityConverter}}">
+                               Visibility="{Binding RankListVisible, Converter={StaticResource VisibilityConverter}}">
 
                         <controls:RankListControl DataContext="{Binding SelectedRace}"/>
                     </DockPanel>

@@ -299,7 +299,7 @@
                             Grid.Column="0">
                         <materialDesign:PackIcon Kind="ArrowUpBoldCircle"/>
                     </Button>
-                    
+
                     <Button Command="{Binding MoveSelectedStartPositionDownCommand}"
                             Margin="2"
                             Style="{StaticResource MaterialDesignRaisedLightButton}"
@@ -307,7 +307,6 @@
                             Grid.Column="1">
                         <materialDesign:PackIcon Kind="ArrowDownBoldCircle"/>
                     </Button>
-                    
                 </Grid>
             </Grid>
         </Grid>

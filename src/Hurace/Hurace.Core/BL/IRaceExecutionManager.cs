@@ -17,6 +17,6 @@ namespace Hurace.Core.BL
             int position);
         Task StopTimeTrackingAsync(
             Domain.RaceState reason);
-        Task GenerateSecondStartListIfNeeded();
+        Task GenerateSecondStartListIfNeeded(Domain.StartPosition currentStartPosition);
     }
 }

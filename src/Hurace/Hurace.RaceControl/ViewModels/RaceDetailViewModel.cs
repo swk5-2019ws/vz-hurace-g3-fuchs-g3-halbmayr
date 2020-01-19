@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -96,8 +97,8 @@ namespace Hurace.RaceControl.ViewModels
             int insertIndex = 0;
             if (this.Measurements.Count > 0)
             {
-                insertIndex = this.Measurements.ToList().FindLastIndex(
-                    m => string.Compare(m.SensorString, measurement.SensorString, StringComparison.OrdinalIgnoreCase) < 0)
+                insertIndex = this.Measurements.ToList()
+                    .FindLastIndex(m => string.Compare(m.SensorString, measurement.SensorString, StringComparison.OrdinalIgnoreCase) < 0)
                     + 1;
             }
 
@@ -117,7 +118,13 @@ namespace Hurace.RaceControl.ViewModels
                         this.currentlyRunning = false;
                     });
 
-                await this.UpdateStartingSkiers().ConfigureAwait(false);
+                await Task.Run(
+                        async () =>
+                        {
+                            Thread.Sleep(5000);
+                            await this.UpdateStartingSkiers().ConfigureAwait(false);
+                        })
+                    .ConfigureAwait(false);
             }
         }
 
@@ -131,7 +138,7 @@ namespace Hurace.RaceControl.ViewModels
             var failureType = (await this.informationManager.GetAllRaceStatesAsync().ConfigureAwait(false))
                 .First(rt => rt.Label == "NichtAbgeschlossen");
 
-            await this.raceExecutionManager.GenerateSecondStartListIfNeeded()
+            await this.raceExecutionManager.GenerateSecondStartListIfNeeded(this.currentStartPosition)
                 .ConfigureAwait(false);
 
             if (this.currentlyRunning)
@@ -168,7 +175,7 @@ namespace Hurace.RaceControl.ViewModels
             var failureType = (await this.informationManager.GetAllRaceStatesAsync().ConfigureAwait(false))
                 .First(rt => rt.Label == "Disqualifiziert");
 
-            await this.raceExecutionManager.GenerateSecondStartListIfNeeded()
+            await this.raceExecutionManager.GenerateSecondStartListIfNeeded(this.currentStartPosition)
                 .ConfigureAwait(false);
 
             await this.raceExecutionManager.StopTimeTrackingAsync(failureType)
@@ -207,6 +214,7 @@ namespace Hurace.RaceControl.ViewModels
             Application.Current.Dispatcher.Invoke(
                 () =>
                 {
+                    this.Ranks.Clear();
                     foreach (var rank in ranks)
                     {
                         this.Ranks.Add(rank);
