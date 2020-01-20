@@ -19,6 +19,7 @@ namespace Hurace.RaceControl.ViewModels
         private bool executionRunning;
         private bool raceDetailViewVisible;
         private bool createRaceButtonVisible;
+        private bool isCreateOperation;
 
         #endregion
         #region ViewModels
@@ -72,6 +73,8 @@ namespace Hurace.RaceControl.ViewModels
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
+                    this.isCreateOperation = true;
+
                     Application.Current.Dispatcher.Invoke(
                         () =>
                         {
@@ -87,8 +90,6 @@ namespace Hurace.RaceControl.ViewModels
             this.CreateOrUpdateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
-                    var raceDetailViewModel = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
-
                     var tempRace = await informationManager.GetRaceByIdAsync(
                                 await createRaceViewModel.CreateOrUpdateRace(new object())
                                     .ConfigureAwait(false),
@@ -97,15 +98,20 @@ namespace Hurace.RaceControl.ViewModels
                                 seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
                         .ConfigureAwait(false);
 
+                    var raceDetailViewModel = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
                     raceDetailViewModel.Race = tempRace;
 
                     Application.Current.Dispatcher.Invoke(
                         () =>
                         {
-                            var insertIndex = this.RaceListItemViewModels
-                                .ToList()
-                                .FindLastIndex(raceVM => DateTime.Compare(raceVM.Race.Date, raceDetailViewModel.Race.Date) <= 0) + 1;
-                            this.RaceListItemViewModels.Insert(insertIndex, raceDetailViewModel);
+                            if (this.isCreateOperation)
+                            {
+                                var insertIndex = this.RaceListItemViewModels
+                                    .ToList()
+                                    .FindLastIndex(raceVM => DateTime.Compare(raceVM.Race.Date, raceDetailViewModel.Race.Date) <= 0) + 1;
+                                this.RaceListItemViewModels.Insert(insertIndex, raceDetailViewModel);
+                            }
+
                             this.CreateRaceButtonVisible = false;
                             this.CreateRaceControlVisible = false;
                             this.RaceDetailControlVisible = true;
@@ -115,6 +121,8 @@ namespace Hurace.RaceControl.ViewModels
             this.OpenEditRaceCommand = new AsyncDelegateCommand(
                 async _ =>
                 {
+                    this.isCreateOperation = false;
+
                     Application.Current.Dispatcher.Invoke(
                         () =>
                         {
@@ -275,12 +283,11 @@ namespace Hurace.RaceControl.ViewModels
 
         public bool CanStopRaceExecution(object argument)
         {
-            return this.ExecutionRunning;
+            return this.ExecutionRunning && !this.SelectedRace.currentlyRunning;
         }
 
         public Task StopRaceExecution(object argument)
         {
-            MessageBox.Show("stop race execution");
             this.ExecutionRunning = false;
             return Task.CompletedTask;
         }

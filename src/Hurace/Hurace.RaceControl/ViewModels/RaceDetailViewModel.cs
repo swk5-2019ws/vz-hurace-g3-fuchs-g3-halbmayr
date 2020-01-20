@@ -17,7 +17,7 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.StartPosition currentStartPosition;
         private IEnumerable<Domain.StartPosition> startList;
 
-        private bool currentlyRunning;
+        internal bool currentlyRunning;
 
         private Domain.Race race;
         private Domain.Skier afterNextStartingSkier;
@@ -111,12 +111,6 @@ namespace Hurace.RaceControl.ViewModels
             if (lastMeasurement)
             {
                 this.raceExecutionManager.OnTimeMeasured -= this.OnTimeMeasured;
-                Application.Current.Dispatcher.Invoke(
-                    () =>
-                    {
-                        this.Measurements.Clear();
-                        this.currentlyRunning = false;
-                    });
 
                 await Task.Run(
                         async () =>
@@ -125,6 +119,13 @@ namespace Hurace.RaceControl.ViewModels
                             await this.UpdateStartingSkiers().ConfigureAwait(false);
                         })
                     .ConfigureAwait(false);
+
+                Application.Current.Dispatcher.Invoke(
+                    () =>
+                    {
+                        this.Measurements.Clear();
+                        this.currentlyRunning = false;
+                    });
             }
         }
 
