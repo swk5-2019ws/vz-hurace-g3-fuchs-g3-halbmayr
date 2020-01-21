@@ -26,7 +26,6 @@ namespace Hurace.RaceControl.ViewModels
 
         private RaceDetailViewModel selectedRace;
         private CreateRaceViewModel createRaceViewModel;
-        private bool rankListVisible;
         private bool raceNotStarted;
 
         #endregion
@@ -114,7 +113,7 @@ namespace Hurace.RaceControl.ViewModels
 
                             this.CreateRaceButtonVisible = false;
                             this.CreateRaceControlVisible = false;
-                            this.RaceDetailControlVisible = true;
+                            this.RaceDetailControlVisible = false;
                         });
                 });
 
