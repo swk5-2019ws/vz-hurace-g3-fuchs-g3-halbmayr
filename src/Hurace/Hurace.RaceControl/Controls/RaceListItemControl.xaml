@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Hurace.RaceControl.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:Hurace.RaceControl.Converters"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              Background="{DynamicResource MaterialDesignPaper}"
              TextElement.FontWeight="Medium"
@@ -12,6 +13,10 @@
              FontFamily="{materialDesign:MaterialDesignFont}"
              mc:Ignorable="d"
              d:DesignHeight="50" d:DesignWidth="150">
+
+    <UserControl.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter"/>
+    </UserControl.Resources>
     
     <Grid Margin="10,10,10,0">
         <Grid.RowDefinitions>
@@ -30,7 +35,7 @@
                        Style="{StaticResource MaterialDesignCaptionTextBlock}"
                        Margin="0,0,5,0"/>
 
-            <TextBlock Text="{Binding Race.Date}"
+            <TextBlock Text="{Binding Race.Date, Converter={StaticResource DateTimeConverter}}"
                        Style="{StaticResource MaterialDesignCaptionTextBlock}"
                        Margin="5,0,0,0"/>
 
