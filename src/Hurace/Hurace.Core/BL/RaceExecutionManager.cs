@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+#pragma warning disable CA1031
 #pragma warning disable CA1502 // Avoid excessive complexity
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 namespace Hurace.Core.BL
@@ -62,58 +63,94 @@ namespace Hurace.Core.BL
             bool firstStartList,
             int position)
         {
-            if (race is null)
-                throw new ArgumentNullException(nameof(race));
-            else if (this.RaceClock is null)
-                throw new InvalidOperationException("Set RaceClock before tracking a race");
-            else if (!await informationManager.IsNextStartPositionAsync(race, firstStartList, position).ConfigureAwait(false))
-                throw new InvalidOperationException($"Position {position} is not the next position");
-            else if (race.Venue is null || !race.Venue.Initialised)
-                throw new ArgumentNullException($"FK of {nameof(Domain.Venue)} has to be set in passed {nameof(Domain.Race)} instance");
-            else if (race.RaceType is null || !race.RaceType.Initialised)
-                throw new ArgumentNullException($"FK of {nameof(Domain.RaceType)} has to be set in passed {nameof(Domain.Race)} instance");
-
-            this.trackedRace = race;
-            this.trackedPosition = position;
-            this.trackingFirstStartList = firstStartList;
-            this.trackedRaceData =
-                await informationManager.GetRaceDataByRaceAndStartlistAndPositionAsync(race, firstStartList, position)
-                    .ConfigureAwait(false);
-
-            this.trackedSkier = await informationManager.GetSkierByRaceAndStartlistAndPositionAsync(race, firstStartList, position)
-                .ConfigureAwait(false);
-
-            var raceVenueId = race.Venue.ForeignKey ?? race.Venue.Reference.Id;
-            var raceTypeId = race.RaceType.ForeignKey ?? race.RaceType.Reference.Id;
-            this.measurementDistributionDictionary =
-                await informationManager.CalculateNormalDistributionOfMeasumentsPerSensorAsync(
-                        raceVenueId, raceTypeId)
-                    .ConfigureAwait(false);
-
-            var raceStates = await informationManager.GetAllRaceStatesAsync().ConfigureAwait(false);
-            trackedRaceData.RaceState = new Domain.Associated<Domain.RaceState>(raceStates.First(rs => rs.Label == "Laufend"));
-
-            await informationManager.UpdateRaceStateOfRaceDataAsync(trackedRaceData).ConfigureAwait(false);
-
-            this.raceClock.TimingTriggered += OnRaceSensorTriggered;
-
-            this.measurementDictionary = new Dictionary<int, int>();
-            this.measurementTimeDictionary = new Dictionary<int, DateTime>();
-
-            if (this.lastTrackedRace == null ||
-                this.lastTrackedRace.Id != this.trackedRace.Id ||
-                this.lastTrackingFirstStartList != this.trackingFirstStartList)
+            try
             {
-                this.bestMeasurementDictionary = new Dictionary<int, int>();
+                if (race is null)
+                    throw new ArgumentNullException(nameof(race));
+                else if (this.RaceClock is null)
+                    throw new InvalidOperationException("Set RaceClock before tracking a race");
+                else if (!await informationManager.IsNextStartPositionAsync(race, firstStartList, position).ConfigureAwait(false))
+                    throw new InvalidOperationException($"Position {position} is not the next position");
+                else if (race.Venue is null || !race.Venue.Initialised)
+                    throw new ArgumentNullException($"FK of {nameof(Domain.Venue)} has to be set in passed {nameof(Domain.Race)} instance");
+                else if (race.RaceType is null || !race.RaceType.Initialised)
+                    throw new ArgumentNullException($"FK of {nameof(Domain.RaceType)} has to be set in passed {nameof(Domain.Race)} instance");
+
+                this.trackedRace = race;
+                this.trackedPosition = position;
+                this.trackingFirstStartList = firstStartList;
+                this.trackedRaceData =
+                    await informationManager.GetRaceDataByRaceAndStartlistAndPositionAsync(race, firstStartList, position)
+                        .ConfigureAwait(false);
+
+                this.trackedSkier = await informationManager.GetSkierByRaceAndStartlistAndPositionAsync(race, firstStartList, position)
+                    .ConfigureAwait(false);
+
+                var raceVenueId = race.Venue.ForeignKey ?? race.Venue.Reference.Id;
+                var raceTypeId = race.RaceType.ForeignKey ?? race.RaceType.Reference.Id;
+                this.measurementDistributionDictionary =
+                    await informationManager.CalculateNormalDistributionOfMeasumentsPerSensorAsync(
+                            raceVenueId, raceTypeId)
+                        .ConfigureAwait(false);
+
+                var raceStates = await informationManager.GetAllRaceStatesAsync().ConfigureAwait(false);
+                trackedRaceData.RaceState = new Domain.Associated<Domain.RaceState>(raceStates.First(rs => rs.Label == "Laufend"));
+
+                await informationManager.UpdateRaceStateOfRaceDataAsync(trackedRaceData).ConfigureAwait(false);
+
+                this.raceClock.TimingTriggered += OnRaceSensorTriggered;
+
+                this.measurementDictionary = new Dictionary<int, int>();
+                this.measurementTimeDictionary = new Dictionary<int, DateTime>();
+
+                if (this.lastTrackedRace == null ||
+                    this.lastTrackedRace.Id != this.trackedRace.Id ||
+                    this.lastTrackingFirstStartList != this.trackingFirstStartList)
+                {
+                    this.bestMeasurementDictionary = new Dictionary<int, int>();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                Debug.WriteLine(
+                    $"{nameof(RaceExecutionManager)}.{nameof(StartTimeTrackingAsync)}: " +
+                    $"caused exception '{e.GetType().Name}' with message '{e.Message}'");
+#endif
             }
         }
 
         public async Task StopTimeTrackingAsync(Domain.RaceState reason)
         {
-            this.raceClock.TimingTriggered -= OnRaceSensorTriggered;
+            try
+            {
+                this.raceClock.TimingTriggered -= OnRaceSensorTriggered;
 
-            trackedRaceData.RaceState = new Domain.Associated<Domain.RaceState>(reason);
-            await informationManager.UpdateRaceStateOfRaceDataAsync(trackedRaceData).ConfigureAwait(false);
+                trackedRaceData.RaceState = new Domain.Associated<Domain.RaceState>(reason);
+                await informationManager.UpdateRaceStateOfRaceDataAsync(trackedRaceData).ConfigureAwait(false);
+
+                this.lastTrackedRace = this.trackedRace;
+                this.lastTrackingFirstStartList = this.trackingFirstStartList;
+
+                this.trackedRace = null;
+                this.trackedSkier = null;
+                this.trackedRaceData = null;
+                this.trackedPosition = null;
+                this.measurementTimeDictionary = null;
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                Debug.WriteLine(
+                    $"{nameof(RaceExecutionManager)}.{nameof(StopTimeTrackingAsync)}: " +
+                    $"caused exception '{e.GetType().Name}' with message '{e.Message}'");
+#endif
+            }
+        }
+
+        public void HaltTimeTracking()
+        {
+            this.raceClock.TimingTriggered -= OnRaceSensorTriggered;
 
             this.lastTrackedRace = this.trackedRace;
             this.lastTrackingFirstStartList = this.trackingFirstStartList;
@@ -139,110 +176,118 @@ namespace Hurace.Core.BL
 
         private async void OnRaceSensorTriggered(int sensorId, DateTime measuredTime)
         {
-            triggerHandlerSem.WaitOne();
-            if (trackedRace is null)
-                return;
-
-            if (0 <= sensorId && sensorId < this.trackedRace.NumberOfSensors)
+            try
             {
+                if (trackedRace is null)
+                    return;
 
-                var wasAlreadyMeasured =
-                    (await this.informationManager.GetTimeMeasurementByRaceDataAndSensorIdAsync(this.trackedRaceData.Id, sensorId)
-                    .ConfigureAwait(false)) != null;
-
-                bool newMeasurementPersistable = sensorId == 0 || (sensorId > 0 && this.measurementTimeDictionary.ContainsKey(0));
-                bool isTimeMeasurementValid = !wasAlreadyMeasured;
-                int difference = 0;
-
-                if (sensorId > 0 && this.measurementTimeDictionary.ContainsKey(0))
+                if (0 <= sensorId && sensorId < this.trackedRace.NumberOfSensors)
                 {
-                    difference = Convert.ToInt32(
-                        (measuredTime - this.measurementTimeDictionary[0]).TotalMilliseconds);
+                    var wasAlreadyMeasured =
+                        (await this.informationManager.GetTimeMeasurementByRaceDataAndSensorIdAsync(this.trackedRaceData.Id, sensorId)
+                        .ConfigureAwait(false)) != null;
 
-                    if (sensorId < this.trackedRace.NumberOfSensors - 1)
+                    bool newMeasurementPersistable = sensorId == 0 || (sensorId > 0 && this.measurementTimeDictionary.ContainsKey(0));
+                    bool isTimeMeasurementValid = !wasAlreadyMeasured;
+                    int difference = 0;
+
+                    if (sensorId > 0 && this.measurementTimeDictionary.ContainsKey(0))
                     {
-                        if (this.measurementDistributionDictionary.ContainsKey(sensorId))
-                        {
-                            //time measurements has reference measurements
-                            (var mean, var stdDev) = measurementDistributionDictionary[sensorId];
-                            var lowerBoundary = Statistics.NormalDistribution.CalculateLowerBoundary(mean, stdDev, 0.95);
+                        difference = Convert.ToInt32(
+                            (measuredTime - this.measurementTimeDictionary[0]).TotalMilliseconds);
 
-                            isTimeMeasurementValid =
-                                isTimeMeasurementValid &&
-                                lowerBoundary <= difference;
+                        if (sensorId < this.trackedRace.NumberOfSensors - 1)
+                        {
+                            if (this.measurementDistributionDictionary.ContainsKey(sensorId))
+                            {
+                                //time measurements has reference measurements
+                                (var mean, var stdDev) = measurementDistributionDictionary[sensorId];
+                                var lowerBoundary = Statistics.NormalDistribution.CalculateLowerBoundary(mean, stdDev, 0.95);
+
+                                isTimeMeasurementValid =
+                                    isTimeMeasurementValid &&
+                                    lowerBoundary <= difference;
+                            }
+                            else if (this.measurementTimeDictionary.ContainsKey(sensorId - 1))
+                                isTimeMeasurementValid =
+                                    isTimeMeasurementValid &&
+                                    (measuredTime - this.measurementTimeDictionary[sensorId - 1]).TotalMilliseconds >= 500;
+                            else
+                                newMeasurementPersistable = false;
                         }
-                        else if (this.measurementTimeDictionary.ContainsKey(sensorId - 1))
-                            isTimeMeasurementValid =
-                                isTimeMeasurementValid &&
-                                (measuredTime - this.measurementTimeDictionary[sensorId - 1]).TotalMilliseconds >= 500;
-                        else
-                            newMeasurementPersistable = false;
                     }
-                }
 
 #if DEBUG
-                Debug.WriteLine(
-                    $"{nameof(RaceExecutionManager)}: {sensorId} " +
-                    $"{(newMeasurementPersistable && isTimeMeasurementValid ? "valid" : "invalid")}");
+                    Debug.WriteLine(
+                        $"{nameof(RaceExecutionManager)}: {sensorId} " +
+                        $"{(newMeasurementPersistable && isTimeMeasurementValid ? "valid" : "invalid")}");
 #endif
 
-                if (newMeasurementPersistable)
-                {
-                    var newTimeMeasurement =
-                       await informationManager.CreateTimeMeasurementAsync(
-                           Convert.ToInt32(difference),
-                           sensorId,
-                           this.trackedRaceData.Id,
-                           isTimeMeasurementValid)
-                       .ConfigureAwait(false);
-
-                    if (isTimeMeasurementValid || (sensorId == 0 && !this.measurementDictionary.ContainsKey(0)))
+                    if (newMeasurementPersistable)
                     {
-                        this.measurementTimeDictionary[sensorId] = measuredTime;
-                    }
+                        var newTimeMeasurement =
+                           await informationManager.CreateTimeMeasurementAsync(
+                               Convert.ToInt32(difference),
+                               sensorId,
+                               this.trackedRaceData.Id,
+                               isTimeMeasurementValid)
+                           .ConfigureAwait(false);
 
-                    if (isTimeMeasurementValid)
-                    {
-                        this.measurementDictionary[sensorId] = difference;
-                        this.measurementTimeDictionary[sensorId] = measuredTime;
-
-                        var lastMeasurement = sensorId == this.trackedRace.NumberOfSensors - 1;
-
-                        int bestDifference = 0;
-                        if (this.bestMeasurementDictionary != null &&
-                            this.bestMeasurementDictionary.ContainsKey(sensorId))
+                        if (isTimeMeasurementValid || (sensorId == 0 && !this.measurementDictionary.ContainsKey(0)))
                         {
-                            bestDifference = difference - this.bestMeasurementDictionary[sensorId];
+                            this.measurementTimeDictionary[sensorId] = measuredTime;
                         }
 
-                        if (lastMeasurement)
+                        if (isTimeMeasurementValid)
                         {
-                            await this.GenerateSecondStartListIfNeeded(this.trackedRaceData).ConfigureAwait(false);
+                            this.measurementDictionary[sensorId] = difference;
+                            this.measurementTimeDictionary[sensorId] = measuredTime;
 
-                            if (bestDifference <= 0)
-                                this.bestMeasurementDictionary = this.measurementDictionary;
+                            var lastMeasurement = sensorId == this.trackedRace.NumberOfSensors - 1;
 
-                            var raceStates = await informationManager.GetAllRaceStatesAsync().ConfigureAwait(false);
+                            int bestDifference = 0;
+                            if (this.bestMeasurementDictionary != null &&
+                                this.bestMeasurementDictionary.ContainsKey(sensorId))
+                            {
+                                bestDifference = difference - this.bestMeasurementDictionary[sensorId];
+                            }
 
-                            await this.StopTimeTrackingAsync(raceStates.First(rs => rs.Label == "Abgeschlossen"))
+                            if (lastMeasurement)
+                            {
+                                await this.GenerateSecondStartListIfNeeded(this.trackedRaceData).ConfigureAwait(false);
+
+                                if (bestDifference <= 0)
+                                    this.bestMeasurementDictionary = this.measurementDictionary;
+
+                                var raceStates = await informationManager.GetAllRaceStatesAsync().ConfigureAwait(false);
+
+                                await this.StopTimeTrackingAsync(raceStates.First(rs => rs.Label == "Abgeschlossen"))
+                                    .ConfigureAwait(false);
+                            }
+
+                            await (OnTimeMeasured?.Invoke(
+                                    new Domain.ProcessedTimeMeasurement
+                                    {
+                                        SensorString = $"Sensor {sensorId}",
+                                        Measurement = TimeSpan.FromMilliseconds(newTimeMeasurement.Measurement),
+                                        BestDifference = bestDifference != 0
+                                            ? TimeSpan.FromMilliseconds(bestDifference)
+                                            : TimeSpan.MaxValue
+                                    },
+                                    lastMeasurement))
                                 .ConfigureAwait(false);
                         }
-
-                        await (OnTimeMeasured?.Invoke(
-                                new Domain.ProcessedTimeMeasurement
-                                {
-                                    SensorString = $"Sensor {sensorId}",
-                                    Measurement = TimeSpan.FromMilliseconds(newTimeMeasurement.Measurement),
-                                    BestDifference = bestDifference != 0
-                                        ? TimeSpan.FromMilliseconds(bestDifference)
-                                        : TimeSpan.MaxValue
-                                },
-                                lastMeasurement))
-                            .ConfigureAwait(false);
                     }
                 }
             }
-            triggerHandlerSem.Release();
+            catch (Exception e)
+            {
+#if DEBUG
+                Debug.WriteLine(
+                    $"{nameof(RaceExecutionManager)}.{nameof(OnTimeMeasured)}: {sensorId} " +
+                    $"caused exception '{e.GetType().Name}' with message '{e.Message}'");
+#endif
+            }
         }
 
         public async Task GenerateSecondStartListIfNeeded(Domain.StartPosition currentStartPosition)

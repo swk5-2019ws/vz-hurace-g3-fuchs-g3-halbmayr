@@ -16,6 +16,8 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.StartPosition currentStartPosition;
         private IEnumerable<Domain.StartPosition> startList;
 
+        private bool currentlyExecutingUiCommand;
+
         internal bool currentlyRunning;
 
         private Domain.Race race;
@@ -39,8 +41,11 @@ namespace Hurace.RaceControl.ViewModels
             this.Ranks = new ObservableCollection<Domain.RankedSkier>();
             this.Measurements = new ObservableCollection<Domain.ProcessedTimeMeasurement>();
 
+            this.currentlyExecutingUiCommand = false;
+
             this.RegisterFailureCommand = new AsyncDelegateCommand(
-                this.RegisterFailure);
+                this.RegisterFailure,
+                this.CanRegisterFailure);
             this.DisqualifyCommand = new AsyncDelegateCommand(
                 this.Disqualify,
                 this.CanDisqualify);
@@ -138,8 +143,14 @@ namespace Hurace.RaceControl.ViewModels
         #endregion
         #region Command-Methods
 
+        private bool CanRegisterFailure(object parameter)
+        {
+            return !this.currentlyExecutingUiCommand;
+        }
+
         private async Task RegisterFailure(object parameter)
         {
+            this.currentlyExecutingUiCommand = true;
             this.currentlyRunning = false;
 
             var failureType = (await this.informationManager.GetAllRaceStatesAsync().ConfigureAwait(false))
@@ -168,15 +179,18 @@ namespace Hurace.RaceControl.ViewModels
 
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
+
+            this.currentlyExecutingUiCommand = false;
         }
 
         private bool CanDisqualify(object parameter)
         {
-            return this.currentlyRunning;
+            return this.currentlyRunning && !this.currentlyExecutingUiCommand;
         }
 
         private async Task Disqualify(object parameter)
         {
+            this.currentlyExecutingUiCommand = true;
             this.currentlyRunning = false;
 
             var failureType = (await this.informationManager.GetAllRaceStatesAsync().ConfigureAwait(false))
@@ -190,15 +204,18 @@ namespace Hurace.RaceControl.ViewModels
 
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
+
+            this.currentlyExecutingUiCommand = false;
         }
 
         private bool CanReleaseStart(object parameter)
         {
-            return !this.currentlyRunning;
+            return !this.currentlyRunning && !this.currentlyExecutingUiCommand;
         }
 
         private async Task ReleaseStart(object parameter)
         {
+            this.currentlyExecutingUiCommand = true;
             this.currentlyRunning = true;
 
             await this.raceExecutionManager.StartTimeTrackingAsync(
@@ -208,6 +225,8 @@ namespace Hurace.RaceControl.ViewModels
                 .ConfigureAwait(false);
 
             this.raceExecutionManager.OnTimeMeasured += OnTimeMeasured;
+
+            this.currentlyExecutingUiCommand = false;
         }
 
         #endregion

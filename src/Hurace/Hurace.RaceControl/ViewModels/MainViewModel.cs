@@ -314,6 +314,7 @@ namespace Hurace.RaceControl.ViewModels
         public Task StopRaceExecution(object argument)
         {
             this.ExecutionRunning = false;
+            this.raceExecutionManager.HaltTimeTracking();
             return Task.CompletedTask;
         }
 

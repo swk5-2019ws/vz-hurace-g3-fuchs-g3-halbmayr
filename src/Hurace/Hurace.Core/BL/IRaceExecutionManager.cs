@@ -15,6 +15,7 @@ namespace Hurace.Core.BL
             Domain.Race race,
             bool firstStartList,
             int position);
+        void HaltTimeTracking();
         Task StopTimeTrackingAsync(
             Domain.RaceState reason);
         Task GenerateSecondStartListIfNeeded(Domain.StartPosition currentStartPosition);
