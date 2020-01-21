@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Hurace.Entities.Country">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Country.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.EntityObjectBase">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>EntityObjectBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.Race">
+    <Position X="1.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEgAgAAAAAAAAAAAIAAgAAIABAAAAAAAAAgA=</HashCode>
+      <FileName>Race.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.RaceData">
+    <Position X="8.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>RaceData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.RaceState">
+    <Position X="2.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RaceState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.RaceType">
+    <Position X="9.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RaceType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.Season">
+    <Position X="4" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQgAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Season.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.SeasonPlan">
+    <Position X="10.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SeasonPlan.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.Sex">
+    <Position X="5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Sex.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.Skier">
+    <Position X="6.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQEAAAAAAIAAAAAAAAAAAAAAQAAAAAAAgAAAAAAg=</HashCode>
+      <FileName>Skier.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.StartList">
+    <Position X="11.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>StartList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.StartPosition">
+    <Position X="13" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAgAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>StartPosition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.TimeMeasurement">
+    <Position X="7.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAgAAAAAAAIAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>TimeMeasurement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.Entities.Venue">
+    <Position X="14" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Venue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
