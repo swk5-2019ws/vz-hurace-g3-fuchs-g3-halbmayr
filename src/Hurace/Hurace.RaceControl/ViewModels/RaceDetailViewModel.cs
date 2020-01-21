@@ -13,7 +13,6 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class RaceDetailViewModel : BaseViewModel
     {
-        private bool firstStartList;
         private Domain.StartPosition currentStartPosition;
         private IEnumerable<Domain.StartPosition> startList;
 
@@ -23,6 +22,7 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.Skier afterNextStartingSkier;
         private Domain.Skier nextStartingSkier;
         private Domain.Skier currentStartingSkier;
+        private bool firstRun;
         private readonly IInformationManager informationManager;
         private readonly IRaceExecutionManager raceExecutionManager;
         private readonly MainViewModel mainVM;
@@ -59,6 +59,12 @@ namespace Hurace.RaceControl.ViewModels
         #endregion
 
         public bool CurrentStartingSkierTracked { get; set; }
+
+        public bool FirstRun
+        {
+            get => firstRun;
+            set => base.Set(ref this.firstRun, value);
+        }
 
         public Domain.Race Race
         {
@@ -151,7 +157,7 @@ namespace Hurace.RaceControl.ViewModels
             {
                 var raceData = await informationManager.GetRaceDataByRaceAndStartlistAndPositionAsync(
                         race,
-                        firstStartList,
+                        FirstRun,
                         currentStartPosition.Position)
                     .ConfigureAwait(false);
 
@@ -197,7 +203,7 @@ namespace Hurace.RaceControl.ViewModels
 
             await this.raceExecutionManager.StartTimeTrackingAsync(
                     this.Race,
-                    this.firstStartList,
+                    this.FirstRun,
                     this.currentStartPosition.Position)
                 .ConfigureAwait(false);
 
@@ -227,7 +233,7 @@ namespace Hurace.RaceControl.ViewModels
         {
             Application.Current.Dispatcher.Invoke(() => this.Measurements.Clear());
 
-            this.firstStartList = true;
+            this.FirstRun = true;
             this.startList = (await this.informationManager.GetStartPositionListAsync(this.Race.Id, true)
                     .ConfigureAwait(false))
                 .OrderBy(sp => sp.Position);
@@ -236,7 +242,7 @@ namespace Hurace.RaceControl.ViewModels
                 .ConfigureAwait(false);
             if (this.currentStartPosition == null)
             {
-                this.firstStartList = false;
+                this.FirstRun = false;
                 this.startList = (await this.informationManager.GetStartPositionListAsync(this.Race.Id, false)
                         .ConfigureAwait(false))
                     .OrderBy(sp => sp.Position);
