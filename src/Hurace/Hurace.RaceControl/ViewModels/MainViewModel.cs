@@ -110,6 +110,8 @@ namespace Hurace.RaceControl.ViewModels
                         .ConfigureAwait(false);
                 },
                 this.CanEditRace);
+
+            this.ExecutionRunning = false;
         }
 
         #endregion
@@ -151,10 +153,14 @@ namespace Hurace.RaceControl.ViewModels
             set
             {
                 base.Set(ref this.executionRunning, value);
+                base.NotifyPropertyChanged(nameof(NotExecutionRunning));
                 base.NotifyPropertyChanged(nameof(RaceNotCompleted));
                 base.NotifyPropertyChanged(nameof(RankListVisible));
+                base.NotifyPropertyChanged(nameof(RaceExecutionButtonVisible));
             }
         }
+
+        public bool NotExecutionRunning => !this.ExecutionRunning;
 
         public bool RaceNotStarted
         {
@@ -165,6 +171,8 @@ namespace Hurace.RaceControl.ViewModels
                 base.NotifyPropertyChanged(nameof(RankListVisible));
             }
         }
+
+        public bool RaceExecutionButtonVisible => !this.ExecutionRunning && this.RaceNotCompleted;
 
         public bool RaceNotCompleted =>
             this.ExecutionRunning ||
@@ -219,31 +227,45 @@ namespace Hurace.RaceControl.ViewModels
         {
             this.createOrUpdateOperationCurrentlyRunning = true;
 
-            var tempRace = await informationManager.GetRaceByIdAsync(
-                        await createRaceViewModel.CreateOrUpdateRace(new object())
-                            .ConfigureAwait(false),
+            var createdOrUpdatedRaceId = await createRaceViewModel.CreateOrUpdateRace(null).ConfigureAwait(false);
+
+            var createdOrUpdatedRace = await informationManager.GetRaceByIdAsync(
+                        createdOrUpdatedRaceId,
                         raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
                         venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
                         seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
                 .ConfigureAwait(false);
 
-            var raceDetailViewModel = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
-            raceDetailViewModel.Race = tempRace;
+            RaceDetailViewModel createdOrUpdatedRaceVM;
+            if (this.isCreateOperation)
+            {
+                createdOrUpdatedRaceVM = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
+                createdOrUpdatedRaceVM.Race = createdOrUpdatedRace;
+
+                Application.Current.Dispatcher.Invoke(
+                    () =>
+                    {
+                        var insertIndex = this.RaceListItemViewModels
+                            .ToList()
+                            .FindLastIndex(raceVM => DateTime.Compare(raceVM.Race.Date, createdOrUpdatedRaceVM.Race.Date) <= 0) + 1;
+                        this.RaceListItemViewModels.Insert(insertIndex, createdOrUpdatedRaceVM);
+                    });
+            }
+            else
+            {
+                createdOrUpdatedRaceVM = this.RaceListItemViewModels
+                    .ToList()
+                    .Find(raceVM => raceVM.Race.Id == createdOrUpdatedRaceId);
+            }
 
             Application.Current.Dispatcher.Invoke(
                 () =>
                 {
-                    if (this.isCreateOperation)
-                    {
-                        var insertIndex = this.RaceListItemViewModels
-                            .ToList()
-                            .FindLastIndex(raceVM => DateTime.Compare(raceVM.Race.Date, raceDetailViewModel.Race.Date) <= 0) + 1;
-                        this.RaceListItemViewModels.Insert(insertIndex, raceDetailViewModel);
-                    }
+                    this.SelectedRace = createdOrUpdatedRaceVM;
 
                     this.CreateRaceButtonVisible = false;
                     this.CreateRaceControlVisible = false;
-                    this.RaceDetailControlVisible = false;
+                    this.RaceDetailControlVisible = true;
                 });
 
             this.createOrUpdateOperationCurrentlyRunning = false;
@@ -311,11 +333,16 @@ namespace Hurace.RaceControl.ViewModels
             return this.ExecutionRunning && !this.SelectedRace.currentlyRunning;
         }
 
-        public Task StopRaceExecution(object argument)
+        public async Task StopRaceExecution(object argument)
         {
             this.ExecutionRunning = false;
             this.raceExecutionManager.HaltTimeTracking();
-            return Task.CompletedTask;
+
+            this.RaceNotStarted = await informationManager.WasRaceNeverStartedAsync(this.SelectedRace.Race.Id)
+                .ConfigureAwait(true);
+
+            if (this.RankListVisible)
+                await this.SelectedRace.LoadRankList().ConfigureAwait(true);
         }
 
         private async Task StartRaceLogic(Timer.IRaceClock raceClock)
@@ -377,7 +404,9 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task InitializeSelectedRace()
         {
-            var race = await informationManager.GetRaceByIdAsync(
+            if (!this.ExecutionRunning)
+            {
+                var race = await informationManager.GetRaceByIdAsync(
                     this.selectedRace.Race.Id,
                     Domain.Associated<Domain.RaceState>.LoadingType.Reference,
                     Domain.Associated<Domain.RaceType>.LoadingType.Reference,
@@ -389,13 +418,15 @@ namespace Hurace.RaceControl.ViewModels
                     Domain.Associated<Domain.Country>.LoadingType.Reference)
                 .ConfigureAwait(true);
 
-            this.RaceNotStarted = await informationManager.WasRaceNeverStartedAsync(race.Id).ConfigureAwait(true);
+                this.RaceNotStarted = await informationManager.WasRaceNeverStartedAsync(race.Id).ConfigureAwait(true);
 
-            if (this.RankListVisible)
-                await this.SelectedRace.LoadRankList().ConfigureAwait(true);
+                if (this.RankListVisible)
+                    await this.SelectedRace.LoadRankList().ConfigureAwait(true);
 
-            this.SelectedRace.Race = race;
-            base.NotifyPropertyChanged(nameof(RaceNotCompleted));
+                this.SelectedRace.Race = race;
+                base.NotifyPropertyChanged(nameof(RaceNotCompleted));
+                this.ExecutionRunning = false;
+            }
         }
 
         #endregion

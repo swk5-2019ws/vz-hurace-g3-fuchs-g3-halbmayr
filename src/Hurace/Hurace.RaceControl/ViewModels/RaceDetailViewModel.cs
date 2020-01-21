@@ -27,7 +27,6 @@ namespace Hurace.RaceControl.ViewModels
         private bool firstRun;
         private readonly IInformationManager informationManager;
         private readonly IRaceExecutionManager raceExecutionManager;
-        private readonly MainViewModel mainVM;
 
         public RaceDetailViewModel(
             IInformationManager informationManager,
@@ -36,7 +35,7 @@ namespace Hurace.RaceControl.ViewModels
         {
             this.informationManager = informationManager ?? throw new ArgumentNullException(nameof(informationManager));
             this.raceExecutionManager = raceExecutionManager ?? throw new ArgumentNullException(nameof(raceExecutionManager));
-            this.mainVM = mainVM ?? throw new ArgumentNullException(nameof(mainVM));
+            this.MainVM = mainVM ?? throw new ArgumentNullException(nameof(mainVM));
             this.currentlyRunning = false;
             this.Ranks = new ObservableCollection<Domain.RankedSkier>();
             this.Measurements = new ObservableCollection<Domain.ProcessedTimeMeasurement>();
@@ -98,6 +97,8 @@ namespace Hurace.RaceControl.ViewModels
         public ObservableCollection<Domain.ProcessedTimeMeasurement> Measurements { get; set; }
 
         public ObservableCollection<Domain.RankedSkier> Ranks { get; }
+
+        public MainViewModel MainVM { get; }
 
         #endregion
         #region Methods
@@ -271,8 +272,8 @@ namespace Hurace.RaceControl.ViewModels
 
                 if (this.currentStartPosition == null)
                 {
-                    this.mainVM.ExecutionRunning = false;
-                    await this.mainVM.InitializeSelectedRace().ConfigureAwait(false);
+                    this.MainVM.ExecutionRunning = false;
+                    await this.MainVM.InitializeSelectedRace().ConfigureAwait(false);
                     return;
                 }
             }
