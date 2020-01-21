@@ -55,12 +55,6 @@
                     Margin="0,0,27,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
         </Grid>
 
-        <!--<GridSplitter Width="2"
-                      Grid.Column="0"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Stretch"
-                      Background="DarkGray"/>-->
-
         <DockPanel Grid.Column="1"
                    Visibility="{Binding CreateRaceControlVisible, Converter={StaticResource VisibilityConverter}}">
             <controls:CreateRaceControl DockPanel.Dock="Top" 

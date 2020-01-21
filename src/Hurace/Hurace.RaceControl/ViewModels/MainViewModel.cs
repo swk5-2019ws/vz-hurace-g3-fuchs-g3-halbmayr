@@ -20,6 +20,7 @@ namespace Hurace.RaceControl.ViewModels
         private bool raceDetailViewVisible;
         private bool createRaceButtonVisible;
         private bool isCreateOperation;
+        private bool createOrUpdateOperationCurrentlyRunning;
 
         #endregion
         #region ViewModels
@@ -54,6 +55,7 @@ namespace Hurace.RaceControl.ViewModels
             this.createRaceViewModel = new CreateRaceViewModel(informationManager);
 
             this.createRaceVisible = false;
+            this.createOrUpdateOperationCurrentlyRunning = false;
 
             this.StartRaceExecutionCommand = new AsyncDelegateCommand(
                 this.StartRaceExecution,
@@ -67,7 +69,12 @@ namespace Hurace.RaceControl.ViewModels
             this.DeleteRaceCommand = new AsyncDelegateCommand(
                 this.DeleteRace,
                 this.CanDeleteRace);
-            this.AbortRaceCreateOrUpdateCommand = new AsyncDelegateCommand(this.AbortRaceCreateOrUpdate);
+            this.AbortRaceCreateOrUpdateCommand = new AsyncDelegateCommand(
+                this.AbortRaceCreateOrUpdate,
+                this.CanAbortRaceCreateOrUpdate);
+            this.CreateOrUpdateRaceCommand = new AsyncDelegateCommand(
+                this.CreateOrUpdateRace,
+                this.CanCreateOrUpdateRace);
 
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
@@ -84,37 +91,6 @@ namespace Hurace.RaceControl.ViewModels
 
                     await this.CreateRaceViewModel.Initialize()
                         .ConfigureAwait(false);
-                });
-
-            this.CreateOrUpdateRaceCommand = new AsyncDelegateCommand(
-                async _ =>
-                {
-                    var tempRace = await informationManager.GetRaceByIdAsync(
-                                await createRaceViewModel.CreateOrUpdateRace(new object())
-                                    .ConfigureAwait(false),
-                                raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
-                                venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
-                                seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
-                        .ConfigureAwait(false);
-
-                    var raceDetailViewModel = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
-                    raceDetailViewModel.Race = tempRace;
-
-                    Application.Current.Dispatcher.Invoke(
-                        () =>
-                        {
-                            if (this.isCreateOperation)
-                            {
-                                var insertIndex = this.RaceListItemViewModels
-                                    .ToList()
-                                    .FindLastIndex(raceVM => DateTime.Compare(raceVM.Race.Date, raceDetailViewModel.Race.Date) <= 0) + 1;
-                                this.RaceListItemViewModels.Insert(insertIndex, raceDetailViewModel);
-                            }
-
-                            this.CreateRaceButtonVisible = false;
-                            this.CreateRaceControlVisible = false;
-                            this.RaceDetailControlVisible = false;
-                        });
                 });
 
             this.OpenEditRaceCommand = new AsyncDelegateCommand(
@@ -227,6 +203,56 @@ namespace Hurace.RaceControl.ViewModels
         #endregion
         #region Methods
         #region Command-Methods
+
+        private bool CanCreateOrUpdateRace(object obj)
+        {
+            return this.CreateRaceViewModel.SelectedDate != default &&
+                this.CreateRaceViewModel.SelectedNumberOfSensors != 0 &&
+                this.CreateRaceViewModel.SelectedRaceType != null &&
+                this.CreateRaceViewModel.SelectedVenue != null &&
+                this.CreateRaceViewModel.SelectedSeason != null &&
+                this.CreateRaceViewModel.StartPositions != null &&
+                this.CreateRaceViewModel.StartPositions.Count > 0;
+        }
+
+        private async Task CreateOrUpdateRace(object arg)
+        {
+            this.createOrUpdateOperationCurrentlyRunning = true;
+
+            var tempRace = await informationManager.GetRaceByIdAsync(
+                        await createRaceViewModel.CreateOrUpdateRace(new object())
+                            .ConfigureAwait(false),
+                        raceTypeLoadingType: Domain.Associated<Domain.RaceType>.LoadingType.Reference,
+                        venueLoadingType: Domain.Associated<Domain.Venue>.LoadingType.Reference,
+                        seasonLoadingType: Domain.Associated<Domain.Season>.LoadingType.Reference)
+                .ConfigureAwait(false);
+
+            var raceDetailViewModel = this.serviceProvider.GetRequiredService<RaceDetailViewModel>();
+            raceDetailViewModel.Race = tempRace;
+
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    if (this.isCreateOperation)
+                    {
+                        var insertIndex = this.RaceListItemViewModels
+                            .ToList()
+                            .FindLastIndex(raceVM => DateTime.Compare(raceVM.Race.Date, raceDetailViewModel.Race.Date) <= 0) + 1;
+                        this.RaceListItemViewModels.Insert(insertIndex, raceDetailViewModel);
+                    }
+
+                    this.CreateRaceButtonVisible = false;
+                    this.CreateRaceControlVisible = false;
+                    this.RaceDetailControlVisible = false;
+                });
+
+            this.createOrUpdateOperationCurrentlyRunning = false;
+        }
+
+        private bool CanAbortRaceCreateOrUpdate(object obj)
+        {
+            return !this.createOrUpdateOperationCurrentlyRunning;
+        }
 
         private async Task DeleteRace(object obj)
         {
