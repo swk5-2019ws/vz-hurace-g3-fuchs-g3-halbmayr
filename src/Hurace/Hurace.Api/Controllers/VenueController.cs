@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Hurace.Core.BL;
+using Hurace.Core.Debugging.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hurace.Core.BL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NSwag.Annotations;
 
 namespace Hurace.Api.Controllers
 {
@@ -23,13 +25,18 @@ namespace Hurace.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Domain.Venue>>> GetAllRaces()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation(nameof(GetAllVenues))]
+        public async Task<ActionResult<IEnumerable<Domain.Venue>>> GetAllVenues()
         {
-            logger.LogInformation($"this is a log info");
+#if DEBUG
+            logger.LogCall();
+#endif
 
             return Ok(await informationManager.GetAllVenuesAsync(
-                Domain.Associated<Domain.Country>.LoadingType.Reference,
-                Domain.Associated<Domain.Season>.LoadingType.Reference)
+                    Domain.Associated<Domain.Country>.LoadingType.Reference,
+                    Domain.Associated<Domain.Season>.LoadingType.Reference)
                 .ConfigureAwait(false));
         }
     }

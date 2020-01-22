@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -12,19 +13,20 @@ namespace Hurace.RaceControl.ViewModels
 {
     public class RaceDetailViewModel : BaseViewModel
     {
-        private bool firstStartList;
         private Domain.StartPosition currentStartPosition;
         private IEnumerable<Domain.StartPosition> startList;
 
-        private bool currentlyRunning;
+        private bool currentlyExecutingUiCommand;
+
+        internal bool currentlyRunning;
 
         private Domain.Race race;
         private Domain.Skier afterNextStartingSkier;
         private Domain.Skier nextStartingSkier;
         private Domain.Skier currentStartingSkier;
+        private bool firstRun;
         private readonly IInformationManager informationManager;
         private readonly IRaceExecutionManager raceExecutionManager;
-        private readonly MainViewModel mainVM;
 
         public RaceDetailViewModel(
             IInformationManager informationManager,
@@ -33,13 +35,16 @@ namespace Hurace.RaceControl.ViewModels
         {
             this.informationManager = informationManager ?? throw new ArgumentNullException(nameof(informationManager));
             this.raceExecutionManager = raceExecutionManager ?? throw new ArgumentNullException(nameof(raceExecutionManager));
-            this.mainVM = mainVM ?? throw new ArgumentNullException(nameof(mainVM));
+            this.MainVM = mainVM ?? throw new ArgumentNullException(nameof(mainVM));
             this.currentlyRunning = false;
             this.Ranks = new ObservableCollection<Domain.RankedSkier>();
             this.Measurements = new ObservableCollection<Domain.ProcessedTimeMeasurement>();
 
+            this.currentlyExecutingUiCommand = false;
+
             this.RegisterFailureCommand = new AsyncDelegateCommand(
-                this.RegisterFailure);
+                this.RegisterFailure,
+                this.CanRegisterFailure);
             this.DisqualifyCommand = new AsyncDelegateCommand(
                 this.Disqualify,
                 this.CanDisqualify);
@@ -58,6 +63,12 @@ namespace Hurace.RaceControl.ViewModels
         #endregion
 
         public bool CurrentStartingSkierTracked { get; set; }
+
+        public bool FirstRun
+        {
+            get => firstRun;
+            set => base.Set(ref this.firstRun, value);
+        }
 
         public Domain.Race Race
         {
@@ -87,6 +98,8 @@ namespace Hurace.RaceControl.ViewModels
 
         public ObservableCollection<Domain.RankedSkier> Ranks { get; }
 
+        public MainViewModel MainVM { get; }
+
         #endregion
         #region Methods
         #region Measurement-Logic
@@ -96,8 +109,8 @@ namespace Hurace.RaceControl.ViewModels
             int insertIndex = 0;
             if (this.Measurements.Count > 0)
             {
-                insertIndex = this.Measurements.ToList().FindLastIndex(
-                    m => string.Compare(m.SensorString, measurement.SensorString, StringComparison.OrdinalIgnoreCase) < 0)
+                insertIndex = this.Measurements.ToList()
+                    .FindLastIndex(m => string.Compare(m.SensorString, measurement.SensorString, StringComparison.OrdinalIgnoreCase) < 0)
                     + 1;
             }
 
@@ -110,28 +123,41 @@ namespace Hurace.RaceControl.ViewModels
             if (lastMeasurement)
             {
                 this.raceExecutionManager.OnTimeMeasured -= this.OnTimeMeasured;
+
+                await Task.Run(
+                        async () =>
+                        {
+                            Thread.Sleep(5000);
+                            await this.UpdateStartingSkiers().ConfigureAwait(false);
+                        })
+                    .ConfigureAwait(false);
+
                 Application.Current.Dispatcher.Invoke(
                     () =>
                     {
                         this.Measurements.Clear();
                         this.currentlyRunning = false;
                     });
-
-                await this.UpdateStartingSkiers().ConfigureAwait(false);
             }
         }
 
         #endregion
         #region Command-Methods
 
+        private bool CanRegisterFailure(object parameter)
+        {
+            return !this.currentlyExecutingUiCommand;
+        }
+
         private async Task RegisterFailure(object parameter)
         {
+            this.currentlyExecutingUiCommand = true;
             this.currentlyRunning = false;
 
             var failureType = (await this.informationManager.GetAllRaceStatesAsync().ConfigureAwait(false))
                 .First(rt => rt.Label == "NichtAbgeschlossen");
 
-            await this.raceExecutionManager.GenerateSecondStartListIfNeeded()
+            await this.raceExecutionManager.GenerateSecondStartListIfNeeded(this.currentStartPosition)
                 .ConfigureAwait(false);
 
             if (this.currentlyRunning)
@@ -143,7 +169,7 @@ namespace Hurace.RaceControl.ViewModels
             {
                 var raceData = await informationManager.GetRaceDataByRaceAndStartlistAndPositionAsync(
                         race,
-                        firstStartList,
+                        FirstRun,
                         currentStartPosition.Position)
                     .ConfigureAwait(false);
 
@@ -154,21 +180,24 @@ namespace Hurace.RaceControl.ViewModels
 
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
+
+            this.currentlyExecutingUiCommand = false;
         }
 
         private bool CanDisqualify(object parameter)
         {
-            return this.currentlyRunning;
+            return this.currentlyRunning && !this.currentlyExecutingUiCommand;
         }
 
         private async Task Disqualify(object parameter)
         {
+            this.currentlyExecutingUiCommand = true;
             this.currentlyRunning = false;
 
             var failureType = (await this.informationManager.GetAllRaceStatesAsync().ConfigureAwait(false))
                 .First(rt => rt.Label == "Disqualifiziert");
 
-            await this.raceExecutionManager.GenerateSecondStartListIfNeeded()
+            await this.raceExecutionManager.GenerateSecondStartListIfNeeded(this.currentStartPosition)
                 .ConfigureAwait(false);
 
             await this.raceExecutionManager.StopTimeTrackingAsync(failureType)
@@ -176,24 +205,29 @@ namespace Hurace.RaceControl.ViewModels
 
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
+
+            this.currentlyExecutingUiCommand = false;
         }
 
         private bool CanReleaseStart(object parameter)
         {
-            return !this.currentlyRunning;
+            return !this.currentlyRunning && !this.currentlyExecutingUiCommand;
         }
 
         private async Task ReleaseStart(object parameter)
         {
+            this.currentlyExecutingUiCommand = true;
             this.currentlyRunning = true;
 
             await this.raceExecutionManager.StartTimeTrackingAsync(
                     this.Race,
-                    this.firstStartList,
+                    this.FirstRun,
                     this.currentStartPosition.Position)
                 .ConfigureAwait(false);
 
             this.raceExecutionManager.OnTimeMeasured += OnTimeMeasured;
+
+            this.currentlyExecutingUiCommand = false;
         }
 
         #endregion
@@ -207,6 +241,7 @@ namespace Hurace.RaceControl.ViewModels
             Application.Current.Dispatcher.Invoke(
                 () =>
                 {
+                    this.Ranks.Clear();
                     foreach (var rank in ranks)
                     {
                         this.Ranks.Add(rank);
@@ -218,7 +253,7 @@ namespace Hurace.RaceControl.ViewModels
         {
             Application.Current.Dispatcher.Invoke(() => this.Measurements.Clear());
 
-            this.firstStartList = true;
+            this.FirstRun = true;
             this.startList = (await this.informationManager.GetStartPositionListAsync(this.Race.Id, true)
                     .ConfigureAwait(false))
                 .OrderBy(sp => sp.Position);
@@ -227,7 +262,7 @@ namespace Hurace.RaceControl.ViewModels
                 .ConfigureAwait(false);
             if (this.currentStartPosition == null)
             {
-                this.firstStartList = false;
+                this.FirstRun = false;
                 this.startList = (await this.informationManager.GetStartPositionListAsync(this.Race.Id, false)
                         .ConfigureAwait(false))
                     .OrderBy(sp => sp.Position);
@@ -237,8 +272,8 @@ namespace Hurace.RaceControl.ViewModels
 
                 if (this.currentStartPosition == null)
                 {
-                    this.mainVM.ExecutionRunning = false;
-                    await this.mainVM.InitializeSelectedRace().ConfigureAwait(false);
+                    this.MainVM.ExecutionRunning = false;
+                    await this.MainVM.InitializeSelectedRace().ConfigureAwait(false);
                     return;
                 }
             }

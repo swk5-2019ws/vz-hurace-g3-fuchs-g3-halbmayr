@@ -27,7 +27,7 @@
     
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="260" MinWidth="180" MaxWidth="260"/>
+            <ColumnDefinition Width="Auto" MinWidth="140" MaxWidth="260"/>
             <ColumnDefinition MinWidth="500" Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -47,6 +47,12 @@
                         <StackPanel Margin="0,0,0,50"/>
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Focusable" Value="{Binding MainVM.NotExecutionRunning}"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
             </ListBox>
 
             <Button Content="{materialDesign:PackIcon Plus}"
@@ -54,12 +60,6 @@
                     Command="{Binding OpenCreateRaceCommand}"
                     Margin="0,0,27,10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
         </Grid>
-
-        <GridSplitter Width="2"
-                      Grid.Column="0"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Stretch"
-                      Background="DarkGray"/>
 
         <DockPanel Grid.Column="1"
                    Visibility="{Binding CreateRaceControlVisible, Converter={StaticResource VisibilityConverter}}">
@@ -73,6 +73,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <Button Content="Abbruch"
+                        Command="{Binding AbortRaceCreateOrUpdateCommand}"
                         Grid.Column="0"
                         Margin="5,5,2.5,5"/>
                 
@@ -125,7 +126,7 @@
                                 Style="{StaticResource MaterialDesignRaisedAccentButton}"
                                 Foreground="White"
                                 ToolTip="Starte das Rennen"
-                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
+                                Visibility="{Binding RaceExecutionButtonVisible, Converter={StaticResource VisibilityConverter}}">
 
                             <materialDesign:PackIcon Kind="PlayCircleOutline"/>
                         </Button>
@@ -137,7 +138,7 @@
                                 Style="{StaticResource MaterialDesignRaisedLightButton}"
                                 Foreground="White"
                                 ToolTip="Starte die Simulation"
-                                Visibility="{Binding RaceNotCompleted, Converter={StaticResource VisibilityConverter}}">
+                                Visibility="{Binding RaceExecutionButtonVisible, Converter={StaticResource VisibilityConverter}}">
                             
                             <materialDesign:PackIcon Kind="PlaySpeed"/>
                         </Button>
@@ -181,7 +182,7 @@
                                Grid.Column="0"
                                Grid.ColumnSpan="2"
                                LastChildFill="False"
-                               Visibility="{Binding RaceNotCompleted, Converter={StaticResource InvertedVisibilityConverter}}">
+                               Visibility="{Binding RankListVisible, Converter={StaticResource VisibilityConverter}}">
 
                         <controls:RankListControl DataContext="{Binding SelectedRace}"/>
                     </DockPanel>

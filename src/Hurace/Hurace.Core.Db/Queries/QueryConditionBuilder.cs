@@ -45,6 +45,28 @@ namespace Hurace.Core.Db.Queries
         }
 
         /// <summary>
+        /// Declare a condition that allows everything
+        /// </summary>
+        /// <returns>a reference to itself</returns>
+        public QueryConditionBuilder DeclareTautologyCondition()
+        {
+            this.QueryCondition = new StaticQueryCondition(alwaysTrue: true);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declare a condition that allows nothing
+        /// </summary>
+        /// <returns>a reference to itself</returns>
+        public QueryConditionBuilder DeclareContradictingCondition()
+        {
+            this.QueryCondition = new StaticQueryCondition(alwaysTrue: false);
+
+            return this;
+        }
+
+        /// <summary>
         /// Declares a new <see cref="QueryConditionNode"/> with the passed parameters.
         /// This is only possible, if <see cref="DeclareCondition(string, QueryConditionType, object)"/> or
         /// <see cref="DeclareConditionNode(QueryConditionNodeType, Func{QueryConditionBuilder}, Func{QueryConditionBuilder})"/>

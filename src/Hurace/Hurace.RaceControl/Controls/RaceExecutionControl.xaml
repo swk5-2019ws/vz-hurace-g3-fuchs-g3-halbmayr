@@ -43,22 +43,37 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
+            <TextBlock Text="1.Lauf"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       HorizontalAlignment="Center"
+                       Grid.Row="0"
+                       Grid.Column="0"
+                       Visibility="{Binding FirstRun, Converter={StaticResource VisibilityConverter}}"/>
+
+            <TextBlock Text="2.Lauf"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       HorizontalAlignment="Center"
+                       Grid.Row="0"
+                       Grid.Column="0"
+                       Visibility="{Binding FirstRun, Converter={StaticResource InvertedVisibilityConverter}}"/>
+
             <controls:SkierSummaryListItem DataContext="{Binding AfterNextStartingSkier}"
-                                           Grid.Row="0"
+                                           Grid.Row="1"
                                            Grid.Column="0"
                                            Visibility="{Binding AfterNextStartingSkier, Converter={StaticResource RefToVisibilityConverter}}"
                                            Opacity="0.3"/>
 
             <controls:SkierSummaryListItem DataContext="{Binding NextStartingSkier}"
-                                           Grid.Row="1"
+                                           Grid.Row="2"
                                            Grid.Column="0"
                                            Visibility="{Binding NextStartingSkier, Converter={StaticResource RefToVisibilityConverter}}"
                                            Opacity="0.6"/>
 
             <controls:SkierSummaryListItem DataContext="{Binding CurrentStartingSkier}"
-                                           Grid.Row="2"
+                                           Grid.Row="3"
                                            Grid.Column="0"
                                            Visibility="{Binding CurrentStartingSkier, Converter={StaticResource RefToVisibilityConverter}}"/>
         </Grid>

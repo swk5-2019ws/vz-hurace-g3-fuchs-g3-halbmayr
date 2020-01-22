@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Hurace.RaceControl.Converters.BoolToVisibilityConverter" Collapsed="true">
+    <Position X="6.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\BoolToVisibilityConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hurace.RaceControl.Converters.InvertedBoolConverter" Collapsed="true">
+    <Position X="4.5" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\InvertedBoolConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hurace.RaceControl.Converters.ValueConverterCollection" Collapsed="true">
+    <Position X="4.5" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\ValueConverterCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hurace.RaceControl.ViewModels.Shared.AsyncDelegateCommand">
+    <Position X="12" Y="3.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAAAEQAAABAAAAAAAAAAAAAQAAAAEA=</HashCode>
+      <FileName>ViewModels\Shared\AsyncDelegateCommand.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hurace.RaceControl.ViewModels.BaseViewModel">
+    <Position X="2" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABIAAAAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\BaseViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Hurace.RaceControl.ViewModels.CreateRaceViewModel">
+    <Position X="0.5" Y="3.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>QxBIaEYAAKAwRQCgMJViSIAOIDCCGAAYAgKIAIhCCkA=</HashCode>
+      <FileName>ViewModels\CreateRaceViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.RaceControl.ViewModels.MainViewModel">
+    <Position X="3.75" Y="3.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>FCAsAJAAggChQEAIECAwAYQgCAgBCQAAAAkAgeIsAAA=</HashCode>
+      <FileName>ViewModels\MainViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.RaceControl.ViewModels.RaceDetailViewModel">
+    <Position X="6.75" Y="3.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>QAAIEECKAgwADCAAAAAIEAQAAgAAAAAAAWUQAAAgQgg=</HashCode>
+      <FileName>ViewModels\RaceDetailViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.RaceControl.ViewModels.SimulatorConfigViewModel">
+    <Position X="9.25" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAABAAhACCgIAAAIgAIAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\SimulatorConfigViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Hurace.RaceControl.Converters.ReferenceToBoolConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\ReferenceToBoolConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Hurace.RaceControl.Converters.SignedTimeSpanConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.75" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\SignedTimeSpanConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Hurace.RaceControl.Converters.UnsignedTimeSpanConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.25" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\UnsignedTimeSpanConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Hurace.RaceControl.Converters.DateTimeConverter" Collapsed="true">
+    <Position X="11.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Converters\DateTimeConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

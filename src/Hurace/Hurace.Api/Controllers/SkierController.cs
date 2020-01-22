@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Hurace.Core.BL;
+using Hurace.Core.Debugging.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hurace.Core.BL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSwag.Annotations;
+using Hurace.Core.Debugging.Exceptions;
 
 namespace Hurace.Api.Controllers
 {
@@ -24,9 +26,14 @@ namespace Hurace.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Domain.Skier>>> GetAllRaces()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation(nameof(GetAllSkiers))]
+        public async Task<ActionResult<IEnumerable<Domain.Skier>>> GetAllSkiers()
         {
-            logger.LogInformation($"this is a log info");
+#if DEBUG
+            logger.LogCall();
+#endif
 
             return Ok(await informationManager.GetAllSkiersAsync(
                 Domain.Associated<Domain.Sex>.LoadingType.Reference,
@@ -35,21 +42,101 @@ namespace Hurace.Api.Controllers
                 .ConfigureAwait(false));
         }
 
-        [HttpGet("{raceId}")]
+        [HttpGet("{skierId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        [OpenApiOperation("Returns skiers for the given raceId")]
-        public async Task<ActionResult<IEnumerable<Domain.Skier>>> GetRankedSkiersOfRace(int raceId)
+        [OpenApiOperation(nameof(GetSkierById))]
+        public async Task<ActionResult<Domain.Skier>> GetSkierById(int skierId)
         {
-            logger.LogInformation($"this is a log info");
+#if DEBUG
+            logger.LogCall(new { skierId });
+#endif
 
-            var skierList = await informationManager.GetRankedSkiersOfRaceAsync(raceId)
-                .ConfigureAwait(false);
+            try
+            {
+                var skier = await this.informationManager.GetSkierByIdAsync(skierId).ConfigureAwait(false);
+                return Ok(skier);
+            }
+            catch (HuraceException)
+            {
+                return NotFound();
+            }
+        }
 
-            return skierList == null
-                ? NotFound($"Invalid raceId: {raceId}")
-                : (ActionResult<IEnumerable<Domain.Skier>>)Ok(skierList);
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation(nameof(CreateSkier))]
+        public async Task<ActionResult<Domain.Skier>> CreateSkier(Domain.Skier skier)
+        {
+#if DEBUG
+            logger.LogCall(skier);
+#endif
+
+            if (skier is null || skier.Sex is null || skier.Country is null)
+                return BadRequest();
+
+            try
+            {
+                var skierId = await this.informationManager.CreateSkierAsync(skier).ConfigureAwait(false);
+
+                var createdSkier = await this.informationManager.GetSkierByIdAsync(skierId).ConfigureAwait(false);
+
+                return CreatedAtAction(nameof(this.GetSkierById), new { skierId }, createdSkier);
+            }
+            catch (HuraceException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("{skierId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation(nameof(UpdateSkier))]
+        public async Task<ActionResult> UpdateSkier(int skierId, Domain.Skier skier)
+        {
+#if DEBUG
+            logger.LogCall(new { skierId, skier });
+#endif
+
+            if (skier is null)
+                return BadRequest("Passed skier is null");
+
+            try
+            {
+                await this.informationManager.UpdateSkierById(skierId, skier).ConfigureAwait(false);
+                return NoContent();
+            }
+            catch (HuraceException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("{skierId}/delete")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [OpenApiOperation(nameof(DeleteSkier))]
+        public async Task<ActionResult> DeleteSkier(int skierId)
+        {
+#if DEBUG
+            logger.LogCall(new { skierId });
+#endif
+
+            try
+            {
+                await this.informationManager.MarkSkierAsRemoved(skierId).ConfigureAwait(false);
+                return NoContent();
+            }
+            catch (HuraceException)
+            {
+                return NotFound();
+            }
         }
     }
 }
