@@ -21,6 +21,8 @@ namespace Hurace.RaceControl.ViewModels
         private bool createRaceButtonVisible;
         private bool isCreateOperation;
         private bool createOrUpdateOperationCurrentlyRunning;
+        private bool displaysCurrentResultWindow;
+        private bool displaysCurrentSkierWindow;
 
         #endregion
         #region ViewModels
@@ -75,6 +77,12 @@ namespace Hurace.RaceControl.ViewModels
             this.CreateOrUpdateRaceCommand = new AsyncDelegateCommand(
                 this.CreateOrUpdateRace,
                 this.CanCreateOrUpdateRace);
+            this.CurrentSkierScreenCommand = new AsyncDelegateCommand(
+                this.CreateCurrentSkierWindow,
+                this.CanCreateCurrentSkierWindow);
+            this.CurrentResultScreenCommand = new AsyncDelegateCommand(
+                this.CreateCurrentResultWindow,
+                this.CanCreateCurrentResultWindow);
 
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
@@ -125,9 +133,13 @@ namespace Hurace.RaceControl.ViewModels
         public AsyncDelegateCommand StartSimulatedRaceExecutionCommand { get; }
         public AsyncDelegateCommand StopRaceExecutionCommand { get; }
         public AsyncDelegateCommand DeleteRaceCommand { get; }
+        public AsyncDelegateCommand CurrentSkierScreenCommand { get; }
+        public AsyncDelegateCommand CurrentResultScreenCommand { get; }
         public AsyncDelegateCommand AbortRaceCreateOrUpdateCommand { get; set; }
 
         #endregion
+
+        public Window DetailWindow { get; set; }
 
         public bool CreateRaceButtonVisible
         {
@@ -211,6 +223,39 @@ namespace Hurace.RaceControl.ViewModels
         #endregion
         #region Methods
         #region Command-Methods
+
+        private bool CanCreateCurrentSkierWindow(object obj)
+        {
+            if(DetailWindow != null)
+                return DetailWindow.GetType() == typeof(Windows.CurrentResultWindow);
+
+            return true;
+        }
+
+        private bool CanCreateCurrentResultWindow(object obj)
+        {
+            if (DetailWindow != null)
+                return DetailWindow.GetType() == typeof(Windows.CurrentSkierWindow);
+
+            return true;
+        }
+
+        private async Task CreateCurrentSkierWindow(object arg)
+        {
+            if (this.DetailWindow != null)
+                DetailWindow.Close();
+            DetailWindow = new Windows.CurrentSkierWindow();
+            DetailWindow.Show();
+
+        }
+
+        private async Task CreateCurrentResultWindow(object arg)
+        {
+            if (this.DetailWindow != null)
+                DetailWindow.Close();
+            DetailWindow = new Windows.CurrentResultWindow();
+            DetailWindow.Show();
+        }
 
         private bool CanCreateOrUpdateRace(object obj)
         {
