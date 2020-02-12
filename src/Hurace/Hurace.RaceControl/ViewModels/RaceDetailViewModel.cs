@@ -285,6 +285,11 @@ namespace Hurace.RaceControl.ViewModels
                 }
             }
 
+            if (this.CurrentStartingSkier != null && this.CurrentStartingSkier.StartPosition.Reference.Position > 1)
+            {
+                this.LastStartedSkier = this.CurrentStartingSkier;
+            }
+
             this.CurrentStartingSkier = this.currentStartPosition.Skier.Reference;
 
             var startListList = this.startList.ToList();
