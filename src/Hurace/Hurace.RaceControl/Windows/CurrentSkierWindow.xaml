@@ -18,59 +18,84 @@
     <Window.Resources>
         <converters:SignedTimeSpanConverter x:Key="SignedTimeSpanVisualizer"/>
         <converters:UnsignedTimeSpanConverter x:Key="UnsignedTimeSpanVisualizer"/>
+        <converters:SkierNameConverter x:Key="SkierNameConverter"/>
+        <converters:DateTimeConverter x:Key="DateFormatConverter"/>
     </Window.Resources>
 
+    <materialDesign:Card Margin="20">
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" MinWidth="250"/>
-            <ColumnDefinition Width="*" MinWidth="200"/>
-        </Grid.ColumnDefinitions>
-        <materialDesign:Card Grid.Column="0">
-            <materialDesign:Card.Background>
-                <ImageBrush
-                    ImageSource="https://www.altitude1260.com.au/wp-content/uploads/2018/10/Planning-A-Trip-To-The-Snowy-Mountains.jpg"
-                    Opacity="0.25"/>
-            </materialDesign:Card.Background>
-            <StackPanel Orientation="Vertical">
-            
-                <StackPanel Orientation="Horizontal"
-                            Margin="20"
-                            HorizontalAlignment="Center">
-                    <TextBlock FontSize="20"
-                       Text="{Binding CurrentStartingSkier.FirstName}"/>
-                    <TextBlock FontSize="20"
-                       Text=" "/>
-                    <TextBlock FontSize="20"
-                       Text="{Binding CurrentStartingSkier.LastName}"/>
-                </StackPanel>
+            <Grid Grid.Row="0"
+                  Grid.Column="0">
 
-                <Image Margin="20" Source="{Binding CurrentStartingSkier.ImageUrl}"
-                       HorizontalAlignment="Center"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                <TextBlock HorizontalAlignment="Center"
-                           Margin="10"
-                           Text="{Binding Path=CurrentStartingSkier.DateOfBirth, StringFormat=dd.MM.yyyy}"/>
-                <TextBlock HorizontalAlignment="Center"
-                           Margin="10"
+                <Image Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.RowSpan="3"
+                       Source="{Binding CurrentStartingSkier.ImageUrl}"
+                       Margin="20"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="0"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           FontSize="20"
+                           Text="{Binding CurrentStartingSkier, Converter={StaticResource SkierNameConverter}}"/>
+
+                <TextBlock Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding CurrentStartingSkier.DateOfBirth, Converter={StaticResource DateFormatConverter}}"/>
+
+                <TextBlock Grid.Row="1"
+                           Grid.Column="2"
                            Text="{Binding CurrentStartingSkier.Country.Reference.Name}"/>
-            </StackPanel>
-        </materialDesign:Card>
-        <ListView ItemsSource="{Binding Measurements, UpdateSourceTrigger=PropertyChanged}"
-                      VerticalAlignment="Center"
-                      Grid.Column="1">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Sensor"
+
+            </Grid>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="1"
+                       Text="TIME"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+            <ListView Grid.Row="1" 
+                      Grid.Column="0"
+                      Grid.ColumnSpan="2"
+                      ItemsSource="{Binding Measurements, UpdateSourceTrigger=PropertyChanged}"
+                      VerticalAlignment="Center">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Sensor"
                                         DisplayMemberBinding="{Binding SensorString}"/>
 
-                    <GridViewColumn Header="Messung"
+                        <GridViewColumn Header="Messung"
                                         DisplayMemberBinding="{Binding Measurement, Converter={StaticResource UnsignedTimeSpanVisualizer}}"/>
 
-                    <GridViewColumn Header="Differenz zu Bestzeit"
+                        <GridViewColumn Header="Differenz zu Bestzeit"
                                         DisplayMemberBinding="{Binding BestDifference, Converter={StaticResource SignedTimeSpanVisualizer}}"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </Grid>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
+    </materialDesign:Card>
 </Window>
