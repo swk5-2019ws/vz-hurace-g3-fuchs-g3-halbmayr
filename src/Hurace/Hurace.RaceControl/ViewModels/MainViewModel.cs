@@ -150,7 +150,7 @@ namespace Hurace.RaceControl.ViewModels
 
         public DispatcherTimer DispatcherTimer { get; private set; }
 
-        public Window DetailWindow { get; set; }
+        public Window RaceExecutionWindow { get; set; }
 
         public bool CreateRaceButtonVisible
         {
@@ -237,44 +237,44 @@ namespace Hurace.RaceControl.ViewModels
 
         private bool CanCreateCurrentSkierWindow(object obj)
         {
-            return DetailWindow != null
-                ? DetailWindow.GetType() == typeof(Windows.CurrentResultWindow)
+            return RaceExecutionWindow != null
+                ? RaceExecutionWindow.GetType() == typeof(Windows.CurrentResultWindow)
                 : true;
         }
 
         private bool CanCreateCurrentResultWindow(object obj)
         {
-            return DetailWindow != null
-                ? DetailWindow.GetType() == typeof(Windows.CurrentSkierWindow)
+            return RaceExecutionWindow != null
+                ? RaceExecutionWindow.GetType() == typeof(Windows.CurrentSkierWindow)
                 : true;
         }
 
         private Task CreateCurrentSkierWindow(object arg)
         {
-            if (this.DetailWindow != null)
-                DetailWindow.Close();
+            if (this.RaceExecutionWindow != null)
+                RaceExecutionWindow.Close();
 
-            DetailWindow = new Windows.CurrentSkierWindow
+            RaceExecutionWindow = new Windows.CurrentSkierWindow
             {
                 DataContext = this.SelectedRace
             };
 
-            DetailWindow.Show();
+            RaceExecutionWindow.Show();
 
             return Task.CompletedTask;
         }
 
         private Task CreateCurrentResultWindow(object arg)
         {
-            if (this.DetailWindow != null)
-                DetailWindow.Close();
+            if (this.RaceExecutionWindow != null)
+                RaceExecutionWindow.Close();
 
-            DetailWindow = new Windows.CurrentResultWindow
+            RaceExecutionWindow = new Windows.CurrentResultWindow
             {
                 DataContext = this.SelectedRace
             };
 
-            DetailWindow.Show();
+            RaceExecutionWindow.Show();
 
             return Task.CompletedTask;
         }
@@ -402,6 +402,8 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task StopRaceExecution(object argument)
         {
+            this.RaceExecutionWindow?.Close();
+            this.RaceExecutionWindow = null;
             this.ExecutionRunning = false;
             this.raceExecutionManager.HaltTimeTracking();
 

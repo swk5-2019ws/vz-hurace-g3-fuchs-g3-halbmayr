@@ -296,6 +296,11 @@ namespace Hurace.RaceControl.ViewModels
 
                 if (this.currentStartPosition == null)
                 {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        this.MainVM.RaceExecutionWindow?.Close();
+                        this.MainVM.RaceExecutionWindow = null;
+                    });
                     this.MainVM.ExecutionRunning = false;
                     await this.MainVM.InitializeSelectedRace().ConfigureAwait(false);
                     return;
