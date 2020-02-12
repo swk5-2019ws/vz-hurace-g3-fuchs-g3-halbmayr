@@ -306,6 +306,13 @@ namespace Hurace.RaceControl.ViewModels
             {
                 this.LastStartedSkier = this.CurrentStartingSkier;
             }
+            else
+            {
+                lastStartedSkier = new Domain.Skier()
+                {
+                    Id = -1
+                };
+            }
 
             this.CurrentStartingSkier = this.currentStartPosition.Skier.Reference;
 
