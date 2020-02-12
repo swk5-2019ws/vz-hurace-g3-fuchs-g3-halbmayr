@@ -24,6 +24,7 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.Skier afterNextStartingSkier;
         private Domain.Skier nextStartingSkier;
         private Domain.Skier currentStartingSkier;
+        private Domain.Skier lastStartedSkier;
         private bool firstRun;
         private readonly IInformationManager informationManager;
         private readonly IRaceExecutionManager raceExecutionManager;
@@ -92,6 +93,12 @@ namespace Hurace.RaceControl.ViewModels
         {
             get => currentStartingSkier;
             set => base.Set(ref this.currentStartingSkier, value);
+        }
+
+        public Domain.Skier LastStartedSkier
+        {
+            get => lastStartedSkier;
+            set => base.Set(ref this.lastStartedSkier, value);
         }
 
         public ObservableCollection<Domain.ProcessedTimeMeasurement> Measurements { get; set; }
@@ -295,6 +302,8 @@ namespace Hurace.RaceControl.ViewModels
             }
             else
                 this.NextStartingSkier = null;
+
+            this.LoadRankList();
         }
 
         private async Task<Domain.StartPosition> GetCurrentStartPosition(

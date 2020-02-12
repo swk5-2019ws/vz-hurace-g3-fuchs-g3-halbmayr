@@ -97,7 +97,7 @@
   <Class Name="Hurace.Domain.Skier">
     <Position X="9.25" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAQEAAAAAABAAAAAAAAAAAAAIQAAAAAAAgAAAACAg=</HashCode>
+      <HashCode>AAAAQEAAEAAABAAAAAAAAAAAAAIQAAAAAAAgAAAAAAg=</HashCode>
       <FileName>Skier.cs</FileName>
     </TypeIdentifier>
   </Class>
