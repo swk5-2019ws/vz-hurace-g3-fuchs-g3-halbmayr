@@ -4,11 +4,45 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Hurace.RaceControl.Windows"
+      xmlns:converters="clr-namespace:Hurace.RaceControl.Converters"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      TextElement.FontWeight="Medium"
+      TextElement.FontSize="14"
+      FontFamily="{materialDesign:MaterialDesignFont}"
+      SizeToContent="WidthAndHeight"
       Title="CurrentResultWindow">
 
+    <Window.Resources>
+        <converters:SignedTimeSpanConverter x:Key="TimeSpanVisualizer"/>
+    </Window.Resources>
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <DataGrid ItemsSource="{Binding Ranks}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Rang"
+                                    Binding="{Binding Rank}"/>
+                <DataGridTextColumn Header="Nachname"
+                                    Binding="{Binding LastName}"/>
+                <DataGridTextColumn Header="Vorname"
+                                    Binding="{Binding FirstName}"/>
+                <DataGridTextColumn Header="Land"
+                                    Binding="{Binding Country.Reference.Name}"/>
+                <DataGridTextColumn Header="1.Lauf"
+                                    Binding="{Binding ElapsedTimeInFirstRun, Converter={StaticResource TimeSpanVisualizer}}"/>
+                <DataGridTextColumn Header="2.Lauf"
+                                    Binding="{Binding ElapsedTimeInSecondRun, Converter={StaticResource TimeSpanVisualizer}}"/>
+                <DataGridTextColumn Header="Gesamtzeit"
+                                    Binding="{Binding ElapsedTotalTime, Converter={StaticResource TimeSpanVisualizer}}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
