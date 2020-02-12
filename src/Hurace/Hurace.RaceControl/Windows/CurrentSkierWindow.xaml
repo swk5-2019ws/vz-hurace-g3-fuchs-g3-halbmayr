@@ -20,6 +20,7 @@
         <converters:UnsignedTimeSpanConverter x:Key="UnsignedTimeSpanVisualizer"/>
         <converters:SkierNameConverter x:Key="SkierNameConverter"/>
         <converters:DateTimeConverter x:Key="DateFormatConverter"/>
+        <converters:ElapsedTimeConverter x:Key="ElapsedTimeConverter"/>
     </Window.Resources>
 
     <materialDesign:Card Margin="20">
@@ -30,7 +31,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" MinWidth="250"/>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Row="0"
@@ -73,7 +74,8 @@
 
             <TextBlock Grid.Row="0"
                        Grid.Column="1"
-                       Text="TIME"
+                       Text="{Binding MainVM.Stopwatch.Elapsed, Converter={StaticResource ElapsedTimeConverter}}"
+                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
 

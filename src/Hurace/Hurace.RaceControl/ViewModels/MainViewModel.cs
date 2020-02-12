@@ -3,9 +3,11 @@ using Hurace.RaceControl.ViewModels.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 #pragma warning disable CA1822 // Mark members as static
 namespace Hurace.RaceControl.ViewModels
@@ -56,6 +58,13 @@ namespace Hurace.RaceControl.ViewModels
 
             this.createRaceVisible = false;
             this.createOrUpdateOperationCurrentlyRunning = false;
+
+            this.Stopwatch = new Stopwatch();
+            this.DispatcherTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(10)
+            };
+            this.DispatcherTimer.Tick += this.OnDispatcherTimer;
 
             this.StartRaceExecutionCommand = new AsyncDelegateCommand(
                 this.StartRaceExecution,
@@ -136,6 +145,10 @@ namespace Hurace.RaceControl.ViewModels
         public AsyncDelegateCommand AbortRaceCreateOrUpdateCommand { get; set; }
 
         #endregion
+
+        public Stopwatch Stopwatch { get; private set; }
+
+        public DispatcherTimer DispatcherTimer { get; private set; }
 
         public Window DetailWindow { get; set; }
 
@@ -224,41 +237,46 @@ namespace Hurace.RaceControl.ViewModels
 
         private bool CanCreateCurrentSkierWindow(object obj)
         {
-            if (DetailWindow != null)
-                return DetailWindow.GetType() == typeof(Windows.CurrentResultWindow);
-
-            return true;
+            return DetailWindow != null
+                ? DetailWindow.GetType() == typeof(Windows.CurrentResultWindow)
+                : true;
         }
 
         private bool CanCreateCurrentResultWindow(object obj)
         {
-            if (DetailWindow != null)
-                return DetailWindow.GetType() == typeof(Windows.CurrentSkierWindow);
-
-            return true;
+            return DetailWindow != null
+                ? DetailWindow.GetType() == typeof(Windows.CurrentSkierWindow)
+                : true;
         }
 
-        private async Task CreateCurrentSkierWindow(object arg)
+        private Task CreateCurrentSkierWindow(object arg)
         {
             if (this.DetailWindow != null)
                 DetailWindow.Close();
+
             DetailWindow = new Windows.CurrentSkierWindow
             {
                 DataContext = this.SelectedRace
             };
+
             DetailWindow.Show();
 
+            return Task.CompletedTask;
         }
 
-        private async Task CreateCurrentResultWindow(object arg)
+        private Task CreateCurrentResultWindow(object arg)
         {
             if (this.DetailWindow != null)
                 DetailWindow.Close();
+
             DetailWindow = new Windows.CurrentResultWindow
             {
                 DataContext = this.SelectedRace
             };
+
             DetailWindow.Show();
+
+            return Task.CompletedTask;
         }
 
         private bool CanCreateOrUpdateRace(object obj)
@@ -427,6 +445,14 @@ namespace Hurace.RaceControl.ViewModels
         }
 
         #endregion
+        #region Event-Handler Methods
+
+        private void OnDispatcherTimer(object sender, EventArgs e)
+        {
+            base.NotifyPropertyChanged(nameof(this.Stopwatch));
+        }
+
+        #endregion
         #region Async-Loaders
 
         internal async Task InitializeAsync()
@@ -476,6 +502,22 @@ namespace Hurace.RaceControl.ViewModels
                 base.NotifyPropertyChanged(nameof(RaceNotCompleted));
                 this.ExecutionRunning = false;
             }
+        }
+
+        #endregion
+        #region TimeTracking-Methods
+
+        public void StartTimeTracking()
+        {
+            this.Stopwatch.Start();
+            this.DispatcherTimer.Start();
+        }
+
+        public void StopTimeTracking()
+        {
+            this.DispatcherTimer.Stop();
+            this.Stopwatch.Reset();
+            base.NotifyPropertyChanged(nameof(this.Stopwatch));
         }
 
         #endregion

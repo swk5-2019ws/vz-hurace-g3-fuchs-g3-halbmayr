@@ -3,10 +3,12 @@ using Hurace.RaceControl.ViewModels.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 #pragma warning disable CA2227 // Collection properties should be read only
 namespace Hurace.RaceControl.ViewModels
@@ -101,6 +103,7 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.lastStartedSkier, value);
         }
 
+
         public ObservableCollection<Domain.ProcessedTimeMeasurement> Measurements { get; set; }
 
         public ObservableCollection<Domain.RankedSkier> Ranks { get; }
@@ -113,6 +116,11 @@ namespace Hurace.RaceControl.ViewModels
 
         private async Task OnTimeMeasured(Domain.ProcessedTimeMeasurement measurement, bool lastMeasurement)
         {
+            if (measurement.SensorString.Contains('0', StringComparison.InvariantCultureIgnoreCase))
+            {
+                this.MainVM.StartTimeTracking();
+            }
+
             int insertIndex = 0;
             if (this.Measurements.Count > 0)
             {
@@ -188,6 +196,8 @@ namespace Hurace.RaceControl.ViewModels
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
 
+            this.MainVM.StopTimeTracking();
+
             this.currentlyExecutingUiCommand = false;
         }
 
@@ -212,6 +222,8 @@ namespace Hurace.RaceControl.ViewModels
 
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
+
+            this.MainVM.StopTimeTracking();
 
             this.currentlyExecutingUiCommand = false;
         }
@@ -258,6 +270,11 @@ namespace Hurace.RaceControl.ViewModels
 
         internal async Task UpdateStartingSkiers()
         {
+            if (this.MainVM.DispatcherTimer.IsEnabled)
+            {
+                this.MainVM.StopTimeTracking();
+            }
+
             Application.Current.Dispatcher.Invoke(() => this.Measurements.Clear());
 
             this.FirstRun = true;
@@ -308,7 +325,7 @@ namespace Hurace.RaceControl.ViewModels
             else
                 this.NextStartingSkier = null;
 
-            this.LoadRankList();
+            await this.LoadRankList().ConfigureAwait(false);
         }
 
         private async Task<Domain.StartPosition> GetCurrentStartPosition(
