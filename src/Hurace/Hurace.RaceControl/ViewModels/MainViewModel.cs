@@ -509,15 +509,21 @@ namespace Hurace.RaceControl.ViewModels
 
         public void StartTimeTracking()
         {
-            this.Stopwatch.Start();
-            this.DispatcherTimer.Start();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.Stopwatch.Start();
+                this.DispatcherTimer.Start();
+            });
         }
 
         public void StopTimeTracking()
         {
-            this.DispatcherTimer.Stop();
-            this.Stopwatch.Reset();
-            base.NotifyPropertyChanged(nameof(this.Stopwatch));
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.DispatcherTimer.Stop();
+                this.Stopwatch.Reset();
+                base.NotifyPropertyChanged(nameof(this.Stopwatch));
+            });
         }
 
         #endregion
