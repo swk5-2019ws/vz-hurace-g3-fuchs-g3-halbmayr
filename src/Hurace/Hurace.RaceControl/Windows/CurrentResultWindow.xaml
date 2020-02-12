@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Hurace.RaceControl.Windows"
+      xmlns:controls="clr-namespace:Hurace.RaceControl.Controls"
       xmlns:converters="clr-namespace:Hurace.RaceControl.Converters"
       mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -17,32 +18,58 @@
 
     <Window.Resources>
         <converters:SignedTimeSpanConverter x:Key="TimeSpanVisualizer"/>
+        <converters:CompareSkierToBoolConverter x:Key="CompareSkiers"/>
     </Window.Resources>
 
-    <Grid>
+    <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1"
+                         Margin="15"
+                         Background="{DynamicResource MaterialDesignPaper}">
+        <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <DataGrid ItemsSource="{Binding Ranks}"
+            <controls:RaceHeaderControl DataContext="{Binding MainVM.SelectedRace}"
+                                        Grid.Row="0"
+                                        Margin="15"/>
+            <DataGrid ItemsSource="{Binding Ranks}"
                   AutoGenerateColumns="False"
-                  IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Rang"
+                  IsReadOnly="True"
+                      Grid.Row="1">
+                <DataGrid.RowStyle>
+
+                    <Style TargetType="DataGridRow">
+
+                        <Style.Triggers>
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource CompareSkiers}">
+                                        <Binding Path="Id"/>
+                                        <Binding Path="DataContext.LastStartedSkier.Id" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}"/>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Background" Value="LightGray"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Rang"
                                     Binding="{Binding Rank}"/>
-                <DataGridTextColumn Header="Nachname"
+                    <DataGridTextColumn Header="Nachname"
                                     Binding="{Binding LastName}"/>
-                <DataGridTextColumn Header="Vorname"
+                    <DataGridTextColumn Header="Vorname"
                                     Binding="{Binding FirstName}"/>
-                <DataGridTextColumn Header="Land"
+                    <DataGridTextColumn Header="Land"
                                     Binding="{Binding Country.Reference.Name}"/>
-                <DataGridTextColumn Header="1.Lauf"
+                    <DataGridTextColumn Header="1.Lauf"
                                     Binding="{Binding ElapsedTimeInFirstRun, Converter={StaticResource TimeSpanVisualizer}}"/>
-                <DataGridTextColumn Header="2.Lauf"
+                    <DataGridTextColumn Header="2.Lauf"
                                     Binding="{Binding ElapsedTimeInSecondRun, Converter={StaticResource TimeSpanVisualizer}}"/>
-                <DataGridTextColumn Header="Gesamtzeit"
+                    <DataGridTextColumn Header="Gesamtzeit"
                                     Binding="{Binding ElapsedTotalTime, Converter={StaticResource TimeSpanVisualizer}}"/>
-            </DataGrid.Columns>
-        </DataGrid>
-    </Grid>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </materialDesign:Card>
 </Window>
