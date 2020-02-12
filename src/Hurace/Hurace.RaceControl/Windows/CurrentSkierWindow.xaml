@@ -1,14 +1,76 @@
 ﻿<Window x:Class="Hurace.RaceControl.Windows.CurrentSkierWindow"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Hurace.RaceControl.Windows"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="CurrentSkierWindow">
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:converters="clr-namespace:Hurace.RaceControl.Converters"
+        xmlns:local="clr-namespace:Hurace.RaceControl.Windows"
+        mc:Ignorable="d" 
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{materialDesign:MaterialDesignFont}"
+        SizeToContent="WidthAndHeight"
+        Title="CurrentSkierWindow">
 
-    <Grid>
-        
+    <Window.Resources>
+        <converters:SignedTimeSpanConverter x:Key="SignedTimeSpanVisualizer"/>
+        <converters:UnsignedTimeSpanConverter x:Key="UnsignedTimeSpanVisualizer"/>
+    </Window.Resources>
+
+
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="250"/>
+            <ColumnDefinition Width="*" MinWidth="200"/>
+        </Grid.ColumnDefinitions>
+        <materialDesign:Card Grid.Column="0">
+            <materialDesign:Card.Background>
+                <ImageBrush
+                    ImageSource="https://www.altitude1260.com.au/wp-content/uploads/2018/10/Planning-A-Trip-To-The-Snowy-Mountains.jpg"
+                    Opacity="0.25"/>
+            </materialDesign:Card.Background>
+            <StackPanel Orientation="Vertical">
+            
+                <StackPanel Orientation="Horizontal"
+                            Margin="20"
+                            HorizontalAlignment="Center">
+                    <TextBlock FontSize="20"
+                       Text="{Binding CurrentStartingSkier.FirstName}"/>
+                    <TextBlock FontSize="20"
+                       Text=" "/>
+                    <TextBlock FontSize="20"
+                       Text="{Binding CurrentStartingSkier.LastName}"/>
+                </StackPanel>
+
+                <Image Margin="20" Source="{Binding CurrentStartingSkier.ImageUrl}"
+                       HorizontalAlignment="Center"/>
+
+                <TextBlock HorizontalAlignment="Center"
+                           Margin="10"
+                           Text="{Binding Path=CurrentStartingSkier.DateOfBirth, StringFormat=dd.MM.yyyy}"/>
+                <TextBlock HorizontalAlignment="Center"
+                           Margin="10"
+                           Text="{Binding CurrentStartingSkier.Country.Reference.Name}"/>
+            </StackPanel>
+        </materialDesign:Card>
+        <ListView ItemsSource="{Binding Measurements, UpdateSourceTrigger=PropertyChanged}"
+                      VerticalAlignment="Center"
+                      Grid.Column="1">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Sensor"
+                                        DisplayMemberBinding="{Binding SensorString}"/>
+
+                    <GridViewColumn Header="Messung"
+                                        DisplayMemberBinding="{Binding Measurement, Converter={StaticResource UnsignedTimeSpanVisualizer}}"/>
+
+                    <GridViewColumn Header="Differenz zu Bestzeit"
+                                        DisplayMemberBinding="{Binding BestDifference, Converter={StaticResource SignedTimeSpanVisualizer}}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

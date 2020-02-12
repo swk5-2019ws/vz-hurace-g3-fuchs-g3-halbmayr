@@ -21,8 +21,6 @@ namespace Hurace.RaceControl.ViewModels
         private bool createRaceButtonVisible;
         private bool isCreateOperation;
         private bool createOrUpdateOperationCurrentlyRunning;
-        private bool displaysCurrentResultWindow;
-        private bool displaysCurrentSkierWindow;
 
         #endregion
         #region ViewModels
@@ -226,7 +224,7 @@ namespace Hurace.RaceControl.ViewModels
 
         private bool CanCreateCurrentSkierWindow(object obj)
         {
-            if(DetailWindow != null)
+            if (DetailWindow != null)
                 return DetailWindow.GetType() == typeof(Windows.CurrentResultWindow);
 
             return true;
@@ -244,7 +242,10 @@ namespace Hurace.RaceControl.ViewModels
         {
             if (this.DetailWindow != null)
                 DetailWindow.Close();
-            DetailWindow = new Windows.CurrentSkierWindow();
+            DetailWindow = new Windows.CurrentSkierWindow
+            {
+                DataContext = this.SelectedRace
+            };
             DetailWindow.Show();
 
         }
@@ -253,7 +254,10 @@ namespace Hurace.RaceControl.ViewModels
         {
             if (this.DetailWindow != null)
                 DetailWindow.Close();
-            DetailWindow = new Windows.CurrentResultWindow();
+            DetailWindow = new Windows.CurrentResultWindow
+            {
+                DataContext = this.SelectedRace
+            };
             DetailWindow.Show();
         }
 
