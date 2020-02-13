@@ -307,7 +307,7 @@ namespace Hurace.RaceControl.ViewModels
                 }
             }
 
-            if (this.CurrentStartingSkier != null && this.CurrentStartingSkier.StartPosition.Reference.Position > 1)
+            if (this.CurrentStartingSkier != null)
             {
                 this.LastStartedSkier = this.CurrentStartingSkier;
             }
