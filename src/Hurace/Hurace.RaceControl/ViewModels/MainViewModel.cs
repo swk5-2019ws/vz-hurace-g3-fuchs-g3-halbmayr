@@ -259,6 +259,7 @@ namespace Hurace.RaceControl.ViewModels
                 DataContext = this.SelectedRace
             };
 
+            RaceExecutionWindow.Closed += (sender, e) => RaceExecutionWindow = null;
             RaceExecutionWindow.Show();
 
             return Task.CompletedTask;
@@ -274,6 +275,7 @@ namespace Hurace.RaceControl.ViewModels
                 DataContext = this.SelectedRace
             };
 
+            RaceExecutionWindow.Closed += (sender, e) => RaceExecutionWindow = null;
             RaceExecutionWindow.Show();
 
             return Task.CompletedTask;
