@@ -1371,6 +1371,11 @@ namespace Hurace.Core.BL
                         DateOfBirth = skierEnt.DateOfBirth,
                         ImageUrl = skierEnt.ImageUrl,
                         IsRemoved = skierEnt.IsRemoved,
+                        StartPosition = new Domain.Associated<Domain.StartPosition>(new Domain.StartPosition()
+                        {
+                            Id = startPositionEnt.Id,
+                            Position = startPositionEnt.Position
+                        }),
                         Country = new Domain.Associated<Domain.Country>(countrySet.First(c => c.Id == skierEnt.CountryId))
                     })
                 };

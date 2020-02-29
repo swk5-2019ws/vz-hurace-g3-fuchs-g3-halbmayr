@@ -3,10 +3,12 @@ using Hurace.RaceControl.ViewModels.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 #pragma warning disable CA2227 // Collection properties should be read only
 namespace Hurace.RaceControl.ViewModels
@@ -24,6 +26,7 @@ namespace Hurace.RaceControl.ViewModels
         private Domain.Skier afterNextStartingSkier;
         private Domain.Skier nextStartingSkier;
         private Domain.Skier currentStartingSkier;
+        private Domain.Skier lastStartedSkier;
         private bool firstRun;
         private readonly IInformationManager informationManager;
         private readonly IRaceExecutionManager raceExecutionManager;
@@ -94,6 +97,13 @@ namespace Hurace.RaceControl.ViewModels
             set => base.Set(ref this.currentStartingSkier, value);
         }
 
+        public Domain.Skier LastStartedSkier
+        {
+            get => lastStartedSkier;
+            set => base.Set(ref this.lastStartedSkier, value);
+        }
+
+
         public ObservableCollection<Domain.ProcessedTimeMeasurement> Measurements { get; set; }
 
         public ObservableCollection<Domain.RankedSkier> Ranks { get; }
@@ -106,6 +116,11 @@ namespace Hurace.RaceControl.ViewModels
 
         private async Task OnTimeMeasured(Domain.ProcessedTimeMeasurement measurement, bool lastMeasurement)
         {
+            if (measurement.SensorString.Contains('0', StringComparison.InvariantCultureIgnoreCase))
+            {
+                this.MainVM.StartTimeTracking();
+            }
+
             int insertIndex = 0;
             if (this.Measurements.Count > 0)
             {
@@ -181,6 +196,8 @@ namespace Hurace.RaceControl.ViewModels
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
 
+            this.MainVM.StopTimeTracking();
+
             this.currentlyExecutingUiCommand = false;
         }
 
@@ -205,6 +222,8 @@ namespace Hurace.RaceControl.ViewModels
 
             this.raceExecutionManager.OnTimeMeasured -= OnTimeMeasured;
             await this.UpdateStartingSkiers().ConfigureAwait(false);
+
+            this.MainVM.StopTimeTracking();
 
             this.currentlyExecutingUiCommand = false;
         }
@@ -251,6 +270,11 @@ namespace Hurace.RaceControl.ViewModels
 
         internal async Task UpdateStartingSkiers()
         {
+            if (this.MainVM.DispatcherTimer.IsEnabled)
+            {
+                this.MainVM.StopTimeTracking();
+            }
+
             Application.Current.Dispatcher.Invoke(() => this.Measurements.Clear());
 
             this.FirstRun = true;
@@ -272,10 +296,27 @@ namespace Hurace.RaceControl.ViewModels
 
                 if (this.currentStartPosition == null)
                 {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        this.MainVM.RaceExecutionWindow?.Close();
+                        this.MainVM.RaceExecutionWindow = null;
+                    });
                     this.MainVM.ExecutionRunning = false;
                     await this.MainVM.InitializeSelectedRace().ConfigureAwait(false);
                     return;
                 }
+            }
+
+            if (this.CurrentStartingSkier != null)
+            {
+                this.LastStartedSkier = this.CurrentStartingSkier;
+            }
+            else
+            {
+                lastStartedSkier = new Domain.Skier()
+                {
+                    Id = -1
+                };
             }
 
             this.CurrentStartingSkier = this.currentStartPosition.Skier.Reference;
@@ -295,6 +336,8 @@ namespace Hurace.RaceControl.ViewModels
             }
             else
                 this.NextStartingSkier = null;
+
+            await this.LoadRankList().ConfigureAwait(false);
         }
 
         private async Task<Domain.StartPosition> GetCurrentStartPosition(

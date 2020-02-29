@@ -3,9 +3,11 @@ using Hurace.RaceControl.ViewModels.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 #pragma warning disable CA1822 // Mark members as static
 namespace Hurace.RaceControl.ViewModels
@@ -57,6 +59,13 @@ namespace Hurace.RaceControl.ViewModels
             this.createRaceVisible = false;
             this.createOrUpdateOperationCurrentlyRunning = false;
 
+            this.Stopwatch = new Stopwatch();
+            this.DispatcherTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(10)
+            };
+            this.DispatcherTimer.Tick += this.OnDispatcherTimer;
+
             this.StartRaceExecutionCommand = new AsyncDelegateCommand(
                 this.StartRaceExecution,
                 this.CanStartRaceExecution);
@@ -75,6 +84,12 @@ namespace Hurace.RaceControl.ViewModels
             this.CreateOrUpdateRaceCommand = new AsyncDelegateCommand(
                 this.CreateOrUpdateRace,
                 this.CanCreateOrUpdateRace);
+            this.CurrentSkierScreenCommand = new AsyncDelegateCommand(
+                this.CreateCurrentSkierWindow,
+                this.CanCreateCurrentSkierWindow);
+            this.CurrentResultScreenCommand = new AsyncDelegateCommand(
+                this.CreateCurrentResultWindow,
+                this.CanCreateCurrentResultWindow);
 
             this.OpenCreateRaceCommand = new AsyncDelegateCommand(
                 async _ =>
@@ -125,9 +140,17 @@ namespace Hurace.RaceControl.ViewModels
         public AsyncDelegateCommand StartSimulatedRaceExecutionCommand { get; }
         public AsyncDelegateCommand StopRaceExecutionCommand { get; }
         public AsyncDelegateCommand DeleteRaceCommand { get; }
+        public AsyncDelegateCommand CurrentSkierScreenCommand { get; }
+        public AsyncDelegateCommand CurrentResultScreenCommand { get; }
         public AsyncDelegateCommand AbortRaceCreateOrUpdateCommand { get; set; }
 
         #endregion
+
+        public Stopwatch Stopwatch { get; private set; }
+
+        public DispatcherTimer DispatcherTimer { get; private set; }
+
+        public Window RaceExecutionWindow { get; set; }
 
         public bool CreateRaceButtonVisible
         {
@@ -211,6 +234,52 @@ namespace Hurace.RaceControl.ViewModels
         #endregion
         #region Methods
         #region Command-Methods
+
+        private bool CanCreateCurrentSkierWindow(object obj)
+        {
+            return RaceExecutionWindow != null
+                ? RaceExecutionWindow.GetType() == typeof(Windows.CurrentResultWindow)
+                : true;
+        }
+
+        private bool CanCreateCurrentResultWindow(object obj)
+        {
+            return RaceExecutionWindow != null
+                ? RaceExecutionWindow.GetType() == typeof(Windows.CurrentSkierWindow)
+                : true;
+        }
+
+        private Task CreateCurrentSkierWindow(object arg)
+        {
+            if (this.RaceExecutionWindow != null)
+                RaceExecutionWindow.Close();
+
+            RaceExecutionWindow = new Windows.CurrentSkierWindow
+            {
+                DataContext = this.SelectedRace
+            };
+
+            RaceExecutionWindow.Closed += (sender, e) => RaceExecutionWindow = null;
+            RaceExecutionWindow.Show();
+
+            return Task.CompletedTask;
+        }
+
+        private Task CreateCurrentResultWindow(object arg)
+        {
+            if (this.RaceExecutionWindow != null)
+                RaceExecutionWindow.Close();
+
+            RaceExecutionWindow = new Windows.CurrentResultWindow
+            {
+                DataContext = this.SelectedRace
+            };
+
+            RaceExecutionWindow.Closed += (sender, e) => RaceExecutionWindow = null;
+            RaceExecutionWindow.Show();
+
+            return Task.CompletedTask;
+        }
 
         private bool CanCreateOrUpdateRace(object obj)
         {
@@ -335,6 +404,8 @@ namespace Hurace.RaceControl.ViewModels
 
         public async Task StopRaceExecution(object argument)
         {
+            this.RaceExecutionWindow?.Close();
+            this.RaceExecutionWindow = null;
             this.ExecutionRunning = false;
             this.raceExecutionManager.HaltTimeTracking();
 
@@ -375,6 +446,14 @@ namespace Hurace.RaceControl.ViewModels
         {
             this.CreateRaceControlVisible = false;
             return Task.CompletedTask;
+        }
+
+        #endregion
+        #region Event-Handler Methods
+
+        private void OnDispatcherTimer(object sender, EventArgs e)
+        {
+            base.NotifyPropertyChanged(nameof(this.Stopwatch));
         }
 
         #endregion
@@ -427,6 +506,28 @@ namespace Hurace.RaceControl.ViewModels
                 base.NotifyPropertyChanged(nameof(RaceNotCompleted));
                 this.ExecutionRunning = false;
             }
+        }
+
+        #endregion
+        #region TimeTracking-Methods
+
+        public void StartTimeTracking()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.Stopwatch.Start();
+                this.DispatcherTimer.Start();
+            });
+        }
+
+        public void StopTimeTracking()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.DispatcherTimer.Stop();
+                this.Stopwatch.Reset();
+                base.NotifyPropertyChanged(nameof(this.Stopwatch));
+            });
         }
 
         #endregion

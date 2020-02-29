@@ -99,6 +99,7 @@
                 <Grid Margin="7">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -178,7 +179,29 @@
                         </Button>
                     </Grid>
 
-                    <DockPanel Grid.Row="1"
+                    <StackPanel Grid.Row="1"
+                             Grid.Column="0"
+                             Grid.ColumnSpan="2"
+                             Orientation="Horizontal"
+                             Visibility="{Binding ExecutionRunning, Converter={StaticResource VisibilityConverter}}">
+                        
+                        <Button Command="{Binding CurrentSkierScreenCommand}"
+                                Margin="5,0"
+                                Width="150"
+                                Foreground="White">
+                            Aktueller Läufer
+                        </Button>
+                        
+                        <Button Command="{Binding CurrentResultScreenCommand}"
+                                Margin="5,0"
+                                Width="150"
+                                Foreground="White">
+                            Zwischenstand
+                        </Button>
+
+                    </StackPanel>
+                    
+                    <DockPanel Grid.Row="2"
                                Grid.Column="0"
                                Grid.ColumnSpan="2"
                                LastChildFill="False"
@@ -187,7 +210,7 @@
                         <controls:RankListControl DataContext="{Binding SelectedRace}"/>
                     </DockPanel>
 
-                    <DockPanel Grid.Row="1"
+                    <DockPanel Grid.Row="2"
                                Grid.Column="0"
                                Grid.ColumnSpan="2"
                                LastChildFill="False"
